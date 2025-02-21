@@ -1,14 +1,18 @@
-import React, { useState, useContext } from 'react';
-import { Text, StyleSheet, View, TextInput, Pressable, Dimensions, TouchableOpacity } from 'react-native';
-import { ThemeContext } from '@/hooks/ThemeProvider';
-import ThemeButton from '@/components/ui/ThemeButton'; 
+import React, { useState, useContext } from "react";
+import { Text, View, TouchableOpacity, StyleSheet, Dimensions, TextInput, Pressable } from "react-native";
+import { ThemeContext } from "@/hooks/ThemeProvider";
+import ThemeButton from "@/components/ui/ThemeButton";
 
-function Login({navigation}) {
+function Register({navigation}) {
+
     const { theme } = useContext(ThemeContext);
-    // const router = useRouter();
+
     const { width, height } = Dimensions.get('window');
-    const [ USN, setUSN ] = useState('');
-    const [ password, setpass ] = useState('');
+
+    const [email, setemail] = useState("");
+    const [username, setusername] = new useState("");
+    const [password, setpassword] = useState("");
+    const [conpass, setconpass] = useState("");
 
     const styles = StyleSheet.create({
         mainContainer: {
@@ -20,7 +24,7 @@ function Login({navigation}) {
         },
         link: {
             color: "#0056b3"	,
-            textDecorationLine: 'underline'
+            textDecorationLine: 'underline',
         },
         hr:{
             height: 1,
@@ -57,22 +61,35 @@ function Login({navigation}) {
             color: theme.button.color
         }
     })
+    
 
     return (
         <View style={styles.mainContainer}>
             <View style = { { alignSelf: 'flex-end' } } >
                 <ThemeButton />
             </View>
+            <Text style={styles.text}>Enter Email-Address:</Text>
+            <TextInput 
+                value={email}
+                onChangeText={() => setemail()}
+                style = {styles.inputText}
+            />
             <Text style={styles.text}>Enter the username:</Text>
             <TextInput 
-                value={USN}
-                onChangeText={() => setUSN()}
+                value={username}
+                onChangeText={() => setusername()}
                 style = {styles.inputText}
             />
             <Text style={styles.text}>Enter password:</Text>
             <TextInput 
                 value={password}
-                onChangeText={() => setpass()}
+                onChangeText={() => setpassword()}
+                style = {styles.inputText}
+            />
+            <Text style={styles.text}>Enter password again:</Text>
+            <TextInput 
+                value={conpass}
+                onChangeText={() => setconpass()}
                 style = {styles.inputText}
             />
             <TouchableOpacity
@@ -83,10 +100,11 @@ function Login({navigation}) {
             </TouchableOpacity>
             <View>
                 <View style= {styles.hr}></View>
-                <Text style = {styles.text}>new user? <Pressable onFocus = {( ()=> { navigation.navigate('register') })} style={styles.link}>Register here</Pressable></Text>
+                <Text style = {styles.text}>existing user? <Pressable onFocus = {( ()=> { navigation.navigate('login') })} style={styles.link}>Login here</Pressable></Text>
             </View>
         </View>
     )
+
 }
 
-export default Login;
+export default Register;

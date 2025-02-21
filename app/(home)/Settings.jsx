@@ -1,9 +1,9 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { Button, Text } from 'react-native';
 
-function Settings() {
+function Settings({navigation}) {
     return (
-        <Text> Settings </Text>
+        <Text> Settings <Button title='click me' onPress={ () => {navigation.navigate('room/12')}}/></Text>
     )
 }
 
