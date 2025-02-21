@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Text, StyleSheet, View, TextInput, Pressable, Button } from 'react-native';
+import { Text, StyleSheet, View, TextInput, Pressable, Button, TouchableNativeFeedbackComponent, TouchableOpacity } from 'react-native';
 import { ThemeContext } from '@/hooks/ThemeProvider';
 import ThemeButton from '@/components/ui/ThemeButton'; 
 
@@ -31,7 +31,6 @@ function Login({navigation}) {
             borderWidth: 1,
             color: theme.text,
             backgroundColor: theme.button.background ,
-            color: theme.button.color,
         },
         inputText: {
             color: theme.text,
@@ -43,12 +42,8 @@ function Login({navigation}) {
             textAlignVertical: 'center',
             height: 40,
         },
-        buttonContainer: {
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-evenly',
-            height: '40%',
-            marginTop: 20,
+        buttonText: {
+            color: theme.button.color
         }
     })
 
@@ -69,11 +64,12 @@ function Login({navigation}) {
                 onChangeText={() => setpass()}
                 style = {styles.inputText}
             />
-            <Button
+            <TouchableOpacity
                 style={styles.button}
-                onPress={() => navigation.navigate("Home")}
-                title='Submit'
-            />
+                onPress={() => navigation.navigate("home")}
+             >
+                <Text style = {styles.buttonText}>Submit</Text>
+             </TouchableOpacity>
         </View>
     )
 }
