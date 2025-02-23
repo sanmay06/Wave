@@ -9,6 +9,7 @@ function Login({navigation}) {
     const { width, height } = Dimensions.get('window');
     const [ USN, setUSN ] = useState('');
     const [ password, setpass ] = useState('');
+    const [msg, setmsg] = useState("");
 
     const styles = StyleSheet.create({
         mainContainer: {
@@ -66,15 +67,16 @@ function Login({navigation}) {
             <Text style={styles.text}>Enter the username:</Text>
             <TextInput 
                 value={USN}
-                onChangeText={() => setUSN()}
+                onChangeText={(text) => setUSN(text)}
                 style = {styles.inputText}
             />
             <Text style={styles.text}>Enter password:</Text>
             <TextInput 
                 value={password}
-                onChangeText={() => setpass()}
+                onChangeText={(text) => setpass(text)}
                 style = {styles.inputText}
             />
+            <Text style={styles.text}>{msg}</Text>text
             <TouchableOpacity
                 style={styles.button}
                 onPress={() => navigation.navigate("home")}
@@ -83,7 +85,7 @@ function Login({navigation}) {
             </TouchableOpacity>
             <View>
                 <View style= {styles.hr}></View>
-                <Text style = {styles.text}>new user? <Pressable onFocus = {( ()=> { navigation.navigate('register') })} style={styles.link}>Register here</Pressable></Text>
+                <Text style = {styles.text}>new user? <Pressable onFocus = {( ()=> { navigation.navigate('register') })} style={styles.link}><Text style = {styles.text}>Register here</Text></Pressable></Text>
             </View>
         </View>
     )

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Text, View, TouchableOpacity, StyleSheet, Dimensions, TextInput, Pressable } from "react-native";
 import { ThemeContext } from "@/hooks/ThemeProvider";
 import ThemeButton from "@/components/ui/ThemeButton";
@@ -13,6 +13,7 @@ function Register({navigation}) {
     const [username, setusername] = new useState("");
     const [password, setpassword] = useState("");
     const [conpass, setconpass] = useState("");
+    const [msg, setmsg] = useState(null)
 
     const styles = StyleSheet.create({
         mainContainer: {
@@ -62,6 +63,12 @@ function Register({navigation}) {
         }
     })
     
+    useEffect(() => {
+      if(conpass && conpass !== password)
+        setmsg("Both passwords should match");
+      else
+        setmsg("");
+    }, [conpass, password])
 
     return (
         <View style={styles.mainContainer}>
@@ -71,27 +78,28 @@ function Register({navigation}) {
             <Text style={styles.text}>Enter Email-Address:</Text>
             <TextInput 
                 value={email}
-                onChangeText={() => setemail()}
+                onChangeText={(text) => setemail(text)}
                 style = {styles.inputText}
             />
             <Text style={styles.text}>Enter the username:</Text>
             <TextInput 
                 value={username}
-                onChangeText={() => setusername()}
+                onChangeText={(text) => setusername(text)}
                 style = {styles.inputText}
             />
             <Text style={styles.text}>Enter password:</Text>
             <TextInput 
                 value={password}
-                onChangeText={() => setpassword()}
+                onChangeText={(text) => setpassword(text)}
                 style = {styles.inputText}
             />
             <Text style={styles.text}>Enter password again:</Text>
             <TextInput 
                 value={conpass}
-                onChangeText={() => setconpass()}
+                onChangeText={(text) => setconpass(text)}
                 style = {styles.inputText}
             />
+            <Text style={styles.text}>{msg}</Text>
             <TouchableOpacity
                 style={styles.button}
                 onPress={() => navigation.navigate("home")}
@@ -100,7 +108,7 @@ function Register({navigation}) {
             </TouchableOpacity>
             <View>
                 <View style= {styles.hr}></View>
-                <Text style = {styles.text}>existing user? <Pressable onFocus = {( ()=> { navigation.navigate('login') })} style={styles.link}>Login here</Pressable></Text>
+                <Text style = {styles.text}>existing user? <Pressable onFocus = {( ()=> { navigation.navigate('login') })} style={styles.link}><Text style = {styles.text}>Login here</Text></Pressable></Text>
             </View>
         </View>
     )
