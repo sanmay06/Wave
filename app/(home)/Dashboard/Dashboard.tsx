@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { View, Text, Switch, Alert, Button, TextInput, ScrollView, StyleSheet, Linking } from "react-native";
 import { getDatabase, ref, onValue, set, query, orderByKey, limitToLast, push } from "firebase/database";
 import { database } from "../../../firebaseConfig"; // Adjust path if needed
+import { auth } from "../../../firebaseConfig";
 
 export default function Dashboard() {
+  console.log(auth.currentUser)
   const [light1, setLight1] = useState<boolean>(false);
   const [light2, setLight2] = useState<boolean>(false);
   const [light3, setLight3] = useState<boolean>(false);

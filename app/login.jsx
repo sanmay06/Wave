@@ -1,15 +1,27 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Text, StyleSheet, View, TextInput, Pressable, Dimensions, TouchableOpacity } from 'react-native';
 import { ThemeContext } from '@/hooks/ThemeProvider';
 import ThemeButton from '@/components/ui/ThemeButton'; 
+import { auth } from '@/firebaseConfig';
+import useAuth from '@/hooks/Auth';
 
 function Login({navigation}) {
+
+    const { error, login, logged } = useAuth();
+
+    useEffect(() => {
+        if(logged)
+            navigation.navigate("home");
+      console.log(logged);
+    }, [logged])
+
     const { theme } = useContext(ThemeContext);
     // const router = useRouter();
     const { width, height } = Dimensions.get('window');
     const [ USN, setUSN ] = useState('');
     const [ password, setpass ] = useState('');
-    const [msg, setmsg] = useState("");
+    const [ msg, setmsg ] = useState("");
+    const [passvis, setpassvis] = useState(true);
 
     const styles = StyleSheet.create({
         mainContainer: {
@@ -59,6 +71,10 @@ function Login({navigation}) {
         }
     })
 
+    useEffect(() => {
+        
+    }, [])
+
     return (
         <View style={styles.mainContainer}>
             <View style = { { alignSelf: 'flex-end' } } >
@@ -73,19 +89,29 @@ function Login({navigation}) {
             <Text style={styles.text}>Enter password:</Text>
             <TextInput 
                 value={password}
+                secureTextEntry={passvis}
                 onChangeText={(text) => setpass(text)}
                 style = {styles.inputText}
             />
-            <Text style={styles.text}>{msg}</Text>text
+            <TouchableOpacity
+                onPress={ () => setpassvis(!passvis) }
+            >
+                <Text style={styles.text}>{passvis ? "Hide" : "Show"}</Text>
+            </TouchableOpacity>
+            <Text style={styles.text}>{msg}</Text>
             <TouchableOpacity
                 style={styles.button}
-                onPress={() => navigation.navigate("home")}
-             >
+                onPress={() => {
+                    login(USN, password);
+                    setmsg(error);
+                    }
+                }
+            >
                 <Text style = {styles.buttonText}>Submit</Text>
             </TouchableOpacity>
             <View>
                 <View style= {styles.hr}></View>
-                <Text style = {styles.text}>new user? <Pressable onFocus = {( ()=> { navigation.navigate('register') })} style={styles.link}><Text style = {styles.text}>Register here</Text></Pressable></Text>
+                <Text style = {styles.text}>new user? <Pressable onFocus = {( () => { navigation.navigate('register') })} style={styles.link}><Text style = {styles.text}>Register here</Text></Pressable></Text>
             </View>
         </View>
     )

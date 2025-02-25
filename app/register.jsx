@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { Text, View, TouchableOpacity, StyleSheet, Dimensions, TextInput, Pressable } from "react-native";
 import { ThemeContext } from "@/hooks/ThemeProvider";
 import ThemeButton from "@/components/ui/ThemeButton";
+import { register, googleRegister } from "@/hooks/Auth";
 
 function Register({navigation}) {
 
@@ -10,10 +11,10 @@ function Register({navigation}) {
     const { width, height } = Dimensions.get('window');
 
     const [email, setemail] = useState("");
-    const [username, setusername] = new useState("");
     const [password, setpassword] = useState("");
     const [conpass, setconpass] = useState("");
-    const [msg, setmsg] = useState(null)
+    const [msg, setmsg] = useState("");
+    const [passvis, setpassvis] = useState(true);
 
     const styles = StyleSheet.create({
         mainContainer: {
@@ -81,28 +82,32 @@ function Register({navigation}) {
                 onChangeText={(text) => setemail(text)}
                 style = {styles.inputText}
             />
-            <Text style={styles.text}>Enter the username:</Text>
-            <TextInput 
-                value={username}
-                onChangeText={(text) => setusername(text)}
-                style = {styles.inputText}
-            />
             <Text style={styles.text}>Enter password:</Text>
             <TextInput 
                 value={password}
+                secureTextEntry={passvis}
                 onChangeText={(text) => setpassword(text)}
                 style = {styles.inputText}
             />
             <Text style={styles.text}>Enter password again:</Text>
             <TextInput 
                 value={conpass}
+                secureTextEntry={passvis}
                 onChangeText={(text) => setconpass(text)}
                 style = {styles.inputText}
             />
+            <TouchableOpacity
+                 onPress={ () => setpassvis(!passvis) }
+            
+                        >
+                            <Text style={styles.text}>{passvis ? "Hide" : "Show"}</Text>
+                        </TouchableOpacity>
             <Text style={styles.text}>{msg}</Text>
             <TouchableOpacity
                 style={styles.button}
-                onPress={() => navigation.navigate("home")}
+                onPress={() => {
+                    register(email, password);
+                }}
              >
                 <Text style = {styles.buttonText}>Submit</Text>
             </TouchableOpacity>
