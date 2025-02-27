@@ -17,8 +17,8 @@ function Home() {
 
                         if(route.name === "dashboard")
                             icon = focused ? 'grid' : 'grid-outline';
-                        if(route.name === "settings")
-                            icon = focused ? 'settings' : 'settings-outline';
+                        if(route.name === "analysis")
+                            icon = focused ? 'analytics' : 'analytics-outline';
                         if(route.name === "profile")
                             icon = focused ? 'person-circle' : 'person-circle-outline';
 
@@ -30,7 +30,7 @@ function Home() {
                 })}
             >
                 <Tab.Screen name= "dashboard" component={Dash} />
-                <Tab.Screen name= "settings" component={Settings} />
+                <Tab.Screen name= "analysis" component={Settings} />
                 <Tab.Screen name = "profile" component={Profile} />
             </Tab.Navigator>
         </SafeAreaProvider>
