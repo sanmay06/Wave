@@ -4,7 +4,7 @@ import { getDatabase, ref, onValue, set, query, orderByKey, limitToLast, push } 
 import { database } from "../../../firebaseConfig";
 import { auth } from "../../../firebaseConfig";
 import { ThemeContext } from "@/hooks/ThemeProvider";
-import { Menu } from "@/components/ui/Menu";
+import Menu  from "@/components/ui/Menu";
 
 export default function Dashboard() {
   const { theme } = useContext<any>(ThemeContext); // Correctly calling useContext inside the component
