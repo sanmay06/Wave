@@ -52,7 +52,7 @@ const Settings = () => {
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       <ThemeButton />
-      <Title style={[styles.header, { color: theme.primary }]}>Sensor Data</Title>
+      <Title style={[styles.header, { color: theme.primary }]}>Analysis</Title>
 
       {loading ? (
         <ActivityIndicator animating={true} color={theme.primary} size="large" />
