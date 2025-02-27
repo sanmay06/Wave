@@ -65,6 +65,7 @@ function Login({navigation}) {
             textAlign: 'center',
             textAlignVertical: 'center',
             height: 40,
+            width: 250,
         },
         buttonText: {
             color: theme.button.color
@@ -80,7 +81,7 @@ function Login({navigation}) {
             <View style = { { alignSelf: 'flex-end' } } >
                 <ThemeButton />
             </View>
-            <Text style={styles.text}>Enter the username:</Text>
+            <Text style={styles.text}>Enter your E-mail:</Text>
             <TextInput 
                 value={USN}
                 onChangeText={(text) => setUSN(text)}

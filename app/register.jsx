@@ -2,10 +2,12 @@ import React, { useState, useContext, useEffect } from "react";
 import { Text, View, TouchableOpacity, StyleSheet, Dimensions, TextInput, Pressable } from "react-native";
 import { ThemeContext } from "@/hooks/ThemeProvider";
 import ThemeButton from "@/components/ui/ThemeButton";
-import { register, googleRegister } from "@/hooks/Auth";
 import AntDesign from '@expo/vector-icons/AntDesign';
+import useAuth from "@/hooks/Auth";
 
 function Register({ navigation }) {
+
+    const { loggged, googleRegister, register } = useAuth();
 
     const { theme } = useContext(ThemeContext);
 
@@ -116,7 +118,7 @@ function Register({ navigation }) {
                 <Text style={styles.text} >or Sign in with</Text>
                 <TouchableOpacity 
                     onPress={googleRegister}
-                    style={{padding: "20px"}}
+                    style={{padding: "20px", alignItems:'center'}}
                 >
                     <AntDesign name="google" size={32} color= {theme.text} />
                 </TouchableOpacity>

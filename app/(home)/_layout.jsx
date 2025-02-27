@@ -26,7 +26,8 @@ function Home() {
                     },
                     tabBarActiveTintColor: '#0073e6',
                     tabBarInactiveTintColor: '#808080', 
-                })}  
+                    headerShown: false,
+                })}
             >
                 <Tab.Screen name= "dashboard" component={Dash} />
                 <Tab.Screen name= "settings" component={Settings} />

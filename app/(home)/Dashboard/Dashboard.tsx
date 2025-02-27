@@ -1,11 +1,80 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { View, Text, Switch, Alert, Button, TextInput, ScrollView, StyleSheet, Linking } from "react-native";
 import { getDatabase, ref, onValue, set, query, orderByKey, limitToLast, push } from "firebase/database";
-import { database } from "../../../firebaseConfig"; // Adjust path if needed
+import { database } from "../../../firebaseConfig";
 import { auth } from "../../../firebaseConfig";
+import { ThemeContext } from "@/hooks/ThemeProvider";
+import { Menu } from "@/components/ui/Menu";
 
 export default function Dashboard() {
-  console.log(auth.currentUser)
+  const { theme } = useContext<any>(ThemeContext); // Correctly calling useContext inside the component
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.background,
+      padding: 20,
+    },
+    scrollContainer: {
+      flexGrow: 1,
+    },
+    title: {
+      fontSize: 36,
+      fontWeight: "bold",
+      textAlign: "center",
+      color: theme.text,
+    },
+    subtitle: {
+      fontSize: 16,
+      color: theme.labelText,
+      textAlign: "center",
+    },
+    card: {
+      backgroundColor: theme.background,
+      borderRadius: 25,
+      padding: 20,
+      marginBottom: 15,
+      shadowColor: "#000",
+      shadowOpacity: 0.1,
+      shadowOffset: { width: 0, height: 2 },
+      elevation: 5,
+      borderColor: theme.border,
+      borderWidth: 1,
+    },
+    cardTitle: {
+      fontSize: 18,
+      marginBottom: 10,
+      fontWeight: "bold",
+      color: theme.text,
+    },
+    cardValue: {
+      fontSize: 24,
+      color: theme.primary,
+    },
+    input: {
+      height: 40,
+      borderColor: theme.border,
+      borderWidth: 1,
+      borderRadius: 5,
+      paddingLeft: 10,
+      fontSize: 16,
+      color: theme.text,
+      backgroundColor: theme.background,
+    },
+    button: {
+      backgroundColor: theme.button.background,
+      color: theme.button.color,
+      padding: 10,
+      borderRadius: 5,
+      alignItems: "center",
+    },
+    buttonText: {
+      color: theme.button.color,
+      fontSize: 16,
+      fontWeight: "bold",
+    },
+  });
+
   const [light1, setLight1] = useState<boolean>(false);
   const [light2, setLight2] = useState<boolean>(false);
   const [light3, setLight3] = useState<boolean>(false);
@@ -102,6 +171,7 @@ export default function Dashboard() {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <Menu />
       <View style={styles.container}>
         <Text style={styles.title}>WAVE</Text>
         <Text style={styles.subtitle}>By Automattrix</Text>
@@ -194,51 +264,3 @@ export default function Dashboard() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-    padding: 20,
-  },
-  scrollContainer: {
-    flexGrow: 1,
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#888",
-    textAlign: "center",
-  },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 25,
-    padding: 20,
-    marginBottom: 15,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 5,
-  },
-  cardTitle: {
-    fontSize: 18,
-    marginBottom: 10,
-    fontWeight: "bold",
-  },
-  cardValue: {
-    fontSize: 24,
-    color: "#007BFF",
-  },
-  input: {
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingLeft: 10,
-    fontSize: 16,
-  },
-});

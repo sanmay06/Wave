@@ -29,30 +29,16 @@ const useAuth = () => {
     }
   };
 
-  const logout = async () => {
+  const register = async (email, password) => {
     try {
-      await signOut(auth);
-    } catch (err) {
-      console.error("Logout error:", err);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log("User registered:", userCredential.user);
+    } catch (error) {
+      console.error("Registration error:", error.message);
     }
   };
-
-  return { user, loading, error, login, logout, logged };
-};
-
-export default useAuth;
-
-
-export const register = async (email, password) => {
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    console.log("User registered:", userCredential.user);
-  } catch (error) {
-    console.error("Registration error:", error.message);
-  }
-};
-
-export const googleRegister = async() => {
+  
+  const googleRegister = async() => {
     const provider = new GoogleAuthProvider();
     try {
         const result = await signInWithPopup(auth, provider);
@@ -62,3 +48,15 @@ export const googleRegister = async() => {
     }
 };
 
+  const logout = async () => {
+    try {
+      await signOut(auth);
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+  };
+
+  return { user, loading, error, login, logout, logged , register, googleRegister };
+};
+
+export default useAuth;
