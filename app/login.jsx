@@ -64,7 +64,7 @@ function Login({navigation}) {
             borderColor: theme.button.background,
             textAlign: 'center',
             textAlignVertical: 'center',
-            height: 40,
+            height: 60,
             width: 250,
         },
         buttonText: {
