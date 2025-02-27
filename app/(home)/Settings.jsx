@@ -70,7 +70,7 @@ const Settings = () => {
 };
 
 const DataCard = ({ title, data, theme }) => {
-  const chartWidth = screenWidth * 0.9;
+  const chartWidth = screenWidth * 0.80;
   const chartHeight = 200;
   const minY = Math.min(...data);
   const maxY = Math.max(...data);
@@ -87,8 +87,9 @@ const DataCard = ({ title, data, theme }) => {
     <Card style={[styles.card, { backgroundColor: theme.secondary, borderColor: theme.border }]}>
       <Card.Content>
         <Title style={{ color: theme.text }}>{title}</Title>
-        <View style={{ height: chartHeight, width: chartWidth }}>
-          <Svg height={chartHeight} width={chartWidth} viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
+        <View style={{ height: chartHeight, width: chartWidth}}>
+          <Svg height={chartHeight + 20} width={chartWidth + 60} viewBox={`-10 -10 ${chartWidth + 70} ${chartHeight + 30}`}>
+
             {/* Line Path */}
             <Path d={pathData} stroke={theme.primary} strokeWidth="2" fill="none" />
 
@@ -100,14 +101,15 @@ const DataCard = ({ title, data, theme }) => {
                 
                 {/* Label Text Above Each Point */}
                 <Text
-                  x={point.x}
-                  y={point.y - 10} // Position slightly above the point
-                  fontSize="12"
+                  x={Math.max(10, Math.min(chartWidth - 10, point.x))} // Prevents overflow
+                  y={Math.max(15, point.y - 10)} // Keeps labels readable
+                  fontSize="10"
                   fill={theme.text}
                   textAnchor="middle"
                 >
-                  {data[index].toFixed(2)} {/* Display data value */}
+                  {data[index].toFixed(2)}
                 </Text>
+
               </React.Fragment>
             ))}
           </Svg>
@@ -136,16 +138,12 @@ const generatePath = (data, width, height, minY, maxY) => {
   
   // Function to generate an array of point positions for dots
   const generatePoints = (data, width, height, minY, maxY) => {
-    if (data.length === 0) return [];
-  
-    const xStep = width / (data.length - 1 || 1);
-    const scaleY = (val) => height - ((val - minY) / (maxY - minY)) * height;
-  
-    return data.map((y, i) => ({
-      x: i * xStep,
-      y: scaleY(y),
+    return data.map((value, index) => ({
+      x: (index / (data.length - 1)) * width, // Scale X position
+      y: height - ((value - minY) / (maxY - minY)) * height, // Invert and scale Y
     }));
   };
+  
   
   
   
