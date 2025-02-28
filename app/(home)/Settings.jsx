@@ -52,7 +52,7 @@ const Settings = () => {
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       <ThemeButton />
-      <Title style={[styles.header, { color: theme.primary }]}>Analysis</Title>
+      <Title style={[styles.header, { color: theme.primary }]}>Sensor Data</Title>
 
       {loading ? (
         <ActivityIndicator animating={true} color={theme.primary} size="large" />
@@ -70,7 +70,7 @@ const Settings = () => {
 };
 
 const DataCard = ({ title, data, theme }) => {
-  const chartWidth = screenWidth * 0.9;
+  const chartWidth = screenWidth * 0.80;
   const chartHeight = 200;
   const minY = Math.min(...data);
   const maxY = Math.max(...data);
@@ -87,8 +87,9 @@ const DataCard = ({ title, data, theme }) => {
     <Card style={[styles.card, { backgroundColor: theme.secondary, borderColor: theme.border }]}>
       <Card.Content>
         <Title style={{ color: theme.text }}>{title}</Title>
-        <View style={{ height: chartHeight, width: chartWidth }}>
-          <Svg height={chartHeight} width={chartWidth} viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
+        <View style={{ height: chartHeight, width: chartWidth}}>
+          <Svg height={chartHeight + 20} width={chartWidth + 60} viewBox={`-10 -10 ${chartWidth + 70} ${chartHeight + 30}`}>
+
             {/* Line Path */}
             <Path d={pathData} stroke={theme.primary} strokeWidth="2" fill="none" />
 
@@ -100,14 +101,15 @@ const DataCard = ({ title, data, theme }) => {
                 
                 {/* Label Text Above Each Point */}
                 <Text
-                  x={point.x}
-                  y={point.y - 10} // Position slightly above the point
-                  fontSize="12"
+                  x={Math.max(10, Math.min(chartWidth - 10, point.x))} // Prevents overflow
+                  y={Math.max(15, point.y - 10)} // Keeps labels readable
+                  fontSize="10"
                   fill={theme.text}
                   textAnchor="middle"
                 >
-                  {data[index].toFixed(2)} {/* Display data value */}
+                  {data[index].toFixed(2)}
                 </Text>
+
               </React.Fragment>
             ))}
           </Svg>
@@ -150,6 +152,7 @@ const generatePoints = (data, width, height, minY, maxY) => {
   }));
 };
 
+  
   
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 10 , backgroundColor: "#FFFFFF" },

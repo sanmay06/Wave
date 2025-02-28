@@ -37,7 +37,7 @@ function Login({navigation}) {
         },
         hr:{
             height: 1,
-            width: width * 0.2,
+            width: width * 0.75,
             borderBottomWidth: 5,
             borderBottomColor:theme.text,
         },
@@ -64,7 +64,7 @@ function Login({navigation}) {
             borderColor: theme.button.background,
             textAlign: 'center',
             textAlignVertical: 'center',
-            height: 60,
+            height: 40,
             width: 250,
         },
         buttonText: {
@@ -110,7 +110,7 @@ function Login({navigation}) {
             >
                 <Text style = {styles.buttonText}>Submit</Text>
             </TouchableOpacity>
-            <View>
+            <View style = {{alignItems:"center"}}>
                 <View style= {styles.hr}></View>
                 <Text style = {styles.text}>new user? <Pressable onFocus = {( () => { navigation.navigate('register') })} style={styles.link}><Text style = {styles.text}>Register here</Text></Pressable></Text>
             </View>

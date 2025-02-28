@@ -5,9 +5,23 @@ import { database } from "../../../firebaseConfig";
 import { auth } from "../../../firebaseConfig";
 import { ThemeContext } from "@/hooks/ThemeProvider";
 import Menu  from "@/components/ui/Menu";
+import { StackNavigationProp } from "@react-navigation/stack";
 
-export default function Dashboard() {
-  const { theme } = useContext<any>(ThemeContext); // Correctly calling useContext inside the component
+type RootStackParamList = {
+  Dashboard: undefined;
+  Profile: undefined;
+  Settings: undefined;
+};
+
+// Define the navigation prop type for Dashboard
+type DashboardScreenNavigationProp = StackNavigationProp<RootStackParamList, "Dashboard">;
+
+// Define the props for Dashboard
+type DashboardProps = {
+  navigation: DashboardScreenNavigationProp;
+};
+
+const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme } = useContext<any>(ThemeContext); // Correctly calling useContext inside the component
 
   const styles = StyleSheet.create({
     container: {
@@ -171,7 +185,7 @@ export default function Dashboard() {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <Menu />
+      <Menu navigation={navigation}/>
       <View style={styles.container}>
         <Text style={styles.title}>WAVE</Text>
         <Text style={styles.subtitle}>By Automattrix</Text>
@@ -264,3 +278,5 @@ export default function Dashboard() {
     </ScrollView>
   );
 }
+
+export default Dashboard;

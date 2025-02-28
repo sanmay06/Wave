@@ -5,7 +5,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import useAuth from '@/hooks/Auth';
 import { ThemeContext } from '@/hooks/ThemeProvider';
 
-const Menu = () => {
+const Menu = ({navigation}) => {
 
     const{ theme } = useContext(ThemeContext);
 
@@ -24,8 +24,8 @@ const Menu = () => {
             <ThemeButton />            
             <TouchableOpacity 
                 onPress={() => {
-                    logout()
-                    navigation.navigate('login')
+                    logout(navigation)
+                    // navigation.navigate('login')
                 }}
             >
                 <Ionicons name="exit-outline" size={24} color="black" />
