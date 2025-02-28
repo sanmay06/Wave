@@ -97,7 +97,7 @@ function Login({navigation}) {
             <TouchableOpacity
                 onPress={ () => setpassvis(!passvis) }
             >
-                <Text style={styles.text}>{passvis ? "Hide" : "Show"}</Text>
+                <Text style={styles.text}>{passvis ? "Show" : "Hide"}</Text>
             </TouchableOpacity>
             <Text style={styles.text}>{msg}</Text>
             <TouchableOpacity
@@ -112,7 +112,7 @@ function Login({navigation}) {
             </TouchableOpacity>
             <View style = {{alignItems:"center"}}>
                 <View style= {styles.hr}></View>
-                <Text style = {styles.text}>new user? <Pressable onFocus = {( () => { navigation.navigate('register') })} style={styles.link}><Text style = {styles.text}>Register here</Text></Pressable></Text>
+                <Text style = {styles.text}>new user? <Pressable onPress={() => navigation.navigate('register')} style={styles.link}><Text style = {styles.text}>Register here</Text></Pressable></Text>
             </View>
         </View>
     )

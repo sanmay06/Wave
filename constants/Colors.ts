@@ -5,7 +5,7 @@ export const Colors = {
   light: {
     background: '#ffffff',  // Pure white for a clean look
     primary: '#0073e6',     // Vibrant blue for primary elements
-    secondary: '#005bb5',   // Darker blue for accents and highlights
+    secondary: '#CEEAD6',   // Darker blue for accents and highlights
     text: '#333333',        // Dark gray for readability
     labelText: '#555555',   // Lighter gray for secondary text
     button: { background: '#0073e6', color: '#ffffff' },  // Blue button with white text

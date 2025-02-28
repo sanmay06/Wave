@@ -45,7 +45,8 @@ function Register({ navigation }) {
             textAlignVertical: 'center',
         },
         button: {
-            margin: 20,
+            margin: 0,
+            marginTop:-80,
             padding: 10,
             borderRadius: 5,
             borderWidth: 1,
@@ -55,12 +56,13 @@ function Register({ navigation }) {
         inputText: {
             color: theme.text,
             fontSize: 25,
-            borderWidth: 1,
+            borderWidth: .5,
             borderRadius: 10,
             borderColor: theme.button.background,
             textAlign: 'center',
             textAlignVertical: 'center',
             height: 40,
+            width: 250,
         },
         buttonText: {
             color: theme.button.color
@@ -76,9 +78,9 @@ function Register({ navigation }) {
 
     return (
         <View style={styles.mainContainer}>
-            <View style={{ alignSelf: 'flex-end' }} >
+            {/* <View style={{ alignSelf: 'flex-end' }} >
                 <ThemeButton />
-            </View>
+            </View> */}
             <Text style={styles.text}>Enter Email-Address:</Text>
             <TextInput
                 value={email}
@@ -103,7 +105,7 @@ function Register({ navigation }) {
                 onPress={() => setpassvis(!passvis)}
 
             >
-                <Text style={styles.text}>{passvis ? "Hide" : "Show"}</Text>
+                <Text style={styles.text}>{passvis ? "Show" : "Hide"}</Text>
             </TouchableOpacity>
             <Text style={styles.text}>{msg}</Text>
             <TouchableOpacity
@@ -125,7 +127,7 @@ function Register({ navigation }) {
             </View>
             <View>
                 <View style={styles.hr}></View>
-                <Text style={styles.text}>existing user? <Pressable onFocus={(() => { navigation.navigate('login') })} style={styles.link}><Text style={styles.text}>Login here</Text></Pressable></Text>
+                <Text style={styles.text}>existing user? <Pressable onPress={(() => { navigation.navigate('login') })} style={styles.link}><Text style={styles.text}>Login here</Text></Pressable></Text>
             </View>
         </View>
     )
