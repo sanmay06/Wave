@@ -9,7 +9,7 @@ import Svg, { Path, Circle, Text } from 'react-native-svg';
 
 const db = database;
 const screenWidth = Dimensions.get('window').width;
-const MAX_VISIBLE_POINTS = 10;
+const MAX_VISIBLE_POINTS = 4;
 
 const Settings = () => {
   const { theme } = useContext(ThemeContext);
@@ -121,36 +121,38 @@ const DataCard = ({ title, data, theme }) => {
 // Function to generate the SVG path for line chart
 // Function to generate the SVG path for line chart
 const generatePath = (data, width, height, minY, maxY) => {
-    if (data.length === 0) return '';
-  
-    const xStep = width / (data.length - 1 || 1);
-    const scaleY = (val) => height - ((val - minY) / (maxY - minY)) * height;
-  
-    let path = `M 0 ${scaleY(data[0])}`;
-    data.forEach((y, i) => {
-      path += ` L ${i * xStep} ${scaleY(y)}`;
-    });
-  
-    return path;
-  };
-  
-  // Function to generate an array of point positions for dots
-  const generatePoints = (data, width, height, minY, maxY) => {
-    if (data.length === 0) return [];
-  
-    const xStep = width / (data.length - 1 || 1);
-    const scaleY = (val) => height - ((val - minY) / (maxY - minY)) * height;
-  
-    return data.map((y, i) => ({
-      x: i * xStep,
-      y: scaleY(y),
-    }));
-  };
-  
-  
+  const limitedData = data.slice(-4); // Keep last 4 points
+
+  if (limitedData.length === 0) return '';
+
+  const xStep = width / 4; // Ensure last point fits inside the box
+  const scaleY = (val) => height - ((val - minY) / (maxY - minY)) * height;
+
+  let path = `M 0 ${scaleY(limitedData[0])}`;
+  limitedData.forEach((y, i) => {
+    path += ` L ${(i + 0.5) * xStep} ${scaleY(y)}`; // Adjust to prevent overflow
+  });
+
+  return path;
+};
+
+const generatePoints = (data, width, height, minY, maxY) => {
+  const limitedData = data.slice(-4); // Keep last 4 points
+
+  if (limitedData.length === 0) return [];
+
+  const xStep = width / 4; // Adjust for correct spacing
+  const scaleY = (val) => height - ((val - minY) / (maxY - minY)) * height;
+
+  return limitedData.map((y, i) => ({
+    x: (i + 0.5) * xStep, // Shift points slightly to fit within box
+    y: scaleY(y),
+  }));
+};
+
   
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 10 },
+  container: { flex: 1, padding: 10 , backgroundColor: "#FFFFFF" },
   header: { textAlign: "center", fontSize: 22, marginBottom: 10 },
   card: { marginBottom: 10, padding: 10, borderWidth: 1, borderRadius: 8 },
 });
