@@ -8,14 +8,10 @@ const Stack = createNativeStackNavigator();
 export default function Dash() {
   
   return (
-      <ThemeProvider>
-        {/* <NavigationContainer> */}
             <Stack.Navigator initialRouteName='dash' screenOptions={{headerShown: false}}>
               <Stack.Screen name = 'dash' component={Dashboard} />
               <Stack.Screen name = 'room/[id]' component={Room} />
               {/* <Stack.Screen name='Home' component={ Dashboard } /> */}
             </Stack.Navigator>
-        {/* </NavigationContainer> */}
-        </ThemeProvider>
   );
 }

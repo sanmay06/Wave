@@ -5,7 +5,7 @@ export const Colors = {
   light: {
     background: '#ffffff',  // Pure white for a clean look
     primary: '#0073e6',     // Vibrant blue for primary elements
-    secondary: '#CEEAD6',   // Darker blue for accents and highlights
+    secondary: '#CEEAD6',   // Light green for accents
     text: '#333333',        // Dark gray for readability
     labelText: '#555555',   // Lighter gray for secondary text
     button: { background: '#0073e6', color: '#ffffff' },  // Blue button with white text
@@ -13,6 +13,23 @@ export const Colors = {
     border: '#e0e0e0',      // Light gray for dividers and borders
     link: '#0073e6',        // Blue for links
     linkHover: '#005bb5',   // Darker blue on hover
+
+    // Tabs
+    tabBackground: '#f5f5f5',  // Light gray for inactive tabs
+    tabActiveBackground: '#ffffff', // White for active tab
+    tabText: '#333333',        // Dark gray for tab text
+    tabActiveText: '#0073e6',  // Blue for active tab text
+
+    // Menu Bar
+    menuBackground: '#f8f9fa',  // Light gray for menu background
+    menuText: '#333333',        // Dark gray for menu text
+    menuHoverBackground: '#e3f2fd', // Light blue hover effect
+    menuHoverText: '#0073e6',   // Blue text on hover
+
+    // Sidebar
+    sidebarBackground: '#f1f1f1', // Light gray sidebar
+    sidebarText: '#444444',       // Slightly darker gray for contrast
+    sidebarActiveText: '#0073e6', // Highlight active sidebar item
   },
 
   // Dark Theme (Dark Background)
@@ -27,6 +44,23 @@ export const Colors = {
     border: '#333333',      // Dark gray for dividers
     link: '#64B5F6',        // Lighter blue for visibility
     linkHover: '#42A5F5',   // Slightly darker on hover
+
+    // Tabs
+    tabBackground: '#1E1E1E',  // Dark gray for inactive tabs
+    tabActiveBackground: '#121212', // Dark black for active tab
+    tabText: '#B0BEC5',        // Gray text for tabs
+    tabActiveText: '#64B5F6',  // Bright blue for active tab
+
+    // Menu Bar
+    menuBackground: '#1c1c1c',  // Dark gray for menu
+    menuText: '#E0E0E0',        // Light gray menu text
+    menuHoverBackground: '#263238', // Dark blue-gray hover effect
+    menuHoverText: '#64B5F6',   // Bright blue text on hover
+
+    // Sidebar
+    sidebarBackground: '#181818', // Slightly lighter black for sidebar
+    sidebarText: '#B0BEC5',       // Soft gray for contrast
+    sidebarActiveText: '#64B5F6', // Highlight active sidebar item
   },
 };
 
