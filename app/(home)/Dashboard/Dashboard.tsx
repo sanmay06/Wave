@@ -271,9 +271,9 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
         </View>*/}
 
         {/* Web Page Button */}
-        <View style={styles.card}>
+        {/* <View style={styles.card}>
           <Button title="Go to Analysis page" onPress={openWebPage} />
-        </View>
+        </View> */}
       </View>
     </ScrollView>
   );

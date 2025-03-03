@@ -32,7 +32,7 @@ function Login({navigation}) {
             flexGap: 10,
         },
         link: {
-            color: "#0056b3"	,
+            color: "#4285F4"	,
             textDecorationLine: 'underline'
         },
         hr:{
@@ -43,7 +43,14 @@ function Login({navigation}) {
         },
         text: {
             color: theme.labelText,
-            fontSize: 25,
+            fontSize: 20,
+            padding: 20,
+            textAlign: 'center',
+            textAlignVertical: 'center',
+        },
+        login:{
+            color: theme.labelText,
+            fontSize: 15,
             padding: 20,
             textAlign: 'center',
             textAlignVertical: 'center',
@@ -58,7 +65,7 @@ function Login({navigation}) {
         },
         inputText: {
             color: theme.text,
-            fontSize: 25,
+            fontSize: 15,
             borderWidth: 1,
             borderRadius: 10,
             borderColor: theme.button.background,
@@ -112,7 +119,7 @@ function Login({navigation}) {
             </TouchableOpacity>
             <View style = {{alignItems:"center"}}>
                 <View style= {styles.hr}></View>
-                <Text style = {styles.text}>new user? <Pressable onPress={() => navigation.navigate('register')} style={styles.link}><Text style = {styles.text}>Register here</Text></Pressable></Text>
+                <Text style = {styles.login}>new user? </Text><Pressable onPress={() => navigation.navigate('register')} style={styles.link}><Text style = {styles.login}>Register here</Text></Pressable>
             </View>
         </View>
     )
