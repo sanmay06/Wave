@@ -4,10 +4,15 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import Profile from './Profile';
 import Dash from './Dashboard/_layout';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { useContext } from 'react';
+import { ThemeContext } from '@/hooks/ThemeProvider';
 
 const Tab = createBottomTabNavigator();
 
 function Home() {
+
+    const { theme } = useContext(ThemeContext);
+
     return (
         <SafeAreaProvider>
             <Tab.Navigator
@@ -26,6 +31,10 @@ function Home() {
                     },
                     tabBarActiveTintColor: '#0073e6',
                     tabBarInactiveTintColor: '#808080', 
+                    tabBarStyle: {
+                        backgroundColor: theme.tabBackground,
+                        color: theme.tabText,
+                    },
                     headerShown: false,
                 })}
             >

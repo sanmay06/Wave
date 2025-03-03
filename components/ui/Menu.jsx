@@ -12,15 +12,37 @@ const Menu = ({navigation}) => {
     const { logout } = useAuth();
 
     const styles = StyleSheet.create({
+        title: {
+            fontSize: 36,
+            fontWeight: "bold",
+            textAlign: "center",
+            color: theme.menuText,
+        },
+        subtitle: {
+            fontSize: 16,
+            color: theme.labelText,
+            textAlign: "center",
+        },
         container:{
             display: 'flex',
+            flexDirection: "row",
+            justifyContent: 'space-between',
+            backgroundColor: theme.menuBackground
+        },
+        titlecontainer: {
+            display: 'flex',
             flexDirection: "column",
+            justifyContent: 'center',
         },
     })
 
 
     return (
         <View style={styles.container} >
+            <View style = {styles.titlecontainer}>
+                <Text style={styles.title}>WAVE</Text>
+                <Text style={styles.subtitle}>By Automattrix</Text>
+            </View>
             <ThemeButton />            
             <TouchableOpacity 
                 onPress={() => {
@@ -28,7 +50,7 @@ const Menu = ({navigation}) => {
                     // navigation.navigate('login')
                 }}
             >
-                <Ionicons name="exit-outline" size={24} color="black" />
+                <Ionicons name="exit-outline" size={45} color={theme.menuText} />
             </TouchableOpacity>
         </View>
     )

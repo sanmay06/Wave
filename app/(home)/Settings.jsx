@@ -6,6 +6,7 @@ import { database } from '@/firebaseConfig';
 import { ThemeContext } from '@/hooks/ThemeProvider';
 import ThemeButton from '@/components/ui/ThemeButton';
 import Svg, { Path, Circle, Text } from 'react-native-svg';
+import Menu from '@/components/ui/Menu';
 
 const db = database;
 const screenWidth = Dimensions.get('window').width;
@@ -51,7 +52,7 @@ const Settings = () => {
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
-      <ThemeButton />
+      <Menu />
       <Title style={[styles.header, { color: theme.primary }]}>Sensor Data</Title>
 
       {loading ? (
