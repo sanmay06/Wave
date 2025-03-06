@@ -6,6 +6,7 @@ import { auth } from "../../../firebaseConfig";
 import { ThemeContext } from "@/hooks/ThemeProvider";
 import Menu  from "@/components/ui/Menu";
 import { StackNavigationProp } from "@react-navigation/stack";
+import Light from "@/components/ui/Lights";
 
 type RootStackParamList = {
   Dashboard: undefined;
@@ -213,7 +214,7 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
             }}
           />
         </View>
-
+        <Light name = {"light1"} theme={theme} light = {light1} setLight = {setLight1} toggleLight={toggleLight}/>
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Light 2</Text>
           <Switch
