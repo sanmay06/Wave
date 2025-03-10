@@ -83,6 +83,9 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
       borderRadius: 5,
       alignItems: "center",
     },
+    cardContainer: {
+      flexDirection: "row",
+    },
     buttonText: {
       color: theme.button.color,
       fontSize: 16,
@@ -206,11 +209,11 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
         <Rooms theme = {theme}/>
 
         {/* Light Control */}
-        
-        <Light light = {light1} setLight = {setLight1} toggleLight = {toggleLight} theme = {theme} name = {"Light 1"}/>
+        <View style={styles.cardContainer}>
+          <Light light = {light1} setLight = {setLight1} toggleLight = {toggleLight} theme = {theme} name = {"Light 1"}/>
 
-        <Light light = {light2} setLight = {setLight2} toggleLight = {toggleLight} theme = {theme} name = {"Light 2"}/>
-
+          <Light light = {light2} setLight = {setLight2} toggleLight = {toggleLight} theme = {theme} name = {"Light 2"}/>
+        </View>
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Light 3</Text>
           <Switch

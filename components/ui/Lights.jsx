@@ -12,6 +12,7 @@ const Light = (props) => {
           height: screeenWidth * 0.08,
           width: screeenWidth * 0.08,
           padding: 20,
+          margin: 10,
           marginBottom: 15,
           shadowColor: "#000",
           shadowOpacity: 0.1,
