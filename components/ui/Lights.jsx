@@ -1,14 +1,16 @@
 import React from 'react';
-import { View, Text, Switch, StyleSheet } from 'react-native';
+import { View, Text, Switch, StyleSheet, Dimensions } from 'react-native';
 
 const Light = (props) => {
 
     const theme = props.theme;
-
+    const screeenWidth = Dimensions.get("window").width;
     const styles = StyleSheet.create({
         card: {
           backgroundColor: theme.background,
           borderRadius: 25,
+          height: screeenWidth * 0.08,
+          width: screeenWidth * 0.08,
           padding: 20,
           marginBottom: 15,
           shadowColor: "#000",

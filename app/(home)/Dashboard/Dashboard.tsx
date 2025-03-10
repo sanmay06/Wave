@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, Text, Switch, Alert, Button, TextInput, ScrollView, StyleSheet, Linking } from "react-native";
+import { View, Text, Switch, Alert, Button, TextInput, ScrollView, StyleSheet, Linking, Dimensions, Pressable } from "react-native";
 import { getDatabase, ref, onValue, set, query, orderByKey, limitToLast, push } from "firebase/database";
 import { database } from "../../../firebaseConfig";
 import { auth } from "../../../firebaseConfig";
@@ -12,8 +12,8 @@ type RootStackParamList = {
   Dashboard: undefined;
   Profile: undefined;
   Settings: undefined;
+  'room/[id]': { id: string };
 };
-
 // Define the navigation prop type for Dashboard
 type DashboardScreenNavigationProp = StackNavigationProp<RootStackParamList, "Dashboard">;
 
@@ -188,8 +188,8 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <Menu navigation={navigation}/>
       <View style={styles.container}>
-        <Text style={styles.title}>WAVE</Text>
-        <Text style={styles.subtitle}>By Automattrix</Text>
+        {/* <Text style={styles.title}>WAVE</Text>
+        <Text style={styles.subtitle}>By Automattrix</Text> */}
 
         {/* Sensor Data Display */}
         <View style={styles.card}>
@@ -203,28 +203,13 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
           <Text style={styles.cardValue}>{pitemp}</Text>
         </View>
 
+        <Rooms theme = {theme}/>
+
         {/* Light Control */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Light 1</Text>
-          <Switch
-            value={light1}
-            onValueChange={(value: boolean) => {
-              setLight1(value);
-              toggleLight("light1", value);
-            }}
-          />
-        </View>
-        <Light name = {"light1"} theme={theme} light = {light1} setLight = {setLight1} toggleLight={toggleLight}/>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Light 2</Text>
-          <Switch
-            value={light2}
-            onValueChange={(value: boolean) => {
-              setLight2(value);
-              toggleLight("light2", value);
-            }}
-          />
-        </View>
+        
+        <Light light = {light1} setLight = {setLight1} toggleLight = {toggleLight} theme = {theme} name = {"Light 1"}/>
+
+        <Light light = {light2} setLight = {setLight2} toggleLight = {toggleLight} theme = {theme} name = {"Light 2"}/>
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Light 3</Text>
@@ -276,8 +261,49 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
           <Button title="Go to Analysis page" onPress={openWebPage} />
         </View> */}
       </View>
+      <Pressable style = {styles.button} onPress={() => navigation.navigate("room/[id]", { id : '123'})} >
+        <Text style={{color: theme.text}}>Rooms</Text>
+      </Pressable>
     </ScrollView>
   );
 }
 
 export default Dashboard;
+
+const Rooms = ( props: any ) => {
+  
+  const theme = props.theme;
+  const width = 1;
+  const screenWidth = Dimensions.get('window').width;
+
+  const styles = StyleSheet.create({
+    card: {
+      backgroundColor: theme.background,
+      height: screenWidth * 0.1,
+      width: screenWidth * 0.1,
+      borderRadius: 25,
+      padding: 20,
+      marginBottom: 15,
+      shadowColor: "#000",
+      shadowOpacity: 0.1,
+      shadowOffset: { width: 0, height: 2 },
+      elevation: 5,
+      borderColor: theme.border,
+      borderWidth: 1,
+    },
+    cardTitle: {
+      fontSize: 18,
+      marginBottom: 10,
+      fontWeight: "bold",
+      color: theme.text,
+    },
+  });
+
+  return (
+    <View style={styles.card}>
+      <Pressable onPress={() => console.log("Rooms")}>
+        <Text style={styles.cardTitle}>Rooms</Text>
+      </Pressable>
+    </View>
+  );
+};
