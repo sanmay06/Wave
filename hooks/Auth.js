@@ -57,7 +57,21 @@ const useAuth = () => {
     }
   };
 
-  return { user, loading, error, login, logout, logged , register, googleRegister };
+  const updateUser = async (name, photo, phoneNumber) => {
+    if(user) {
+      updateProfile(user, {
+        displayName: name,
+        photoURL: photo,
+        phoneNumber: phoneNumber
+      }).then(() => {
+        console.log("User updated successfully");
+      }).catch((error) => {
+        console.error("Error updating user:", error);
+      });
+    }
+  };  
+
+  return { user, loading, error, login, logout, logged , register, googleRegister, updateUser };
 };
 
 export default useAuth;

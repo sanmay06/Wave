@@ -4,14 +4,24 @@ import Menu from '@/components/ui/Menu';
 import useAuth from '@/hooks/Auth';
 import { ThemeContext } from '@/hooks/ThemeProvider';
 
-function Profile() {
+function Profile(navigation) {
     const {theme} = useContext(ThemeContext);
 
     const width = Dimensions.get('window').width;
 
+    const { user,updateUser } = useAuth();
+    const [phone, setPhone] = useState('');
+    const [address, setAddress] = useState('');
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [photo, setPhoto] = useState('');
+    const [disabled, setDisabled] = useState(false);
+
     const styles = StyleSheet.create({
         mainContainer: {
             backgroundColor: theme.background,
+            flex: 1,
             alignItems: 'center',
             width: '100%',
             height: '100%',
@@ -57,15 +67,6 @@ function Profile() {
         }
     });
 
-    const { user } = useAuth();
-    const [phone, setPhone] = useState('');
-    const [address, setAddress] = useState('');
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [photo, setPhoto] = useState('');
-    const [disabled, setDisabled] = useState(false);
-
     useEffect(() => {
         if(user) {
             if(user.displayName)
@@ -79,11 +80,15 @@ function Profile() {
         }
     }, [user]);
 
-    console.log(user);
+    // console.log(user);
+
+    const saveChanges = () => {
+        updateUser(name, photo, phone);
+    };
 
     return (
         <View style={styles.mainContainer}>
-            <Menu />
+            <Menu navigation={navigation}/>
             <View>
                 <Text style={styles.text}>Username</Text>
                 <TextInput 

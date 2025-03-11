@@ -26,6 +26,7 @@ const Menu = ({navigation}) => {
         container:{
             display: 'flex',
             flexDirection: "row",
+            width: '100%',
             justifyContent: 'space-between',
             backgroundColor: theme.menuBackground
         },

@@ -45,7 +45,7 @@ const Settings = () => {
     fetchData('distbtry/', setDistbtry);
     fetchData('pitemp/', setPitemp);
 
-    console.log(temperature)
+    // console.log(temperature)
 
     setLoading(false);
   }, []);
@@ -156,7 +156,7 @@ const generatePoints = (data, width, height, minY, maxY) => {
   
   
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 10 , backgroundColor: "#FFFFFF" },
+  container: { flex: 1, backgroundColor: "#FFFFFF", },
   header: { textAlign: "center", fontSize: 22, marginBottom: 10 },
   card: { marginBottom: 10, padding: 10, borderWidth: 1, borderRadius: 8 },
 });
