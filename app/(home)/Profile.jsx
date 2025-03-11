@@ -46,10 +46,24 @@ function Profile(navigation) {
         },button: {
             margin: 20,
             padding: 10,
+            width: 100,
+            alignItems: 'center',
+            marginTop: 50,
             borderRadius: 5,
             borderWidth: 1,
             color: theme.text,
             backgroundColor: theme.button.background ,
+        },
+        addressTest: {
+            color: theme.text,
+            fontSize: 15,
+            borderWidth: 1,
+            borderRadius: 10,
+            borderColor: theme.button.background,
+            textAlignVertical: 'top',
+            textAlign: 'center',
+            height: 125,
+            width: 350,
         },
         inputText: {
             color: theme.text,
@@ -119,7 +133,7 @@ function Profile(navigation) {
             <View>
                 <Text style={styles.text}>Address</Text>
                 <TextInput 
-                    style={styles.inputText}
+                    style={styles.addressTest}
                     placeholder="Enter your Address"
                     value={address}
                     onChangeText={(text) => setAddress(text)}
