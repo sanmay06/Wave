@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { View, Text, Switch, Alert, Button, TextInput, ScrollView, StyleSheet, Linking, Dimensions, Pressable } from "react-native";
-import { getDatabase, ref, onValue, set, query, orderByKey, limitToLast, push } from "firebase/database";
+import { getDatabase, ref, onValue, set, query, orderByKey, limitToLast, push, get } from "firebase/database";
 import { database } from "../../../firebaseConfig";
 import { auth } from "../../../firebaseConfig";
 import { ThemeContext } from "@/hooks/ThemeProvider";
@@ -22,7 +22,23 @@ type DashboardProps = {
   navigation: DashboardScreenNavigationProp;
 };
 
+
+const getData = async (path: string, setData: any) => {
+  const snapshot = await get(ref(database, path)); // Root reference
+
+  if (snapshot.exists()) {
+    console.log("Database Structure:", JSON.stringify(snapshot.val(), null, 2));
+    let obj = snapshot.val();
+    // console.log("VALUES:", obj.values());
+    setData(Object.values(snapshot.val()));
+  } else {
+    console.log("No data available");
+  }
+};
+
 const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme } = useContext<any>(ThemeContext); // Correctly calling useContext inside the component
+
+  
 
   const styles = StyleSheet.create({
     container: {
@@ -102,32 +118,28 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
   const [battery, setBattery] = useState<string>("");
   const [scheduledOnTime, setScheduledOnTime] = useState<string>("");
   const [scheduledOffTime, setScheduledOffTime] = useState<string>("");
+  const [rooms, setRooms] = useState<any>("");
 
   // Fetch data from Firebase Realtime Database
   useEffect(() => {
-    const light1Ref = ref(database, "light1");
-    const light2Ref = ref(database, "light2");
-    const light3Ref = ref(database, "light3");
-    const tempRef = ref(database, "temp");
-    const humidityRef = ref(database, "humidity");
-    const batteryRef = ref(database, "btry");
-    const pitempRef = ref(database, "pitemp");
     const lightOnRef = ref(database, "schedule/light_schedule_on");
     const lightOffRef = ref(database, "schedule/light_schedule_off");
 
-    // Fetch the most recent data for lights and sensor values
+
     const getLatestValue = (refPath: string, setState: Function) => {
       const refQuery = query(ref(database, refPath), orderByKey(), limitToLast(1));
       onValue(refQuery, (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
-          const latestKey = Object.keys(data)[0]; // Get the most recent key
+          const latestKey = Object.keys(data)[0]; 
           const latestValue = data[latestKey];
-          setState(latestValue); // Update the state with the latest value
+          setState(latestValue); 
         }
       });
     };
 
+    getData("/ef16bute/rooms", setRooms);
+    console.log(rooms);
     // Fetch most recent light status
     getLatestValue("light1", (value: number) => setLight1(value === 1));
     getLatestValue("light2", (value: number) => setLight2(value === 1));
@@ -144,6 +156,10 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
     onValue(lightOffRef, (snapshot) => snapshot.exists() && setScheduledOffTime(snapshot.val()));
 
   }, []);
+
+  useEffect(() => {
+    console.log(rooms);
+  }, [rooms]);
 
   // Function to push 0 or 1 to Firebase for controlling lights
   const toggleLight = (light: string, state: boolean) => {
@@ -181,11 +197,16 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
     }
   };
 
-  // Open the web page
-  const openWebPage = () => {
-    const url = "https://delicate-puffpuff-27a76f.netlify.app/setting"; // Replace with your desired URL
-    Linking.openURL(url).catch((err: any) => console.error("Failed to open URL:", err));
-  };
+  const DisplayRooms = () => {
+    if(rooms) {
+      // console.log(Object.values(rooms));
+      return rooms.map((room: any) => {
+        return (
+          <Rooms theme = {theme}/>
+        );
+      });
+   }
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -205,8 +226,9 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
           <Text style={styles.cardTitle}>Pi Temperature</Text>
           <Text style={styles.cardValue}>{pitemp}</Text>
         </View>
-
-        <Rooms theme = {theme}/>
+        <View style={{flexDirection: 'row'}}>
+          {DisplayRooms()}
+        </View>
 
         {/* Light Control */}
         <View style={styles.cardContainer}>
@@ -259,10 +281,6 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
           <Button title="Save Schedule" onPress={saveSchedule} />
         </View>*/}
 
-        {/* Web Page Button */}
-        {/* <View style={styles.card}>
-          <Button title="Go to Analysis page" onPress={openWebPage} />
-        </View> */}
       </View>
       <Pressable style = {styles.button} onPress={() => navigation.navigate("room/[id]", { id : '123'})} >
         <Text style={{color: theme.text}}>Rooms</Text>
@@ -286,7 +304,7 @@ const Rooms = ( props: any ) => {
       width: screenWidth * 0.1,
       borderRadius: 25,
       padding: 20,
-      marginBottom: 15,
+      margin:15,
       shadowColor: "#000",
       shadowOpacity: 0.1,
       shadowOffset: { width: 0, height: 2 },
