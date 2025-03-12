@@ -200,9 +200,10 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
   const DisplayRooms = () => {
     if(rooms) {
       // console.log(Object.values(rooms));
-      return rooms.map((room: any) => {
+      return rooms.map((room: any, index: number) => {
         return (
-          <Rooms theme = {theme}/>
+          <Rooms theme = {theme} name = {room.name} nav = {navigation} id = {index} />
+          
         );
       });
    }
@@ -296,6 +297,7 @@ const Rooms = ( props: any ) => {
   const theme = props.theme;
   const width = 1;
   const screenWidth = Dimensions.get('window').width;
+  const navigation = props.nav;
 
   const styles = StyleSheet.create({
     card: {
@@ -322,8 +324,8 @@ const Rooms = ( props: any ) => {
 
   return (
     <View style={styles.card}>
-      <Pressable onPress={() => console.log("Rooms")}>
-        <Text style={styles.cardTitle}>Rooms</Text>
+      <Pressable onPress={() => navigation.navigate("room/[id]", { id : props.id})} >
+        <Text style={styles.cardTitle}>{props.name}</Text>
       </Pressable>
     </View>
   );
