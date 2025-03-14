@@ -205,9 +205,15 @@ function Register({ navigation }) {
                 <TouchableOpacity
                     style={styles.button}
                     onPress={() => {
-                        setmsg(register(email, password));
-                        updateUser(name, photo, phone);
-                    }}
+                        register(email, password, name, deviceId, phone, photo,"" ,address).then((res) => {
+                            if (res === "success") {
+                                navigation.navigate('login');
+                            }else 
+                                setmsg(res);
+                        });
+                        // updateUser(name, photo, phone);
+                    }
+                }
                 >
                     <Text style={styles.buttonText}>Submit</Text>
                 </TouchableOpacity>

@@ -6,7 +6,6 @@ import { ThemeContext } from '@/hooks/ThemeProvider';
 
 function Profile(navigation) {
     const {theme} = useContext(ThemeContext);
-
     const width = Dimensions.get('window').width;
 
     const { user,updateUser } = useAuth();
@@ -81,6 +80,7 @@ function Profile(navigation) {
     });
 
     useEffect(() => {
+        // console.log(user);
         if(user) {
             if(user.displayName)
                 setName(user.displayName);

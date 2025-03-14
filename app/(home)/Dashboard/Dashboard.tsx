@@ -30,7 +30,8 @@ const getData = async (path: string, setData: any) => {
     console.log("Database Structure:", JSON.stringify(snapshot.val(), null, 2));
     let obj = snapshot.val();
     // console.log("VALUES:", obj.values());
-    setData(Object.values(snapshot.val()));
+    // setData(Object.values(snapshot.val()));
+    setData(obj);
   } else {
     console.log("No data available");
   }
@@ -119,6 +120,7 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
   const [scheduledOnTime, setScheduledOnTime] = useState<string>("");
   const [scheduledOffTime, setScheduledOffTime] = useState<string>("");
   const [rooms, setRooms] = useState<any>("");
+  const [data, setData] = useState<any>("");
 
   // Fetch data from Firebase Realtime Database
   useEffect(() => {
@@ -138,18 +140,22 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
       });
     };
 
+
     getData("/ef16bute/rooms", setRooms);
+    setRooms(Object.values(rooms));
     console.log(rooms);
+    getData("/ef16bute", setData);
+    console.log(data);
     // Fetch most recent light status
-    getLatestValue("light1", (value: number) => setLight1(value === 1));
-    getLatestValue("light2", (value: number) => setLight2(value === 1));
-    getLatestValue("light3", (value: number) => setLight3(value === 1));
+    // getLatestValue("light1", (value: number) => setLight1(value === 1));
+    // getLatestValue("light2", (value: number) => setLight2(value === 1));
+    // getLatestValue("light3", (value: number) => setLight3(value === 1));
 
     // Fetch most recent sensor data
-    getLatestValue("pitemp", setPitemp);
+    getData("/ef16bute/pitemp", setPitemp);
     getLatestValue("temp", setTemperature);
-    getLatestValue("humidity", setHumidity);
-    getLatestValue("btry", setBattery);
+    getData("/ef16bute/humidity", setHumidity);
+    getData("/ef16bute/btry", setBattery);
 
     // Fetch scheduled ON/OFF times
     onValue(lightOnRef, (snapshot) => snapshot.exists() && setScheduledOnTime(snapshot.val()));
@@ -199,8 +205,8 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
 
   const DisplayRooms = () => {
     if(rooms) {
-      // console.log(Object.values(rooms));
-      return rooms.map((room: any, index: number) => {
+      console.log(rooms);
+      return Object.values(rooms).map((room: any, index: number) => {
         return (
           <Rooms theme = {theme} name = {room.name} nav = {navigation} id = {index} />
           

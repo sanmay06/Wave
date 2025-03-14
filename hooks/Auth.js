@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "@/firebaseConfig";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { uploadBytes, getDownloadURL, getMetadata } from "firebase/storage";
+import { ref, get } from "firebase/database";
+import { database } from "@/firebaseConfig";
 
 const useAuth = () => {
   const [user, setUser] = useState(null);
@@ -30,15 +32,20 @@ const useAuth = () => {
     }
   };
 
-  const register = async (email, password) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      console.log("User registered:", userCredential.user);
-      return "success";
-    } catch (error) {
-      console.error("Registration error:", error.message);
-      return error.message;
-    }
+  const register = async (email, password, username, deviceID, phoneNumber, uri, address) => {
+    const refe = ref(database, `/${deviceID}`);
+    const snapshot = await get(refe);
+    if(snapshot.exists()) {
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        console.log("User registered:", userCredential.user);
+        return "success";
+      } catch (error) {
+        console.error("Registration error:", error.message);
+        return error.message;
+      }
+    } else 
+      return "Device ID not found";
   };
   
   const googleRegister = async() => {
@@ -51,7 +58,9 @@ const useAuth = () => {
     }
   };
 
-  const uploadImage = async (uri) => {
+
+
+  const uploadImage = async (uri, deviceID) => {
     try {
       // Convert image URI to Blob
       const response = await fetch(uri);
