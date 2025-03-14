@@ -14,7 +14,6 @@ function Profile(navigation) {
     const [address, setAddress] = useState('');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [photo, setPhoto] = useState('');
     const [disabled, setDisabled] = useState(false);
 

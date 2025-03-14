@@ -323,10 +323,10 @@ const Rooms = ( props: any ) => {
   });
 
   return (
-    <View style={styles.card}>
-      <Pressable onPress={() => navigation.navigate("room/[id]", { id : props.id})} >
+    <Pressable onPress={() => navigation.navigate("room/[id]", { id : props.id})} >
+      <View style={styles.card}>
         <Text style={styles.cardTitle}>{props.name}</Text>
-      </Pressable>
-    </View>
+      </View>
+    </Pressable>
   );
 };

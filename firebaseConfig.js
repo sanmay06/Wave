@@ -2,6 +2,7 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getDatabase } from "firebase/database";
+import { getStorage } from "firebase/storage";
 
 // Firebase configuration (Replace with your Firebase project config)
 const firebaseConfig = {
@@ -20,3 +21,4 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
 // Export Firebase Authentication
 export const auth = getAuth(app);
 export const database = getDatabase(app);
+export const storage = getStorage(app);
