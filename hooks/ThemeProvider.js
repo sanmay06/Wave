@@ -6,11 +6,14 @@ export const ThemeContext = new createContext('light');
 
 export const ThemeProvider = ({children}) => {
 
-  const[ colorScheme, setcolorScheme ] = new useState(Appearance.getColorScheme());
+    const [ colorScheme, setcolorScheme ] = new useState(Appearance.getColorScheme());
+
     const theme = colorScheme === 'dark' ? Colors.dark : Colors.light;
+
     return (  
         <ThemeContext.Provider value={{theme, colorScheme, setcolorScheme}}>
             {children}
         </ThemeContext.Provider>
-    )
+    );
+
 }

@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "@/firebaseConfig";
+import { uploadBytes, getDownloadURL, getMetadata } from "firebase/storage";
+import { ref, get } from "firebase/database";
+import { database } from "@/firebaseConfig";
 
 const useAuth = () => {
   const [user, setUser] = useState(null);
@@ -29,13 +32,20 @@ const useAuth = () => {
     }
   };
 
-  const register = async (email, password) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      console.log("User registered:", userCredential.user);
-    } catch (error) {
-      console.error("Registration error:", error.message);
-    }
+  const register = async (email, password, username, deviceID, phoneNumber, uri, address) => {
+    const refe = ref(database, `/${deviceID}`);
+    const snapshot = await get(refe);
+    if(snapshot.exists()) {
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        console.log("User registered:", userCredential.user);
+        return "success";
+      } catch (error) {
+        console.error("Registration error:", error.message);
+        return error.message;
+      }
+    } else 
+      return "Device ID not found";
   };
   
   const googleRegister = async() => {
@@ -46,7 +56,31 @@ const useAuth = () => {
     }catch (error) {
         console.log("google error: ", error.message);
     }
-};
+  };
+
+
+
+  const uploadImage = async (uri, deviceID) => {
+    try {
+      // Convert image URI to Blob
+      const response = await fetch(uri);
+      const blob = await response.blob();
+  
+      // Create a unique filename
+      const filename = `images/${new Date().getTime()}.jpg`;
+      const storageRef = ref(storage, filename);
+  
+      // Upload image to Firebase Storage
+      await uploadBytes(storageRef, blob);
+      const downloadURL = await getDownloadURL(storageRef);
+  
+      console.log("Image uploaded successfully:", downloadURL);
+      return downloadURL; // Return the URL for further use
+    } catch (error) {
+      console.error("Upload Failed:", error.message);
+      throw error;
+    }
+  };
 
   const logout = async (navigation) => {
     try {
@@ -71,7 +105,7 @@ const useAuth = () => {
     }
   };  
 
-  return { user, loading, error, login, logout, logged , register, googleRegister, updateUser };
+  return { user, loading, error, login, logout, logged , register, googleRegister, updateUser, uploadImage };
 };
 
 export default useAuth;
