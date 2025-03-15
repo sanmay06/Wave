@@ -100,34 +100,34 @@ function Register({ navigation }) {
     }, [conpass, password]);
 
     // Pick Image Function
-    const pickImage = () => {
-        ImagePicker.launchImageLibrary({ mediaType: "photo" }, (response) => {
-            if (response.didCancel) {
-                Alert.alert("Cancelled", "Image selection was cancelled.");
-            } else if (response.errorMessage) {
-                Alert.alert("Error", response.errorMessage);
-            } else {
-                setImageUri(response.assets[0].uri);
-            }
-        });
-    };
+    // const pickImage = () => {
+    //     ImagePicker.launchImageLibrary({ mediaType: "photo" }, (response) => {
+    //         if (response.didCancel) {
+    //             Alert.alert("Cancelled", "Image selection was cancelled.");
+    //         } else if (response.errorMessage) {
+    //             Alert.alert("Error", response.errorMessage);
+    //         } else {
+    //             setImageUri(response.assets[0].uri);
+    //         }
+    //     });
+    // };
 
-    const handleUploadImage = async () => {
-        if (!imageUri) {
-            Alert.alert("No Image", "Please select an image first.");
-            return;
-        }
+    // const handleUploadImage = async () => {
+    //     if (!imageUri) {
+    //         Alert.alert("No Image", "Please select an image first.");
+    //         return;
+    //     }
 
-        setUploading(true);
-        try {
-            const downloadURL = await uploadImage(imageUri);
-            setPhoto(downloadURL); // Set the uploaded image URL
-            Alert.alert("Upload Successful", "Image uploaded successfully!");
-        } catch (error) {
-            Alert.alert("Upload Failed", error.message);
-        }
-        setUploading(false);
-    };
+    //     setUploading(true);
+    //     try {
+    //         const downloadURL = await uploadImage(imageUri);
+    //         setPhoto(downloadURL); // Set the uploaded image URL
+    //         Alert.alert("Upload Successful", "Image uploaded successfully!");
+    //     } catch (error) {
+    //         Alert.alert("Upload Failed", error.message);
+    //     }
+    //     setUploading(false);
+    // };
 
     return (
         <ScrollView 
@@ -171,11 +171,11 @@ function Register({ navigation }) {
                 />
 
                 {/* Image Upload Section */}
-                <Text style={styles.text}>Upload Profile Picture:</Text>
+                {/* <Text style={styles.text}>Upload Profile Picture:</Text>
                 <Button title="Pick an Image" onPress={pickImage} />
                 {imageUri && <Image source={{ uri: imageUri }} style={{ width: 100, height: 100, marginTop: 10 }} />}
                 <Button title="Upload Image" onPress={handleUploadImage} disabled={uploading} />
-                {photo && <Image source={{ uri: photo }} style={{ width: 100, height: 100, marginTop: 10 }} />}
+                {photo && <Image source={{ uri: photo }} style={{ width: 100, height: 100, marginTop: 10 }} />} */}
 
                 <Text style={styles.text}>Enter password:</Text>
                 <TextInput

@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "@/firebaseConfig";
 import { uploadBytes, getDownloadURL, getMetadata } from "firebase/storage";
-import { ref, get } from "firebase/database";
+import { ref, get, set, push, update } from "firebase/database";
 import { database } from "@/firebaseConfig";
+import { storage } from "@/firebaseConfig";
 
 const useAuth = () => {
   const [user, setUser] = useState(null);
@@ -35,17 +36,29 @@ const useAuth = () => {
   const register = async (email, password, username, deviceID, phoneNumber, uri, address) => {
     const refe = ref(database, `/${deviceID}`);
     const snapshot = await get(refe);
-    if(snapshot.exists()) {
+    if(snapshot.exists() && snapshot.val().profile.email === "") {
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         console.log("User registered:", userCredential.user);
+
+        await update(ref(database, `/${deviceID}/profile`), {
+          email: email,
+          uname: username,
+          phone_Number: phoneNumber,
+          address: address,
+          device_id: deviceID,
+        });
+
+        // uploadImage(uri, deviceID);
+
         return "success";
+
       } catch (error) {
         console.error("Registration error:", error.message);
         return error.message;
       }
     } else 
-      return "Device ID not found";
+      return "Device ID not found or already registered";
   };
   
   const googleRegister = async() => {
@@ -67,7 +80,7 @@ const useAuth = () => {
       const blob = await response.blob();
   
       // Create a unique filename
-      const filename = `images/${new Date().getTime()}.jpg`;
+      const filename = `images/${deviceID}.jpg`;
       const storageRef = ref(storage, filename);
   
       // Upload image to Firebase Storage

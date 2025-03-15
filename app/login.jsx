@@ -102,9 +102,10 @@ function Login({navigation}) {
                 style = {styles.inputText}
             />
             <TouchableOpacity
+                style = {styles.button}
                 onPress={ () => setpassvis(!passvis) }
             >
-                <Text style={styles.text}>{passvis ? "Show" : "Hide"}</Text>
+                <Text style={styles.buttonText}>{passvis ? "Show" : "Hide"}</Text>
             </TouchableOpacity>
             <Text style={styles.text}>{msg}</Text>
             <TouchableOpacity

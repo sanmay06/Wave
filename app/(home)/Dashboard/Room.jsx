@@ -1,7 +1,9 @@
 import React from 'react'
-import { Text } from 'react-native'
+import { Text, View, Button } from 'react-native'
 import Light from '@/components/ui/Lights'
 import { RouteProp } from '@react-navigation/native';
+import { database } from '@/firebaseConfig';
+import { ref, get, set, update } from 'firebase/database';
 
 
 function Room({navigation , route}) {
@@ -23,8 +25,32 @@ function Room({navigation , route}) {
         return lights.includes(name);
     }
 
+    async function name() {
+        try {
+
+            await update(ref(database, `/`), {
+                testid:{
+                    profile:{
+                        uname:'test',
+                        email:''
+                    }
+                }
+            });
+
+            const snap = await get(ref(database, `/`));
+            console.log(snap.val());
+            
+        } catch (error) {
+            console.error("Registration error:", error.message);
+            return error.message;
+        }
+    }
+
     return (
-        <Text>Room {id}</Text>
+        <View>
+            <Button onPress={name}>Add</Button>
+            <Text>Room {id}</Text>
+        </View>
     )
 } 
 
