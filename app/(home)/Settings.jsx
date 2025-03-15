@@ -158,7 +158,7 @@ const generatePoints = (data, width, height, minY, maxY) => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#FFFFFF", },
   header: { textAlign: "center", fontSize: 22, marginBottom: 10 },
-  card: { marginBottom: 10, padding: 10, borderWidth: 1, borderRadius: 8 },
+  card: { marginBottom: 10,marginLeft:10,marginRight:10, padding: 10, borderWidth: 1, borderRadius: 8 },
 });
 
 export default Settings;
