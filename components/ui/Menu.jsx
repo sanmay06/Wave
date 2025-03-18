@@ -5,9 +5,11 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import useAuth from '@/hooks/Auth';
 import { ThemeContext } from '@/hooks/ThemeProvider';
 
-const Menu = ({navigation}) => {
+const Menu = (props) => {
 
     const{ theme } = useContext(ThemeContext);
+
+    const navigation = props.navigation;
 
     const { logout } = useAuth();
 
@@ -40,6 +42,9 @@ const Menu = ({navigation}) => {
 
     return (
         <View style={styles.container} >
+            {props.back && <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Ionicons name="arrow-back" size={45} color={theme.menuText} />
+                </TouchableOpacity>}
             <View style = {styles.titlecontainer}>
                 <Text style={styles.title}>WAVE</Text>
                 <Text style={styles.subtitle}>By Automattrix</Text>

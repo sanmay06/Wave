@@ -7,7 +7,7 @@ import { ThemeContext } from '@/hooks/ThemeProvider';
 // import { getDownloadURL, ref } from "firebase/storage";
 // import * as ImagePicker from "react-native-image-picker";
 
-function Profile(navigation) {
+function Profile({navigation}) {
     const { theme } = useContext(ThemeContext);
     const width = Dimensions.get('window').width;
 

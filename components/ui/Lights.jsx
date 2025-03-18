@@ -38,9 +38,8 @@ const Light = (props) => {
           <Text style={styles.cardTitle}>{props.name}</Text>
           <Switch
             value={props.light}
-            onValueChange={(value) => {
-              props.setLight(value);
-              props.toggleLight(props.name, value);
+            onValueChange={() => {
+              props.toggleLight(props.name);
             }}
           />
         </View>

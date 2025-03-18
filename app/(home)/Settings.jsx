@@ -12,7 +12,7 @@ const db = database;
 const screenWidth = Dimensions.get('window').width;
 const MAX_VISIBLE_POINTS = 4;
 
-const Settings = () => {
+const Settings = ({navigation}) => {
   const { theme } = useContext(ThemeContext);
   
   const [temperature, setTemperature] = useState([]);
@@ -52,7 +52,7 @@ const Settings = () => {
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
-      <Menu />
+      <Menu navigation={navigation}/>
       <Title style={[styles.header, { color: theme.primary }]}>Sensor Data</Title>
 
       {loading ? (
