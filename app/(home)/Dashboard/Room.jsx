@@ -108,11 +108,11 @@ function Room({navigation , route}) {
     return (
         <View style={styles.container}>
             <Menu back={true} navigation={navigation} />
-            <Button onPress={name} title='Do not push me'></Button>
+            {/* <Button onPress={name} title='Do not push me'></Button> */}
             <Text>Room {id}</Text>
             <View>
                 <Text>Lights</Text>
-                {lights && lights.map((light) => <Light theme={theme} name={light.name} light={light.state} toggleLight={toggleLight}/>)}
+                {lights && lights.map((light, id) => <Light key={id} theme={theme} name={light.name} light={light.state} toggleLight={toggleLight}/>)}
             </View>
         </View>
     )
