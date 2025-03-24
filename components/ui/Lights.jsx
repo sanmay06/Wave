@@ -20,8 +20,9 @@ const Light = (props) => {
           elevation: 5,
           borderColor: theme.border,
           alignItems: 'center',
+          justifyContent: 'space-evenly',
           borderWidth: 1,
-          shadowColor: props.light ? theme.primary : "#000",
+          shadowColor: props.light ? "#FFD700" : "#000",
           shadowOpacity: props.light ? 0.8 : 0.3,
           shadowRadius: props.light ? 15 : 5,
           shadowOffset: { width: 0, height: 0 },
@@ -41,12 +42,12 @@ const Light = (props) => {
           height: 40,
           width: 40,
           borderRadius: 20,
-          backgroundColor: props.light ? theme.primary : theme.border,
+          backgroundColor: props.light ? "#FFD700" : theme.border,
           borderWidth: 3,
-          borderColor: theme.text,
+          borderColor: props.light ? "#FFD700" : theme.text,
           alignItems: 'center',
           justifyContent: 'center',
-          shadowColor: props.light ? theme.primary : "#000",
+          shadowColor: props.light ? "#FFD700" : "#000",
           shadowOpacity: props.light ? 0.8 : 0.3,
           shadowRadius: props.light ? 15 : 5,
           shadowOffset: { width: 0, height: 0 },
@@ -56,18 +57,18 @@ const Light = (props) => {
       });
 
     return (
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>{props.name}</Text>
           <Pressable
-            style={styles.button}
-            // value={props.light}
-            onPress={() => {
-              props.toggleLight(props.name);
-            }}
+            style={styles.card}
+            onPress={() => props.toggleLight(props.name) }
           >
-            {/* <Text style={styles.cardValue}> {props.light ? "ON" : "OFF"} </Text> */}
+            <Text style={styles.cardTitle}>{props.name}</Text>
+            <Pressable
+              style={styles.button}
+              // value={props.light}
+            >
+              {/* <Text style={styles.cardValue}> {props.light ? "ON" : "OFF"} </Text> */}
+            </Pressable>
           </Pressable>
-        </View>
     )
 }
 
