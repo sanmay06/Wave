@@ -1,7 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Text, StyleSheet, View, TextInput, Pressable, Dimensions, TouchableOpacity } from 'react-native';
 import { ThemeContext } from '@/hooks/ThemeProvider';
-import ThemeButton from '@/components/ui/ThemeButton'; 
 import { auth } from '@/firebaseConfig';
 import useAuth from '@/hooks/Auth';
 
@@ -85,9 +84,6 @@ function Login({navigation}) {
 
     return (
         <View style={styles.mainContainer}>
-            <View style = { { alignSelf: 'flex-end' } } >
-                <ThemeButton />
-            </View>
             <Text style={styles.text}>Enter your E-mail:</Text>
             <TextInput 
                 value={USN}

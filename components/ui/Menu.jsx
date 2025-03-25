@@ -1,6 +1,5 @@
 import React,{ useContext } from 'react'
 import { Text, TouchableOpacity, View, StyleSheet } from "react-native"
-import ThemeButton from './ThemeButton'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import useAuth from '@/hooks/Auth';
 import { ThemeContext } from '@/hooks/ThemeProvider';
@@ -48,8 +47,7 @@ const Menu = (props) => {
             <View style = {styles.titlecontainer}>
                 <Text style={styles.title}>WAVE</Text>
                 <Text style={styles.subtitle}>By Automattrix</Text>
-            </View>
-            <ThemeButton />            
+            </View>        
             <TouchableOpacity 
                 onPress={() => {
                     logout(navigation)

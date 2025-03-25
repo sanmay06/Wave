@@ -4,7 +4,6 @@ import { ActivityIndicator, Card, Title } from 'react-native-paper';
 import { ref, onValue } from 'firebase/database';
 import { database } from '@/firebaseConfig';
 import { ThemeContext } from '@/hooks/ThemeProvider';
-import ThemeButton from '@/components/ui/ThemeButton';
 import Svg, { Path, Circle, Text } from 'react-native-svg';
 import Menu from '@/components/ui/Menu';
 

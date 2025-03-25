@@ -7,6 +7,7 @@ import { ThemeContext } from "@/hooks/ThemeProvider";
 import Menu  from "@/components/ui/Menu";
 import { StackNavigationProp } from "@react-navigation/stack";
 import Light from "@/components/ui/Lights";
+import Fan from "@/components/ui/Fan";
 
 type RootStackParamList = {
   Dashboard: undefined;
@@ -241,6 +242,8 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
         <View style={styles.cardContainer}>
           <Light light = {light1} setLight = {setLight1} toggleLight = {toggleLight} theme = {theme} name = {"Light 1"}/>
 
+          <Fan theme = {theme} toggle ={()=> console.log('toggling')} name ={'fan1'} state = {true} speed = {1/4}/>
+            
           <Light light = {light2} setLight = {setLight2} toggleLight = {toggleLight} theme = {theme} name = {"Light 2"}/>
         </View>
         <View style={styles.card}>

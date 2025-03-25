@@ -6,6 +6,7 @@ import { database } from '@/firebaseConfig';
 import { ref, get, set, update } from 'firebase/database';
 import { ThemeContext } from '@/hooks/ThemeProvider';
 import Menu from '@/components/ui/Menu';
+import Fan from '@/components/ui/Fan';
 
 function Room({navigation , route}) {
 
@@ -16,6 +17,7 @@ function Room({navigation , route}) {
     const [lights, setLights] = useState([]);
     const [ data, setData ] = useState();
     const [ deviceId, setDeviceId ] = useState('ef16bute');
+    const [ speed, setSpeed ] = useState(2);
 
     const toggleLight = (name) => {
         setLights(prev =>
@@ -114,6 +116,7 @@ function Room({navigation , route}) {
                 <Text>Lights</Text>
                 {lights && lights.map((light, id) => <Light key={id} theme={theme} name={light.name} light={light.state} toggleLight={toggleLight}/>)}
             </View>
+            <Fan theme = {theme} toggle ={()=> console.log('toggling')} name ={'fan1'} state = {true} speed = {speed} setSpeed={setSpeed} max = {5}/>
         </View>
     )
 } 
