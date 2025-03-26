@@ -17,7 +17,7 @@ function Room({navigation , route}) {
     const [lights, setLights] = useState([]);
     const [ data, setData ] = useState();
     const [ deviceId, setDeviceId ] = useState('ef16bute');
-    const [ speed, setSpeed ] = useState(2);
+    const [ fans, setFans ] = useState([]);
 
     const toggleLight = (name) => {
         setLights(prev =>
@@ -25,13 +25,37 @@ function Room({navigation , route}) {
                 light.name === name ? { ...light, state: !light.state } : light
             )
         );
-    };    
+    };
+    
+    const toggleFans = (name) => {
+        setFans(prev =>
+            prev.map(fan =>
+                fan.name === name ? { ...fan, state: !fan.state } : fan
+            )
+        );
+    };  
+
+    const increase = (name) => {
+        setFans( prev => 
+            prev.map( fan => 
+                fan.name === name ? {...fan, speed: fan.speed + 1} : fan
+            )
+        )
+    }
+
+    const decrease = (name) => {
+        setFans( prev => 
+            prev.map( fan => 
+                fan.name === name ? {...fan, speed: fan.speed - 1} : fan
+            )
+        )
+    }
 
     useEffect(() => {
         async function updateData(){
             if(!lights)
                 return;
-            console.log("lights:", lights)
+            // console.log("lights:", lights)
             let t = 1;
             const obj = lights.reduce((acc, light) => {
                 acc['light' + (t++)] = light
@@ -39,14 +63,35 @@ function Room({navigation , route}) {
                 return acc;
             },{});
 
-            console.log("Object:",obj)
+            // console.log("Object:",obj)
 
             await update(ref(database, `${deviceId}/rooms/room${id}/lights`), obj).then(
-                console.log('updated')
+                console.log('updated Lights')
             )
         } 
         updateData();
     }, [lights]);
+
+    useEffect(() => {
+        async function updateData(){
+            if(!fans)
+                return;
+            // console.log("fans:", fans)
+            let t = 1;
+            const obj = fans.reduce((acc, fan) => {
+                acc['fan' + (t++)] = fan
+                // console.log(acc);
+                return acc;
+            },{});
+
+            // console.log("Object:",obj)
+
+            await update(ref(database, `${deviceId}/rooms/room${id}/fans`), obj).then(
+                console.log('updated Fans')
+            )
+        }
+        updateData();
+    }, [fans]);
 
     async function getData() {
         try {
@@ -59,7 +104,7 @@ function Room({navigation , route}) {
 
     useEffect(() => {
         getData();
-        console.log("Data:",data);
+        // console.log("Data:",data);
     }, []);
 
     useEffect(() => {
@@ -71,6 +116,13 @@ function Room({navigation , route}) {
                 arr.push(data.lights['light' + i]);
             }
             setLights(arr);
+            length = Object.values(data.fans).length;
+            let a = [];
+            for(let i = 1; i <= length; i++) {
+                a.push(data.fans['fan' + i]);
+            }
+            setFans(a);
+            // console.log('fans:', a);            
             // console.log(arr);
         }
     }, [data]);
@@ -78,15 +130,19 @@ function Room({navigation , route}) {
     async function name() {
         try {
 
-            await set(ref(database, `/ef16bute/rooms/room1`), {
-                lights: {
-                    light1: {
-                        name: "Light1",
-                        state: true
+            await update(ref(database, `/ef16bute/rooms/room1`), {
+                fans: {
+                    fan1: {
+                        name: "Fan 1",
+                        state: true,
+                        speed: 5,
+                        max: 5
                     },
-                    light2: {
-                        name: "Light2",
-                        state: false
+                    fan2: {
+                        name: "Fan 2",
+                        state: false,
+                        speed: 4,
+                        max: 5
                     }
                 },
                 name: 'kitchen'
@@ -102,8 +158,19 @@ function Room({navigation , route}) {
 
     const styles = StyleSheet.create({
         container: {
-            flex: 1,
+            minHeight: '100%',
             backgroundColor: theme.background,
+            justifyContent: 'center',
+        },
+        componentBox: {
+            flex: 1,
+            flexDirection: 'column',
+        },
+        compText: {
+            width: '100% ',
+            fontSize: 20,
+            color: theme.text,
+            backgroundColor: theme.primary
         }
     })
 
@@ -111,12 +178,18 @@ function Room({navigation , route}) {
         <View style={styles.container}>
             <Menu back={true} navigation={navigation} />
             {/* <Button onPress={name} title='Do not push me'></Button> */}
-            <Text>Room {id}</Text>
-            <View>
-                <Text>Lights</Text>
-                {lights && lights.map((light, id) => <Light key={id} theme={theme} name={light.name} light={light.state} toggleLight={toggleLight}/>)}
+            <View style = {styles.componentBox}>
+                <Text style={styles.compText}>Lights</Text>
+                <View style = {{flexDirection: 'row'}}>
+                    {lights && lights.map((light, id) => <Light key={id} theme={theme} name={light.name} light={light.state} toggleLight={toggleLight}/>)}
+                </View>
             </View>
-            <Fan theme = {theme} toggle ={()=> console.log('toggling')} name ={'fan1'} state = {true} speed = {speed} setSpeed={setSpeed} max = {5}/>
+            <View style = {styles.componentBox}>
+                <Text style={styles.compText}>Fans</Text>
+                <View style = {{flexDirection: 'row'}}>
+                    {fans && fans.map((fan, id) => <Fan key={id} theme={theme} name={fan.name} state={fan.state} toggle={toggleFans} max = {fan.max} speed = {fan.speed} increase={increase} decrease={decrease}/>)}
+                </View>
+            </View>
         </View>
     )
 } 

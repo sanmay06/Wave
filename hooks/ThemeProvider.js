@@ -8,7 +8,8 @@ export const ThemeProvider = ({children}) => {
 
     const [ colorScheme, setcolorScheme ] = new useState(Appearance.getColorScheme());
 
-    const theme = colorScheme === 'dark' ? Colors.dark : Colors.light;
+    // const theme = colorScheme === 'dark' ? Colors.dark : Colors.light;
+    const theme = Colors.dark;
 
     return (  
         <ThemeContext.Provider value={{theme, colorScheme, setcolorScheme}}>

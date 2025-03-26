@@ -80,7 +80,7 @@ const Fan = (props) => {
               <Pressable
                 onPress={ () => {
                   if(props.speed > 0)
-                    props.setSpeed(props.speed - 1)
+                    props.decrease(props.name)
                 }}
               >
                 <AntDesign name="minussquareo" size={24} color={theme.text} />
@@ -91,7 +91,7 @@ const Fan = (props) => {
               <Pressable
                 onPress={ () => {
                   if(props.speed < props.max)
-                    props.setSpeed(props.speed + 1)
+                    props.increase(props.name)
                 }}
               >
                 <AntDesign name="plussquareo" size={24} color={theme.text} />
