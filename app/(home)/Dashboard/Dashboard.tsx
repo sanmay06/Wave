@@ -8,6 +8,7 @@ import Menu  from "@/components/ui/Menu";
 import { StackNavigationProp } from "@react-navigation/stack";
 import Light from "@/components/ui/Lights";
 import Fan from "@/components/ui/Fan";
+import Outlet from "@/components/ui/Outlets";
 
 type RootStackParamList = {
   Dashboard: undefined;
@@ -28,7 +29,7 @@ const getData = async (path: string, setData: any) => {
   const snapshot = await get(ref(database, path)); // Root reference
 
   if (snapshot.exists()) {
-    console.log("Database Structure:", JSON.stringify(snapshot.val(), null, 2));
+    // console.log("Database Structure:", JSON.stringify(snapshot.val(), null, 2));
     let obj = snapshot.val();
     // console.log("VALUES:", obj.values());
     // setData(Object.values(snapshot.val()));
@@ -39,8 +40,6 @@ const getData = async (path: string, setData: any) => {
 };
 
 const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme } = useContext<any>(ThemeContext); // Correctly calling useContext inside the component
-
-  
 
   const styles = StyleSheet.create({
     container: {
@@ -111,8 +110,6 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
     },
   });
 
-  const [light1, setLight1] = useState<boolean>(false);
-  const [light2, setLight2] = useState<boolean>(false);
   const [light3, setLight3] = useState<boolean>(false);
   const [temperature, setTemperature] = useState<string>("");
   const [pitemp, setPitemp] = useState<string>("");
@@ -144,9 +141,9 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
 
     getData("/ef16bute/rooms", setRooms);
     setRooms(Object.values(rooms));
-    console.log(rooms);
+    // console.log(rooms);
     getData("/ef16bute", setData);
-    console.log(data);
+    // console.log(data);
     // Fetch most recent light status
     // getLatestValue("light1", (value: number) => setLight1(value === 1));
     // getLatestValue("light2", (value: number) => setLight2(value === 1));
@@ -163,10 +160,6 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
     onValue(lightOffRef, (snapshot) => snapshot.exists() && setScheduledOffTime(snapshot.val()));
 
   }, []);
-
-  useEffect(() => {
-    console.log(rooms);
-  }, [rooms]);
 
   // Function to push 0 or 1 to Firebase for controlling lights
   const toggleLight = (light: string, state: boolean) => {
@@ -206,10 +199,10 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
 
   const DisplayRooms = () => {
     if(rooms) {
-      console.log(rooms);
+      // console.log(rooms);
       return Object.values(rooms).map((room: any, index: number) => {
         return (
-          <Rooms theme = {theme} name = {room.name} nav = {navigation} id = {index} />
+          <Rooms theme = {theme} name = {room.name} nav = {navigation} id = {index} key = {index}/>
           
         );
       });
@@ -246,6 +239,7 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
             
           <Light light = {light2} setLight = {setLight2} toggleLight = {toggleLight} theme = {theme} name = {"Light 2"}/>
         </View> */}
+        {/* <Outlet name = {'outlet1'} toggle ={  () => console.log('toggling') } theme = {theme} state = {true}/> */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Light 3</Text>
           <Switch

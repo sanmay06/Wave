@@ -7,6 +7,7 @@ import { ref, get, set, update } from 'firebase/database';
 import { ThemeContext } from '@/hooks/ThemeProvider';
 import Menu from '@/components/ui/Menu';
 import Fan from '@/components/ui/Fan';
+import Outlet from '@/components/ui/Outlets';
 
 function Room({navigation , route}) {
 
@@ -14,15 +15,73 @@ function Room({navigation , route}) {
 
     const { id } = route.params;
 
-    const [lights, setLights] = useState([]);
+    const [lights, setLights] = useState(null);
     const [ data, setData ] = useState();
     const [ deviceId, setDeviceId ] = useState('ef16bute');
-    const [ fans, setFans ] = useState([]);
+    const [ fans, setFans ] = useState(null);
+    const [ outlets, setOutlets ] = useState(null);
+
+    async function getData() {
+        try {
+            let data = await get(ref(database, `/${deviceId}/rooms/room${id}`));
+            setData(data.val());
+        }catch(error) {
+            console.log("Error occurred:" + error.message);
+        }
+    }
+
+    useEffect(() => {
+        getData();
+    }, []);
+
+    useEffect(() => {
+        console.log("Data: ", data);
+    }, [data]);
+
+    useEffect(() => {
+        if(data) {
+            if(data.lights) {
+                let length = Object.values(data.lights).length;
+                let arr = [];
+                for(let i = 1; i <= length; i++) {
+                    // console.log(data.lights['light' + i]);
+                    arr.push(data.lights['light' + i]);
+                }
+                setLights(arr);
+            }
+            if(data.fans) {
+                let length = Object.values(data.fans).length;
+                let a = [];
+                for(let i = 1; i <= length; i++) {
+                    a.push(data.fans['fan' + i]);
+                }
+                setFans(a);
+            }
+            if(data.outlets) {
+                let length = Object.values(data.outlets).length;
+                let a = [];
+                for(let i = 1; i <= length; i++) {
+                    a.push(data.outlets['outlet' + i]);
+                }
+                setOutlets(a);
+            }
+            // console.log('fans:', a);            
+            // console.log(arr);
+        }
+    }, [data]);
 
     const toggleLight = (name) => {
         setLights(prev =>
             prev.map(light =>
                 light.name === name ? { ...light, state: !light.state } : light
+            )
+        );
+    };
+
+    const toggleOutlet = (name) => {
+        setOutlets(prev =>
+            prev.map(outlet =>
+                outlet.name === name ? { ...outlet, state: !outlet.state } : outlet
             )
         );
     };
@@ -74,6 +133,27 @@ function Room({navigation , route}) {
 
     useEffect(() => {
         async function updateData(){
+            if(!outlets)
+                return;
+            // console.log("lights:", lights)
+            let t = 1;
+            const obj = outlets.reduce((acc, outlet) => {
+                acc['outlet' + (t++)] = outlet
+                // console.log(acc);
+                return acc;
+            },{});
+
+            // console.log("Object:",obj)
+
+            await update(ref(database, `${deviceId}/rooms/room${id}/outlets`), obj).then(
+                console.log('updated outlets')
+            )
+        } 
+        updateData();
+    }, [outlets]);
+
+    useEffect(() => {
+        async function updateData(){
             if(!fans)
                 return;
             // console.log("fans:", fans)
@@ -93,44 +173,10 @@ function Room({navigation , route}) {
         updateData();
     }, [fans]);
 
-    async function getData() {
-        try {
-            let data = await get(ref(database, `/${deviceId}/rooms/room${id}`));
-            setData(data.val());
-        }catch(error) {
-            console.log("Error occurred:" + error.message);
-        }
-    }
-
-    useEffect(() => {
-        getData();
-        // console.log("Data:",data);
-    }, []);
-
-    useEffect(() => {
-        if(data && data.lights) {
-            let length = Object.values(data.lights).length;
-            let arr = [];
-            for(let i = 1; i <= length; i++) {
-                // console.log(data.lights['light' + i]);
-                arr.push(data.lights['light' + i]);
-            }
-            setLights(arr);
-            length = Object.values(data.fans).length;
-            let a = [];
-            for(let i = 1; i <= length; i++) {
-                a.push(data.fans['fan' + i]);
-            }
-            setFans(a);
-            // console.log('fans:', a);            
-            // console.log(arr);
-        }
-    }, [data]);
-
     async function name() {
         try {
 
-            await update(ref(database, `/ef16bute/rooms/room1`), {
+            await update(ref(database, `/${deviceId}/rooms/room${id}`), {
                 fans: {
                     fan1: {
                         name: "Fan 1",
@@ -145,7 +191,27 @@ function Room({navigation , route}) {
                         max: 5
                     }
                 },
-                name: 'kitchen'
+                outlets:{
+                    outlet1: {
+                        name: "Outlet 1",
+                        state: true
+                    },
+                    outlet2: {
+                        name: "Outlet 2",
+                        state: false
+                    }
+                },
+                lights:{
+                    light1: {
+                        name: "Light 1",
+                        state: true
+                    },
+                    light2: {
+                        name: "Light 2",
+                        state: false
+                    }
+                },
+                name: 'bedroom'
             }).then(console.log('update'))
 
             const snap = await get(ref(database, `/ef16bute/rooms/`));
@@ -177,7 +243,7 @@ function Room({navigation , route}) {
     return (
         <View style={styles.container}>
             <Menu back={true} navigation={navigation} />
-            {/* <Button onPress={name} title='Do not push me'></Button> */}
+            <Button onPress={name} title='Do not push me'></Button>
             <View style = {styles.componentBox}>
                 <Text style={styles.compText}>Lights</Text>
                 <View style = {{flexDirection: 'row'}}>
@@ -188,6 +254,12 @@ function Room({navigation , route}) {
                 <Text style={styles.compText}>Fans</Text>
                 <View style = {{flexDirection: 'row'}}>
                     {fans && fans.map((fan, id) => <Fan key={id} theme={theme} name={fan.name} state={fan.state} toggle={toggleFans} max = {fan.max} speed = {fan.speed} increase={increase} decrease={decrease}/>)}
+                </View>
+            </View>
+            <View style = {styles.componentBox}>
+                <Text style={styles.compText}>Outlets</Text>
+                <View style = {{flexDirection: 'row'}}>
+                    {outlets && outlets.map((outlet, id) => <Outlet key={id} theme={theme} name={outlet.name} state={outlet.state} toggle={toggleOutlet}/>)}
                 </View>
             </View>
         </View>
