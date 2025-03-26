@@ -41,13 +41,20 @@ const Menu = (props) => {
 
     return (
         <View style={styles.container} >
-            {props.back && <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Ionicons name="arrow-back" size={45} color={theme.menuText} />
-                </TouchableOpacity>}
-            <View style = {styles.titlecontainer}>
-                <Text style={styles.title}>WAVE</Text>
-                <Text style={styles.subtitle}>By Automattrix</Text>
-            </View>        
+            <View style = {{ flexDirection:'row' }}>
+                {props.back && 
+                    <TouchableOpacity 
+                        onPress={() => navigation.goBack()}
+                        style = {{ paddingRight: 10 }}
+                    >
+                        <Ionicons name="arrow-back" size={45} color={theme.menuText} />
+                    </TouchableOpacity>}
+
+                <View style = {styles.titlecontainer}>
+                    <Text style={styles.title}>WAVE</Text>
+                    <Text style={styles.subtitle}>By Automattrix</Text>
+                </View>        
+            </View>
             <TouchableOpacity 
                 onPress={() => {
                     logout(navigation)
