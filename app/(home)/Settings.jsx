@@ -6,7 +6,7 @@ import { database } from '@/firebaseConfig';
 import { ThemeContext } from '@/hooks/ThemeProvider';
 import Svg, { Path, Circle, Text } from 'react-native-svg';
 import Menu from '@/components/ui/Menu';
-
+import useAuth from '@/hooks/Auth';
 const db = database;
 const screenWidth = Dimensions.get('window').width;
 const MAX_VISIBLE_POINTS = 4;
@@ -20,6 +20,14 @@ const Settings = ({navigation}) => {
   const [loading, setLoading] = useState(true);
   const [distbtry, setDistbtry] = useState([]);
   const [pitemp, setPitemp] = useState([]);
+  const [ deviceId, setDeviceId ] = useState();
+    
+  const { user, updateUser } = useAuth(); 
+  useEffect(() => {
+      if(user) {
+          setDeviceId(user.photoURL);
+      }
+  }, [user]);
 
   useEffect(() => {
     const fetchData = (refPath, setData) => {

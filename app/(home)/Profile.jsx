@@ -3,6 +3,8 @@ import { Text, View, StyleSheet, TextInput, Dimensions, TouchableOpacity, Button
 import Menu from '@/components/ui/Menu';
 import useAuth from '@/hooks/Auth';
 import { ThemeContext } from '@/hooks/ThemeProvider';
+import { ref, get, set, push, update } from "firebase/database";
+import { database } from '@/firebaseConfig';
 // import { storage } from '@/firebaseConfig.js';
 // import { getDownloadURL, ref } from "firebase/storage";
 // import * as ImagePicker from "react-native-image-picker";
@@ -11,35 +13,21 @@ function Profile({navigation}) {
     const { theme } = useContext(ThemeContext);
     const width = Dimensions.get('window').width;
 
-    const { user, updateUser } = useAuth(); // Removed uploadImage
+    // console.log("tenent:",user);
     const [phone, setPhone] = useState('');
     const [address, setAddress] = useState('');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [photo, setPhoto] = useState('');
     const [disabled, setDisabled] = useState(false);
-    // const [imageUri, setImageUri] = useState(null);
-    // const [loading, setLoading] = useState(false);
-    // const [deviceId, setDeviceId] = useState("testid");
-    // const [uploading, setUploading] = useState(false);
-
-    // Removed image fetching logic
-    /*
+    const [ deviceId, setDeviceId ] = useState();
+    
+    const { user, updateUser } = useAuth(); 
     useEffect(() => {
-        const fetchImage = async () => {
-            try {
-                const storageref = ref(storage, `/image/${deviceId}/`);
-                const url = await getDownloadURL(storageref);
-                setImageUri(url);
-            } catch (error) {
-                console.error("Error fetching image:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchImage();
-    }, [deviceId]);
-    */
+        if(user) {
+            setDeviceId(user.photoURL);
+        }
+    }, [user]);
 
     const styles = StyleSheet.create({
         mainContainer: {
@@ -141,16 +129,41 @@ function Profile({navigation}) {
     */
 
     useEffect(() => {
-        if (user) {
-            if (user.displayName) setName(user.displayName);
-            if (user.email) setEmail(user.email);
-            if (user.phoneNumber) setPhone(user.phoneNumber);
-            if (user.photoURL) setPhoto(user.photoURL);
+        // if (user) {
+        //     if (user.displayName) setName(user.displayName);
+        //     if (user.email) setEmail(user.email);
+        //     if (user.phoneNumber) setPhone(user.phoneNumber);
+        //     if (user.photoURL) setPhoto(user.photoURL);
+        // }
+        async function getData() {
+            const snap = await get(ref(database, `${deviceId}/profile`))
+            console.log(snap.val());
+            setName(snap.val().uname);
+            setPhone(snap.val().phone_number);
+            setEmail(snap.val().email);
+            setDeviceId(snap.val().device_id);
+            setAddress(snap.val().address);
         }
+        
+        if(deviceId)
+            getData();
     }, [user]);
 
-    const saveChanges = () => {
-        updateUser(name, photo, phone);
+    const saveChanges = async () => {
+        updateUser(name, deviceId);
+        try {
+            await update(ref(database, `${deviceId}/profile`), {
+                uname: name,
+                phone_number: phone,
+                device_id: deviceId,
+                address: address,
+                email: email,
+            });
+
+            console.log("Profile updated successfully");
+        } catch (error) {
+            console.error("Error updating profile:", error);
+        }
     };
 
     return (
@@ -163,6 +176,15 @@ function Profile({navigation}) {
                     placeholder="Enter a Username"
                     value={name}
                     onChangeText={(text) => setName(text)}
+                />
+            </View>
+            <View>
+                <Text style={styles.text}>Device ID</Text>
+                <TextInput
+                    style={styles.inputText}
+                    placeholder="Enter your Device ID"
+                    value={deviceId}
+                    onChangeText={(text) => setDeviceId(text)}
                 />
             </View>
 

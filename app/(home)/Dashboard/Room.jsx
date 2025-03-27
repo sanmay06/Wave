@@ -8,6 +8,7 @@ import { ThemeContext } from '@/hooks/ThemeProvider';
 import Menu from '@/components/ui/Menu';
 import Fan from '@/components/ui/Fan';
 import Outlet from '@/components/ui/Outlets';
+import useAuth from '@/hooks/Auth';
 
 function Room({navigation , route}) {
 
@@ -17,10 +18,17 @@ function Room({navigation , route}) {
 
     const [lights, setLights] = useState(null);
     const [ data, setData ] = useState();
-    const [ deviceId, setDeviceId ] = useState('ef16bute');
+    const [ deviceId, setDeviceId ] = useState();
     const [ fans, setFans ] = useState(null);
     const [ outlets, setOutlets ] = useState(null);
-
+    
+    const { user } = useAuth(); 
+    useEffect(() => {
+        if(user) {
+            setDeviceId(user.photoURL);
+        }
+        console.log("Device ID:", deviceId);
+    }, [user]);
     async function getData() {
         try {
             let data = await get(ref(database, `/${deviceId}/rooms/room${id}`));

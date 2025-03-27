@@ -49,6 +49,7 @@ const useAuth = () => {
           device_id: deviceID,
         });
 
+        updateUser(username, phoneNumber, deviceID);
         // uploadImage(uri, deviceID);
 
         return "success";
@@ -71,30 +72,6 @@ const useAuth = () => {
     }
   };
 
-
-
-  const uploadImage = async (uri, deviceID) => {
-    try {
-      // Convert image URI to Blob
-      const response = await fetch(uri);
-      const blob = await response.blob();
-  
-      // Create a unique filename
-      const filename = `images/${deviceID}.jpg`;
-      const storageRef = ref(storage, filename);
-  
-      // Upload image to Firebase Storage
-      await uploadBytes(storageRef, blob);
-      const downloadURL = await getDownloadURL(storageRef);
-  
-      console.log("Image uploaded successfully:", downloadURL);
-      return downloadURL; // Return the URL for further use
-    } catch (error) {
-      console.error("Upload Failed:", error.message);
-      throw error;
-    }
-  };
-
   const logout = async (navigation) => {
     try {
       await signOut(auth);
@@ -104,12 +81,11 @@ const useAuth = () => {
     }
   };
 
-  const updateUser = async (name, photo, phoneNumber) => {
+  const updateUser = async (name, device_id) => {
     if(user) {
       updateProfile(user, {
         displayName: name,
-        photoURL: photo,
-        phoneNumber: phoneNumber
+        photoURL: device_id,
       }).then(() => {
         console.log("User updated successfully");
       }).catch((error) => {
@@ -118,7 +94,7 @@ const useAuth = () => {
     }
   };  
 
-  return { user, loading, error, login, logout, logged , register, googleRegister, updateUser, uploadImage };
+  return { user, loading, error, login, logout, logged , register, googleRegister, updateUser };
 };
 
 export default useAuth;

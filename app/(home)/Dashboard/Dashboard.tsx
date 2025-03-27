@@ -9,6 +9,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import Light from "@/components/ui/Lights";
 import Fan from "@/components/ui/Fan";
 import Outlet from "@/components/ui/Outlets";
+import useAuth from "@/hooks/Auth";
 
 type RootStackParamList = {
   Dashboard: undefined;
@@ -119,6 +120,16 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
   const [scheduledOffTime, setScheduledOffTime] = useState<string>("");
   const [rooms, setRooms] = useState<any>("");
   const [data, setData] = useState<any>("");
+  const [ deviceId, setDeviceId ] = useState<string>();
+    
+  const { user }: { user: any | null } = useAuth();
+
+  useEffect(() => {
+      if(user && user.photoURL) {
+          setDeviceId(user.photoURL as string);
+      }
+      console.log("Device ID:", deviceId);
+  }, [user]);
 
   // Fetch data from Firebase Realtime Database
   useEffect(() => {
@@ -139,21 +150,21 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
     };
 
 
-    getData("/ef16bute/rooms", setRooms);
+    getData(`/${deviceId}/rooms`, setRooms);
     setRooms(Object.values(rooms));
     // console.log(rooms);
-    getData("/ef16bute", setData);
-    // console.log(data);
+    getData(`/${deviceId}`, setData);
+    console.log(data);
     // Fetch most recent light status
     // getLatestValue("light1", (value: number) => setLight1(value === 1));
     // getLatestValue("light2", (value: number) => setLight2(value === 1));
     // getLatestValue("light3", (value: number) => setLight3(value === 1));
 
     // Fetch most recent sensor data
-    getData("/ef16bute/pitemp", setPitemp);
+    getData(`/${deviceId}/pitemp`, setPitemp);
     getLatestValue("temp", setTemperature);
-    getData("/ef16bute/humidity", setHumidity);
-    getData("/ef16bute/btry", setBattery);
+    getData(`/${deviceId}/humidity`, setHumidity);
+    getData(`/${deviceId}/btry`, setBattery);
 
     // Fetch scheduled ON/OFF times
     onValue(lightOnRef, (snapshot) => snapshot.exists() && setScheduledOnTime(snapshot.val()));
