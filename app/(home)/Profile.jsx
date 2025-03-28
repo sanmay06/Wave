@@ -27,6 +27,7 @@ function Profile({navigation}) {
         if(user) {
             setDeviceId(user.photoURL);
         }
+        console.log("Device ID:", deviceId,"user",user);
     }, [user]);
 
     const styles = StyleSheet.create({

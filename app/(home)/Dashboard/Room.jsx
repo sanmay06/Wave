@@ -40,7 +40,7 @@ function Room({navigation , route}) {
 
     useEffect(() => {
         getData();
-    }, []);
+    }, [deviceId]);
 
     useEffect(() => {
         console.log("Data: ", data);
