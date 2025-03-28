@@ -170,7 +170,7 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
     onValue(lightOnRef, (snapshot) => snapshot.exists() && setScheduledOnTime(snapshot.val()));
     onValue(lightOffRef, (snapshot) => snapshot.exists() && setScheduledOffTime(snapshot.val()));
 
-  }, []);
+  }, [deviceId]);
 
   // Function to push 0 or 1 to Firebase for controlling lights
   const toggleLight = (light: string, state: boolean) => {
