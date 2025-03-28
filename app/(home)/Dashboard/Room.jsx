@@ -27,7 +27,6 @@ function Room({navigation , route}) {
         if(user) {
             setDeviceId(user.photoURL);
         }
-        console.log("Device ID:", deviceId);
     }, [user]);
     async function getData() {
         try {
@@ -40,6 +39,7 @@ function Room({navigation , route}) {
 
     useEffect(() => {
         getData();
+        console.log("Device ID:", deviceId);
     }, [deviceId]);
 
     useEffect(() => {
@@ -181,55 +181,6 @@ function Room({navigation , route}) {
         updateData();
     }, [fans]);
 
-    async function name() {
-        try {
-
-            await update(ref(database, `/${deviceId}/rooms/room${id}`), {
-                fans: {
-                    fan1: {
-                        name: "Fan 1",
-                        state: true,
-                        speed: 5,
-                        max: 5
-                    },
-                    fan2: {
-                        name: "Fan 2",
-                        state: false,
-                        speed: 4,
-                        max: 5
-                    }
-                },
-                outlets:{
-                    outlet1: {
-                        name: "Outlet 1",
-                        state: true
-                    },
-                    outlet2: {
-                        name: "Outlet 2",
-                        state: false
-                    }
-                },
-                lights:{
-                    light1: {
-                        name: "Light 1",
-                        state: true
-                    },
-                    light2: {
-                        name: "Light 2",
-                        state: false
-                    }
-                },
-                name: 'bedroom'
-            }).then(console.log('update'))
-
-            const snap = await get(ref(database, `/ef16bute/rooms/`));
-            console.log(snap.val());
-            
-        } catch (error) {
-            console.error("Registration error:", error.message);
-        }
-    }
-
     const styles = StyleSheet.create({
         container: {
             minHeight: '100%',
@@ -251,7 +202,6 @@ function Room({navigation , route}) {
     return (
         <View style={styles.container}>
             <Menu back={true} navigation={navigation} />
-            <Button onPress={name} title='Do not push me'></Button>
             <View style = {styles.componentBox}>
                 <Text style={styles.compText}>Lights</Text>
                 <View style = {{flexDirection: 'row'}}>

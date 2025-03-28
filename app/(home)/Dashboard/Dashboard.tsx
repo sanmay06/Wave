@@ -210,7 +210,7 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
 
   const DisplayRooms = () => {
     if(rooms) {
-      // console.log(rooms);
+      console.log(rooms);
       return Object.values(rooms).map((room: any, index: number) => {
         return (
           <Rooms theme = {theme} name = {room.name} nav = {navigation} id = {index} key = {index}/>
@@ -297,9 +297,6 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
         </View>*/}
 
       </View>
-      <Pressable style = {styles.button} onPress={() => navigation.navigate("room/[id]", { id : '123'})} >
-        <Text style={{color: theme.text}}>Rooms</Text>
-      </Pressable>
     </ScrollView>
   );
 }

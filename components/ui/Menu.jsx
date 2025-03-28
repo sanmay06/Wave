@@ -27,6 +27,8 @@ const Menu = (props) => {
         container:{
             display: 'flex',
             flexDirection: "row",
+            alignItems: 'center',
+            verticalAlign: 'center',
             width: '100%',
             justifyContent: 'space-between',
             backgroundColor: theme.menuBackground
@@ -35,6 +37,8 @@ const Menu = (props) => {
             display: 'flex',
             flexDirection: "column",
             justifyContent: 'center',
+            verticalAlign: 'center',
+            alignItems: 'center',
         },
     })
 

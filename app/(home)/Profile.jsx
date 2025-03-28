@@ -148,7 +148,7 @@ function Profile({navigation}) {
         
         if(deviceId)
             getData();
-    }, [user]);
+    }, [deviceId]);
 
     const saveChanges = async () => {
         updateUser(name, deviceId);
