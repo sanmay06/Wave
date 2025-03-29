@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { View, Text, Switch, Alert, Button, TextInput, ScrollView, StyleSheet, Linking, Dimensions, Pressable } from "react-native";
-import { getDatabase, ref, onValue, set, query, orderByKey, limitToLast, push, get } from "firebase/database";
+import { getDatabase, ref, onValue, set, query, orderByKey, limitToLast, push, get, update } from "firebase/database";
 import { database } from "../../../firebaseConfig";
 import { auth } from "../../../firebaseConfig";
 import { ThemeContext } from "@/hooks/ThemeProvider";
@@ -144,7 +144,13 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
           const data = snapshot.val();
           const latestKey = Object.keys(data)[0]; 
           const latestValue = data[latestKey];
-          setState(latestValue); 
+          // If the value is an object, get its value
+          if (typeof latestValue === 'object') {
+            const valueKey = Object.keys(latestValue)[0];
+            setState(String(latestValue[valueKey]));
+          } else {
+            setState(String(latestValue));
+          }
         }
       });
     };
@@ -154,17 +160,17 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
     setRooms(Object.values(rooms));
     // console.log(rooms);
     getData(`/${deviceId}`, setData);
-    console.log(data);
+    // console.log(data);
     // Fetch most recent light status
     // getLatestValue("light1", (value: number) => setLight1(value === 1));
     // getLatestValue("light2", (value: number) => setLight2(value === 1));
     // getLatestValue("light3", (value: number) => setLight3(value === 1));
 
     // Fetch most recent sensor data
-    getData(`/${deviceId}/pitemp`, setPitemp);
-    getLatestValue("temp", setTemperature);
-    getData(`/${deviceId}/humidity`, setHumidity);
-    getData(`/${deviceId}/btry`, setBattery);
+    getLatestValue(`/${deviceId}/pitemp`, setPitemp);
+    getLatestValue(`/${deviceId}/temp`, setTemperature);
+    getLatestValue(`/${deviceId}/humidity`, setHumidity);
+    getLatestValue(`/${deviceId}/btry`, setBattery);
 
     // Fetch scheduled ON/OFF times
     onValue(lightOnRef, (snapshot) => snapshot.exists() && setScheduledOnTime(snapshot.val()));
@@ -210,7 +216,7 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
 
   const DisplayRooms = () => {
     if(rooms) {
-      console.log(rooms);
+      // console.log(rooms);
       return Object.values(rooms).map((room: any, index: number) => {
         return (
           <Rooms theme = {theme} name = {room.name} nav = {navigation} id = {index} key = {index}/>
@@ -220,14 +226,64 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
    }
   }
 
+  const generateTestData = async () => {
+    if (!deviceId) {
+      Alert.alert("Error", "Device ID not found");
+      return;
+    }
+
+    const now = Date.now();
+    const sensors = ['temp', 'humidity', 'btry', 'pitemp'] as const;
+    
+    // Generate 20 readings for each sensor
+    for (let i = 0; i < 20; i++) {
+      const timestamp = now - (i * 5 * 60 * 1000); // 5 minutes apart
+      
+      // Generate realistic test data
+      const testData: Record<string, string> = {
+        temp: (20 + Math.random() * 5).toFixed(1), // 20-25°C
+        humidity: (40 + Math.random() * 20).toFixed(1), // 40-60%
+        btry: (80 + Math.random() * 20).toFixed(1), // 80-100%
+        pitemp: (35 + Math.random() * 10).toFixed(1), // 35-45°C
+      };
+
+      // Push data for each sensor
+      for (const sensor of sensors) {
+        const sensorRef = ref(database, `/${deviceId}/${sensor}/${timestamp}`);
+        await set(sensorRef, testData[sensor]); // Changed from update to set
+      }
+    }
+
+    // Generate test rooms if they don't exist
+    const roomsRef = ref(database, `/${deviceId}/rooms`);
+    const roomsSnapshot = await get(roomsRef);
+    
+    if (!roomsSnapshot.exists()) {
+      const testRooms = {
+        room1: {
+          name: "Living Room",
+          devices: ["light1", "light2", "fan1"]
+        },
+        room2: {
+          name: "Bedroom",
+          devices: ["light3", "fan2"]
+        },
+        room3: {
+          name: "Kitchen",
+          devices: ["light4", "fan3"]
+        }
+      };
+      
+      await set(roomsRef, testRooms); // Changed from update to set
+    }
+
+    Alert.alert("Success", "Test data generated successfully!");
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <Menu navigation={navigation}/>
       <View style={styles.container}>
-        {/* <Text style={styles.title}>WAVE</Text>
-        <Text style={styles.subtitle}>By Automattrix</Text> */}
-
-        {/* Sensor Data Display */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Temperature</Text>
           <Text style={styles.cardValue}>{temperature}°C</Text>
@@ -242,15 +298,8 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
           {DisplayRooms()}
         </View>
 
-        {/* Light Control */}
-        {/* <View style={styles.cardContainer}>
-          <Light light = {light1} setLight = {setLight1} toggleLight = {toggleLight} theme = {theme} name = {"Light 1"}/>
+        <Button title="Generate Test Data" onPress={generateTestData} />
 
-          <Fan theme = {theme} toggle ={()=> console.log('toggling')} name ={'fan1'} state = {true} speed = {1/4}/>
-            
-          <Light light = {light2} setLight = {setLight2} toggleLight = {toggleLight} theme = {theme} name = {"Light 2"}/>
-        </View> */}
-        {/* <Outlet name = {'outlet1'} toggle ={  () => console.log('toggling') } theme = {theme} state = {true}/> */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Light 3</Text>
           <Switch

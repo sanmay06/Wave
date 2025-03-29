@@ -46,11 +46,11 @@ const Settings = ({navigation}) => {
       });
     };
 
-    fetchData('temp/', setTemperature);
-    fetchData('humidity/', setHumidity);
-    fetchData('btry/', setBattery);
-    fetchData('distbtry/', setDistbtry);
-    fetchData('pitemp/', setPitemp);
+    fetchData(`/${deviceId}/temp/`, setTemperature);
+    fetchData(`/${deviceId}/humidity/`, setHumidity);
+    fetchData(`/${deviceId}/btry/`, setBattery);
+    // fetchData(`/${deviceId}/distbtry/`, setDistbtry);
+    fetchData(`/${deviceId}/pitemp/`, setPitemp);
 
     // console.log(temperature)
 
