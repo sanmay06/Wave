@@ -41,7 +41,7 @@ const getData = async (path: string, setData: any) => {
 };
 
 const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme } = useContext<any>(ThemeContext); // Correctly calling useContext inside the component
-
+  
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -144,7 +144,6 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
           const data = snapshot.val();
           const latestKey = Object.keys(data)[0]; 
           const latestValue = data[latestKey];
-          // If the value is an object, get its value
           if (typeof latestValue === 'object') {
             const valueKey = Object.keys(latestValue)[0];
             setState(String(latestValue[valueKey]));
@@ -226,60 +225,6 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
    }
   }
 
-  const generateTestData = async () => {
-    if (!deviceId) {
-      Alert.alert("Error", "Device ID not found");
-      return;
-    }
-
-    const now = Date.now();
-    const sensors = ['temp', 'humidity', 'btry', 'pitemp'] as const;
-    
-    // Generate 20 readings for each sensor
-    for (let i = 0; i < 20; i++) {
-      const timestamp = now - (i * 5 * 60 * 1000); // 5 minutes apart
-      
-      // Generate realistic test data
-      const testData: Record<string, string> = {
-        temp: (20 + Math.random() * 5).toFixed(1), // 20-25°C
-        humidity: (40 + Math.random() * 20).toFixed(1), // 40-60%
-        btry: (80 + Math.random() * 20).toFixed(1), // 80-100%
-        pitemp: (35 + Math.random() * 10).toFixed(1), // 35-45°C
-      };
-
-      // Push data for each sensor
-      for (const sensor of sensors) {
-        const sensorRef = ref(database, `/${deviceId}/${sensor}/${timestamp}`);
-        await set(sensorRef, testData[sensor]); // Changed from update to set
-      }
-    }
-
-    // Generate test rooms if they don't exist
-    const roomsRef = ref(database, `/${deviceId}/rooms`);
-    const roomsSnapshot = await get(roomsRef);
-    
-    if (!roomsSnapshot.exists()) {
-      const testRooms = {
-        room1: {
-          name: "Living Room",
-          devices: ["light1", "light2", "fan1"]
-        },
-        room2: {
-          name: "Bedroom",
-          devices: ["light3", "fan2"]
-        },
-        room3: {
-          name: "Kitchen",
-          devices: ["light4", "fan3"]
-        }
-      };
-      
-      await set(roomsRef, testRooms); // Changed from update to set
-    }
-
-    Alert.alert("Success", "Test data generated successfully!");
-  };
-
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <Menu navigation={navigation}/>
@@ -294,11 +239,9 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
           <Text style={styles.cardTitle}>Pi Temperature</Text>
           <Text style={styles.cardValue}>{pitemp}</Text>
         </View>
-        <View style={{flexDirection: 'row'}}>
+        <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
           {DisplayRooms()}
         </View>
-
-        <Button title="Generate Test Data" onPress={generateTestData} />
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Light 3</Text>
@@ -352,21 +295,23 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
 
 export default Dashboard;
 
-const Rooms = ( props: any ) => {
-  
+const Rooms = (props: any) => {
   const theme = props.theme;
-  const width = 1;
-  const screenWidth = Dimensions.get('window').width;
+  const { width, height } = Dimensions.get("window");
+  const isPortrait = height > width;
+  const cardSize = isPortrait ? width * 0.4 : width * 0.2; // Adjust size based on orientation
   const navigation = props.nav;
 
   const styles = StyleSheet.create({
     card: {
       backgroundColor: theme.background,
-      height: screenWidth * 0.1,
-      width: screenWidth * 0.1,
-      borderRadius: 25,
-      padding: 20,
-      margin:15,
+      width: cardSize,
+      height: cardSize,
+      borderRadius: cardSize / 10,
+      padding: 15,
+      margin: 10,
+      justifyContent: "center",
+      alignItems: "center",
       shadowColor: "#000",
       shadowOpacity: 0.1,
       shadowOffset: { width: 0, height: 2 },
@@ -375,15 +320,15 @@ const Rooms = ( props: any ) => {
       borderWidth: 1,
     },
     cardTitle: {
-      fontSize: 18,
-      marginBottom: 10,
+      fontSize: cardSize / 6,
       fontWeight: "bold",
       color: theme.text,
+      textAlign: "center",
     },
   });
 
   return (
-    <Pressable onPress={() => navigation.navigate("room/[id]", { id : props.id + 1})} >
+    <Pressable onPress={() => navigation.navigate("room/[id]", { id: props.id + 1 })}>
       <View style={styles.card}>
         <Text style={styles.cardTitle}>{props.name}</Text>
       </View>

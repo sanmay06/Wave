@@ -4,13 +4,16 @@ import { View, Text, StyleSheet, Dimensions, Button, Pressable, TouchableOpacity
 const Light = (props) => {
 
     const theme = props.theme;
-    const screeenWidth = Dimensions.get("window").width;
+    const { height, width } = Dimensions.get("window");
+    const isPortrait = height > width;
+    
+    const screenWidth = isPortrait ? width * 0.35 : width * 0.15;
     const styles = StyleSheet.create({
         card: {
           backgroundColor: theme.background,
           borderRadius: 25,
-          height: screeenWidth * 0.08,
-          width: screeenWidth * 0.08,
+          height: screenWidth ,
+          width: screenWidth,
           padding: 20,
           margin: 10,
           marginBottom: 15,

@@ -22,7 +22,7 @@ const Settings = ({navigation}) => {
   const [pitemp, setPitemp] = useState([]);
   const [ deviceId, setDeviceId ] = useState();
     
-  const { user, updateUser } = useAuth(); 
+  const { user } = useAuth(); 
   useEffect(() => {
       if(user) {
           setDeviceId(user.photoURL);
@@ -55,7 +55,7 @@ const Settings = ({navigation}) => {
     // console.log(temperature)
 
     setLoading(false);
-  }, []);
+  }, [deviceId]);
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>

@@ -8,54 +8,54 @@ const Fan = (props) => {
 
     const speed = 1 / props.speed;
     const theme = props.theme;
-    const screeenWidth = Dimensions.get("window").width;
-    const styles = StyleSheet.create({
-        card: {
-          backgroundColor: theme.background,
-          borderRadius: 25,
-          height: screeenWidth * 0.08,
-          width: screeenWidth * 0.08,
-          padding: 20,
-          margin: 10,
-          marginBottom: 15,
-          shadowColor: "#000",
-          shadowOpacity: 0.1,
-          shadowOffset: { width: 0, height: 2 },
-          elevation: 5,
-          borderColor: theme.border,
-          alignItems: 'center',
-          justifyContent: 'space-evenly',
-          borderWidth: 1,
-          shadowColor: props.state ? "#FFD700" : "#000",
-          shadowOpacity: props.state ? 0.8 : 0.3,
-          shadowRadius: props.state ? 15 : 5,
-          shadowOffset: { width: 0, height: 0 },
-          elevation: props.light ? 10 : 5, 
+    const { height, width } = Dimensions.get("window");
+    const isPortrait = height > width;
+    
+    const screenWidth = isPortrait ? width * 0.35 : width * 0.15;
 
-        },
-        cardTitle: {
-          fontSize: 18,
-          marginBottom: 10,
-          fontWeight: "bold",
-          color: theme.text,
-        },
-        cardValue: {
-          color: theme.primary,
-        },
-        speedCont: {
-          flexDirection: 'row',
-          alignItems:'center',
-          width: 100,
-          justifyContent: 'space-evenly'
-        },
-        speedBox: {
-          borderWidth: 1,
-          borderColor: 'white',
-          height: 22,
-          width: 22,
-          alignItems: 'center'
-        }
-      });
+const styles = StyleSheet.create({
+    card: {
+      backgroundColor: theme.background,
+      // backgroundColor: 'red',
+      borderRadius: screenWidth / 10,
+      height: screenWidth,
+      width: screenWidth,
+      padding: screenWidth * 0.05,
+      margin: screenWidth * 0.02,
+      shadowColor: "#000",
+      shadowOpacity: 0.1,
+      shadowOffset: { width: 0, height: 2 },
+      elevation: 5,
+      borderColor: theme.border,
+      alignItems: 'center',
+      justifyContent: 'space-evenly',
+      borderWidth: 1,
+    },
+    cardTitle: {
+      fontSize: screenWidth * 0.1,
+      fontWeight: "bold",
+      color: theme.text,
+    },
+    cardValue: {
+      fontSize: screenWidth * 0.08,
+      color: theme.primary,
+    },
+    speedCont: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      width: screenWidth * 0.8,
+      justifyContent: 'space-between',
+    },
+    speedBox: {
+      borderWidth: 1,
+      borderColor: 'white',
+      height: screenWidth * 0.2,
+      width: screenWidth * 0.2,
+      alignItems: 'center',
+      justifyContent: 'center',
+    }
+});
+
 
     return (
           <Pressable
@@ -74,7 +74,7 @@ const Fan = (props) => {
               }}
               style={{ transform: [{ rotate: '0deg' }] }} 
             >
-              <MaterialCommunityIcons name="fan" size={24} color={theme.text} />
+              <MaterialCommunityIcons name="fan" size={screenWidth * 0.25} color={theme.text} />
             </MotiView>
             <View style={styles.speedCont}>
               <Pressable
@@ -83,7 +83,7 @@ const Fan = (props) => {
                     props.decrease(props.name)
                 }}
               >
-                <AntDesign name="minussquareo" size={24} color={theme.text} />
+                <AntDesign name="minussquareo" size={screenWidth * 0.2} color={theme.text} />
               </Pressable>
               <View style={styles.speedBox}>
                 <Text style={styles.cardValue}>{ props.speed }</Text>
@@ -94,7 +94,7 @@ const Fan = (props) => {
                     props.increase(props.name)
                 }}
               >
-                <AntDesign name="plussquareo" size={24} color={theme.text} />
+                <AntDesign name="plussquareo" size={screenWidth * 0.2} color={theme.text} />
               </Pressable>
             </View>
           </Pressable>

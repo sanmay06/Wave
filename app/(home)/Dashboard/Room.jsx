@@ -1,9 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Text, View, Button, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, ScrollView } from 'react-native';
 import Light from '@/components/ui/Lights';
-import { RouteProp } from '@react-navigation/native';
 import { database } from '@/firebaseConfig';
-import { ref, get, set, update } from 'firebase/database';
+import { ref, get, update } from 'firebase/database';
 import { ThemeContext } from '@/hooks/ThemeProvider';
 import Menu from '@/components/ui/Menu';
 import Fan from '@/components/ui/Fan';
@@ -184,12 +183,13 @@ function Room({navigation , route}) {
     const styles = StyleSheet.create({
         container: {
             minHeight: '100%',
+            flex:1,
             backgroundColor: theme.background,
             justifyContent: 'center',
         },
         componentBox: {
-            flex: 1,
             flexDirection: 'column',
+            flexWrap: 'wrap',
         },
         compText: {
             width: '100% ',
@@ -202,24 +202,27 @@ function Room({navigation , route}) {
     return (
         <View style={styles.container}>
             <Menu back={true} navigation={navigation} />
-            <View style = {styles.componentBox}>
-                <Text style={styles.compText}>Lights</Text>
-                <View style = {{flexDirection: 'row'}}>
-                    {lights && lights.map((light, id) => <Light key={id} theme={theme} name={light.name} light={light.state} toggleLight={toggleLight}/>)}
+            <ScrollView contentContainerStyle = {styles.componentBox}>
+                <View>
+                    <Text style={styles.compText}>Lights</Text>
+                    <View style = {{flexDirection: 'row', flexWrap: 'wrap'}}>
+                        {lights && lights.map((light, id) => <Light key={id} theme={theme} name={light.name} light={light.state} toggleLight={toggleLight}/>)}
+
+                    </View> 
                 </View>
-            </View>
-            <View style = {styles.componentBox}>
-                <Text style={styles.compText}>Fans</Text>
-                <View style = {{flexDirection: 'row'}}>
-                    {fans && fans.map((fan, id) => <Fan key={id} theme={theme} name={fan.name} state={fan.state} toggle={toggleFans} max = {fan.max} speed = {fan.speed} increase={increase} decrease={decrease}/>)}
+                <View style = {styles.componentBox}>
+                    <Text style={styles.compText}>Fans</Text>
+                    <View style = {{flexDirection: 'row', flexWrap: 'wrap'}}>
+                        {fans && fans.map((fan, id) => <Fan key={id} theme={theme} name={fan.name} state={fan.state} toggle={toggleFans} max = {fan.max} speed = {fan.speed} increase={increase} decrease={decrease}/>)}
+                    </View>
                 </View>
-            </View>
-            <View style = {styles.componentBox}>
-                <Text style={styles.compText}>Outlets</Text>
-                <View style = {{flexDirection: 'row'}}>
-                    {outlets && outlets.map((outlet, id) => <Outlet key={id} theme={theme} name={outlet.name} state={outlet.state} toggle={toggleOutlet}/>)}
+                <View style = {styles.componentBox}>
+                    <Text style={styles.compText}>Outlets</Text>
+                    <View style = {{flexDirection: 'row', flexWrap: 'wrap'}}>
+                        {outlets && outlets.map((outlet, id) => <Outlet key={id} theme={theme} name={outlet.name} state={outlet.state} toggle={toggleOutlet}/>)}
+                    </View>
                 </View>
-            </View>
+            </ScrollView>
         </View>
     )
 } 

@@ -5,16 +5,20 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 const Outlet = (props) => {
 
     const theme = props.theme;
-    const screeenWidth = Dimensions.get("window").width;
 
     const [color, setColor ] = useState(theme.text);
+    
+    const { height, width } = Dimensions.get("window");
+    const isPortrait = height > width;
+    
+    const screenWidth = isPortrait ? width * 0.35 : width * 0.15;
 
     const styles = StyleSheet.create({
         card: {
           backgroundColor: theme.background,
           borderRadius: 25,
-          height: screeenWidth * 0.08,
-          width: screeenWidth * 0.08,
+          height: screenWidth ,
+          width: screenWidth ,
           padding: 20,
           margin: 10,
           marginBottom: 15,
