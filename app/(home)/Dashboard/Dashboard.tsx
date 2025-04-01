@@ -121,9 +121,20 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
   const [rooms, setRooms] = useState<any>("");
   const [data, setData] = useState<any>("");
   const [ deviceId, setDeviceId ] = useState<string>();
-    
   const { user }: { user: any | null } = useAuth();
 
+  const updateRoomName = (roomId: string, newName: string) => {
+    set(ref(database,`${deviceId}/rooms/room${roomId + 1}/name`), newName)
+    .then(() =>{ 
+      console.log(`Room ${roomId} name updated to ${newName}`)
+      getData(`/${deviceId}/rooms`, setRooms);
+      setRooms(Object.values(rooms));
+  })
+    .catch((error) => {
+      console.error("Error updating room name:", error);
+      Alert.alert("Error", "Failed to update room name.");
+    });
+  };
   useEffect(() => {
       if(user && user.photoURL) {
           setDeviceId(user.photoURL as string);
@@ -157,15 +168,8 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
 
     getData(`/${deviceId}/rooms`, setRooms);
     setRooms(Object.values(rooms));
-    // console.log(rooms);
     getData(`/${deviceId}`, setData);
     // console.log(data);
-    // Fetch most recent light status
-    // getLatestValue("light1", (value: number) => setLight1(value === 1));
-    // getLatestValue("light2", (value: number) => setLight2(value === 1));
-    // getLatestValue("light3", (value: number) => setLight3(value === 1));
-
-    // Fetch most recent sensor data
     getLatestValue(`/${deviceId}/pitemp`, setPitemp);
     getLatestValue(`/${deviceId}/temp`, setTemperature);
     getLatestValue(`/${deviceId}/humidity`, setHumidity);
@@ -214,11 +218,12 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
   };
 
   const DisplayRooms = () => {
+    console.log(rooms);
     if(rooms) {
       // console.log(rooms);
       return Object.values(rooms).map((room: any, index: number) => {
         return (
-          <Rooms theme = {theme} name = {room.name} nav = {navigation} id = {index} key = {index}/>
+          <Rooms theme = {theme} name = {room.name} nav = {navigation} id = {index} key = {index} setRoomName = {updateRoomName} />
           
         );
       });
@@ -296,10 +301,12 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
 export default Dashboard;
 
 const Rooms = (props: any) => {
+
+  const [edit, setEdit] = useState<boolean>(false);
   const theme = props.theme;
   const { width, height } = Dimensions.get("window");
   const isPortrait = height > width;
-  const cardSize = isPortrait ? width * 0.4 : width * 0.2; // Adjust size based on orientation
+  const cardSize = isPortrait ? width * 0.3 : width * 0.15; // Adjust size based on orientation
   const navigation = props.nav;
 
   const styles = StyleSheet.create({
@@ -325,12 +332,38 @@ const Rooms = (props: any) => {
       color: theme.text,
       textAlign: "center",
     },
+    input: {
+      fontSize: cardSize / 6,
+      fontWeight: "bold",
+      width: cardSize * 0.8,
+      color: theme.text,
+      textAlign: "center",
+    },
   });
 
+  useEffect(() => {
+    if(edit) {
+      console.log("Edit is true");
+    }
+  }, [edit]);
+
   return (
-    <Pressable onPress={() => navigation.navigate("room/[id]", { id: props.id + 1 })}>
+    <Pressable 
+      onPress={() => !edit ? navigation.navigate("room/[id]", { id: props.id + 1 }) : null}
+      onLongPress={() => setEdit(true)}
+    >
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>{props.name}</Text>
+        {
+          edit ? (
+            <TextInput
+              style={styles.input}
+              value={props.name}
+              onChangeText={(text) => props.setRoomName(props.id, text)}
+            />
+          ):(
+            <Text style={styles.cardTitle}>{props.name}</Text>
+          )
+        }
       </View>
     </Pressable>
   );
