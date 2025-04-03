@@ -1,8 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Text, View, StyleSheet, ScrollView } from 'react-native';
+import { Text, View, StyleSheet, ScrollView, Pressable } from 'react-native';
 import Light from '@/components/ui/Lights';
 import { database } from '@/firebaseConfig';
-import { ref, get, update } from 'firebase/database';
+import { ref, get, update, set } from 'firebase/database';
 import { ThemeContext } from '@/hooks/ThemeProvider';
 import Menu from '@/components/ui/Menu';
 import Fan from '@/components/ui/Fan';
@@ -20,13 +20,43 @@ function Room({navigation , route}) {
     const [ deviceId, setDeviceId ] = useState();
     const [ fans, setFans ] = useState(null);
     const [ outlets, setOutlets ] = useState(null);
+    const [ edit, setEdit ] = useState(false);
+    const [ lc, setLc ] = useState({});
+    const [ fc, setFc ] = useState({});
+    const [ oc, setOc ] = useState({});
     
     const { user } = useAuth(); 
+
+    const setChanges = () => {
+        setEdit(false);
+        if(lc) {
+            for(const [key, value] of Object.entries(lc))
+                changeName('lights', id, value, key, 'light');
+        }
+        if(fc) {
+            for(const [key, value] of Object.entries(fc))
+                changeName('fans', id, value, key, 'fan');
+        }
+        if(oc) {
+            for(const [key, value] of Object.entries(oc))
+                changeName('outlets', id, value, key, 'outlet');
+        }
+    };
+    
+    const changeName = async (type, id, name, key, id2) => {
+        try {
+            set(ref(database, `${deviceId}/rooms/room${id}/${type}/${id2}${key}/name`), name);
+        }catch(error) {
+            console.log("Error :", error.message);
+        }
+    }
+
     useEffect(() => {
         if(user) {
             setDeviceId(user.photoURL);
         }
     }, [user]);
+
     async function getData() {
         try {
             let data = await get(ref(database, `/${deviceId}/rooms/room${id}`));
@@ -38,7 +68,6 @@ function Room({navigation , route}) {
 
     useEffect(() => {
         getData();
-        console.log("Device ID:", deviceId);
     }, [deviceId]);
 
     useEffect(() => {
@@ -55,7 +84,7 @@ function Room({navigation , route}) {
                     arr.push(data.lights['light' + i]);
                 }
                 setLights(arr);
-                console.log(lights);
+                // console.log(lights);
             }
             if(data.fans) {
                 let length = Object.values(data.fans).length;
@@ -64,7 +93,7 @@ function Room({navigation , route}) {
                     a.push(data.fans['fan' + i]);
                 }
                 setFans(a);
-                console.log(fans);
+                // console.log(fans);
             }
             if(data.outlets) {
                 let length = Object.values(data.outlets).length;
@@ -119,6 +148,18 @@ function Room({navigation , route}) {
             )
         )
     }
+
+    useEffect(() => {
+        console.log("Lights:", lc);
+    }, [lc]);
+
+    useEffect(() => {
+        console.log("Fans:", fc);
+    }, [fc]);
+
+    useEffect(() => {
+        console.log("Outlets:", oc);
+    }, [oc]);
 
     useEffect(() => {
         async function updateData(){
@@ -206,25 +247,29 @@ function Room({navigation , route}) {
         <View style={styles.container}>
             <Menu back={true} navigation={navigation} />
             <ScrollView contentContainerStyle = {styles.componentBox}>
-                <View>
-                    <Text style={styles.compText}>Lights</Text>
-                    <View style = {{flexDirection: 'row', flexWrap: 'wrap'}}>
-                        {lights && lights.map((light, id) => <Light key={id} theme={theme} name={light.name} light={light.state} toggleLight={toggleLight}/>)}
+                <Pressable
+                    onPress = { () => setChanges() }
+                >
+                    <View>
+                        <Text style={styles.compText}>Lights</Text>
+                        <View style = {{flexDirection: 'row', flexWrap: 'wrap'}}>
+                            {lights && lights.map((light, id) => <Light key={id} theme={theme} name={light.name} light={light.state} toggleLight={toggleLight} id={id} setChanges={setLc} edit={edit} setEdit={setEdit}/>)}
 
-                    </View> 
-                </View>
-                <View style = {styles.componentBox}>
-                    <Text style={styles.compText}>Fans</Text>
-                    <View style = {{flexDirection: 'row', flexWrap: 'wrap'}}>
-                        {fans && fans.map((fan, id) => <Fan key={id} theme={theme} name={fan.name} state={fan.state} toggle={toggleFans} max = {fan.max} speed = {fan.speed} increase={increase} decrease={decrease}/>)}
+                        </View> 
                     </View>
-                </View>
-                <View style = {styles.componentBox}>
-                    <Text style={styles.compText}>Outlets</Text>
-                    <View style = {{flexDirection: 'row', flexWrap: 'wrap'}}>
-                        {outlets && outlets.map((outlet, id) => <Outlet key={id} theme={theme} name={outlet.name} state={outlet.state} toggle={toggleOutlet}/>)}
+                    <View style = {styles.componentBox}>
+                        <Text style={styles.compText}>Fans</Text>
+                        <View style = {{flexDirection: 'row', flexWrap: 'wrap'}}>
+                            {fans && fans.map((fan, id) => <Fan key={id} theme={theme} name={fan.name} state={fan.state} toggle={toggleFans} max = {fan.max} speed = {fan.speed} increase={increase} decrease={decrease} id={id} setChanges={setFc} edit={edit} setEdit={setEdit}/>)}
+                        </View>
                     </View>
-                </View>
+                    <View style = {styles.componentBox}>
+                        <Text style={styles.compText}>Outlets</Text>
+                        <View style = {{flexDirection: 'row', flexWrap: 'wrap'}}>
+                            {outlets && outlets.map((outlet, id) => <Outlet key={id} theme={theme} name={outlet.name} state={outlet.state} toggle={toggleOutlet} id={id} setChanges={setOc} edit={edit} setEdit={setEdit}/>)}
+                        </View>
+                    </View>
+                </Pressable>
             </ScrollView>
         </View>
     )

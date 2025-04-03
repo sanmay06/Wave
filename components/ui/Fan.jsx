@@ -1,22 +1,22 @@
-import React from 'react';
-import { View, Text, StyleSheet, Dimensions, Button, Pressable, TouchableOpacity, Easing } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Dimensions, Button, Pressable, TouchableOpacity, Easing, TextInput } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {MotiView ,  MotiText} from 'moti';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
 const Fan = (props) => {
 
-    const speed = 1 / props.speed;
-    const theme = props.theme;
-    const { height, width } = Dimensions.get("window");
-    const isPortrait = height > width;
-    
-    const screenWidth = isPortrait ? width * 0.35 : width * 0.15;
+  const speed = 1 / props.speed;
+  const theme = props.theme;
+  const { height, width } = Dimensions.get("window");
+  const isPortrait = height > width;
+  const [ name, setName ] = useState(props.name);
+  
+  const screenWidth = isPortrait ? width * 0.35 : width * 0.15;
 
 const styles = StyleSheet.create({
     card: {
       backgroundColor: theme.background,
-      // backgroundColor: 'red',
       borderRadius: screenWidth / 10,
       height: screenWidth,
       width: screenWidth,
@@ -30,6 +30,15 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'space-evenly',
       borderWidth: 1,
+    },
+    input: {
+      fontSize: screenWidth * 0.1,
+      fontWeight: "bold",
+      width: screenWidth * 0.8,
+      color: theme.text,
+      textAlign: "center",
+      borderWidth: 1,
+      borderColor: 'white',
     },
     cardTitle: {
       fontSize: screenWidth * 0.1,
@@ -56,13 +65,29 @@ const styles = StyleSheet.create({
     }
 });
 
+  useEffect(() => {
+    props.setChanges( (prev) => {
+      return { ...prev, [props.id + 1]: name };
+    } )
+  }, [name]);
 
     return (
           <Pressable
             style={styles.card}
             onPress={() => props.toggle(props.name) }
+            onLongPress={() => props.setEdit(true)}
           >
-            <Text style={styles.cardTitle}>{props.name}</Text>
+           {
+              props.edit ? (
+                <TextInput
+                  style={styles.input}
+                  value={name}
+                  onChangeText={(text) => setName(text)}
+                />
+              ):(
+                <Text style={styles.cardTitle}>{name}</Text>
+              )
+            }
             <MotiView
               from={{ rotate: '0deg' }}
               animate={props.state ? { rotate: '999999999deg' } : { rotate: '0deg' }}

@@ -1,11 +1,13 @@
-import React from 'react';
-import { View, Text, StyleSheet, Dimensions, Button, Pressable, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Dimensions, Button, Pressable, TouchableOpacity, TextInput } from 'react-native';
 
 const Light = (props) => {
 
     const theme = props.theme;
     const { height, width } = Dimensions.get("window");
     const isPortrait = height > width;
+    const [ name, setName ] = useState(props.name);
+
     
     const screenWidth = isPortrait ? width * 0.35 : width * 0.15;
     const styles = StyleSheet.create({
@@ -30,10 +32,18 @@ const Light = (props) => {
           shadowRadius: props.light ? 15 : 5,
           shadowOffset: { width: 0, height: 0 },
           elevation: props.light ? 10 : 5, 
-
+        },
+        input: {
+          fontSize: screenWidth * 0.1,
+          fontWeight: "bold",
+          width: screenWidth * 0.8,
+          color: theme.text,
+          textAlign: "center",
+          borderWidth: 1,
+          borderColor: 'white',
         },
         cardTitle: {
-          fontSize: 18,
+          fontSize: screenWidth * 0.1,
           marginBottom: 10,
           fontWeight: "bold",
           color: theme.text,
@@ -59,12 +69,29 @@ const Light = (props) => {
         }
       });
 
+      useEffect(() => {
+        props.setChanges( (prev) => {
+          return { ...prev, [props.id + 1]: name };
+        } )
+      }, [name]);
+
     return (
           <Pressable
             style={styles.card}
             onPress={() => props.toggleLight(props.name) }
+            onLongPress={() => props.setEdit(true)}
           >
-            <Text style={styles.cardTitle}>{props.name}</Text>
+             {
+              props.edit ? (
+                <TextInput
+                  style={styles.input}
+                  value={name}
+                  onChangeText={(text) => setName(text)}
+                />
+              ):(
+                <Text style={styles.cardTitle}>{name}</Text>
+              )
+            }
             <Pressable
               style={styles.button}
               // value={props.light}
