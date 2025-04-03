@@ -55,6 +55,7 @@ function Room({navigation , route}) {
                     arr.push(data.lights['light' + i]);
                 }
                 setLights(arr);
+                console.log(lights);
             }
             if(data.fans) {
                 let length = Object.values(data.fans).length;
@@ -63,6 +64,7 @@ function Room({navigation , route}) {
                     a.push(data.fans['fan' + i]);
                 }
                 setFans(a);
+                console.log(fans);
             }
             if(data.outlets) {
                 let length = Object.values(data.outlets).length;
@@ -71,6 +73,7 @@ function Room({navigation , route}) {
                     a.push(data.outlets['outlet' + i]);
                 }
                 setOutlets(a);
+                console.log(outlets);
             }
             // console.log('fans:', a);            
             // console.log(arr);

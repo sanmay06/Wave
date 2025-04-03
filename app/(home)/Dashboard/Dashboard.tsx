@@ -1,14 +1,10 @@
 import React, { useState, useEffect, useContext } from "react";
 import { View, Text, Switch, Alert, Button, TextInput, ScrollView, StyleSheet, Linking, Dimensions, Pressable } from "react-native";
-import { getDatabase, ref, onValue, set, query, orderByKey, limitToLast, push, get, update } from "firebase/database";
+import { ref, onValue, set, query, orderByKey, limitToLast, push, get } from "firebase/database";
 import { database } from "../../../firebaseConfig";
-import { auth } from "../../../firebaseConfig";
 import { ThemeContext } from "@/hooks/ThemeProvider";
 import Menu  from "@/components/ui/Menu";
 import { StackNavigationProp } from "@react-navigation/stack";
-import Light from "@/components/ui/Lights";
-import Fan from "@/components/ui/Fan";
-import Outlet from "@/components/ui/Outlets";
 import useAuth from "@/hooks/Auth";
 
 type RootStackParamList = {
@@ -17,23 +13,18 @@ type RootStackParamList = {
   Settings: undefined;
   'room/[id]': { id: string };
 };
-// Define the navigation prop type for Dashboard
 type DashboardScreenNavigationProp = StackNavigationProp<RootStackParamList, "Dashboard">;
 
-// Define the props for Dashboard
 type DashboardProps = {
   navigation: DashboardScreenNavigationProp;
 };
 
 
 const getData = async (path: string, setData: any) => {
-  const snapshot = await get(ref(database, path)); // Root reference
+  const snapshot = await get(ref(database, path)); 
 
   if (snapshot.exists()) {
-    // console.log("Database Structure:", JSON.stringify(snapshot.val(), null, 2));
     let obj = snapshot.val();
-    // console.log("VALUES:", obj.values());
-    // setData(Object.values(snapshot.val()));
     setData(obj);
   } else {
     console.log("No data available");
@@ -112,6 +103,7 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
   });
 
   const [light3, setLight3] = useState<boolean>(false);
+  const [edit, setEdit] = useState<boolean>(false);
   const [temperature, setTemperature] = useState<string>("");
   const [pitemp, setPitemp] = useState<string>("");
   const [humidity, setHumidity] = useState<string>("");
@@ -122,9 +114,11 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
   const [data, setData] = useState<any>("");
   const [ deviceId, setDeviceId ] = useState<string>();
   const { user }: { user: any | null } = useAuth();
+  const [ chnages, setChanges ] = useState<any>({});
 
   const updateRoomName = (roomId: string, newName: string) => {
-    set(ref(database,`${deviceId}/rooms/room${roomId + 1}/name`), newName)
+    setEdit(false);
+    set(ref(database,`${deviceId}/rooms/room${roomId}/name`), newName)
     .then(() =>{ 
       console.log(`Room ${roomId} name updated to ${newName}`)
       getData(`/${deviceId}/rooms`, setRooms);
@@ -134,6 +128,7 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
       console.error("Error updating room name:", error);
       Alert.alert("Error", "Failed to update room name.");
     });
+    setRooms((prevRooms: any) => ({ ...prevRooms, [`room${roomId}`]: { ...prevRooms[`room${roomId}`], name: newName } }));
   };
   useEffect(() => {
       if(user && user.photoURL) {
@@ -142,7 +137,6 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
       console.log("Device ID:", deviceId);
   }, [user]);
 
-  // Fetch data from Firebase Realtime Database
   useEffect(() => {
     const lightOnRef = ref(database, "schedule/light_schedule_on");
     const lightOffRef = ref(database, "schedule/light_schedule_off");
@@ -165,25 +159,22 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
       });
     };
 
-
     getData(`/${deviceId}/rooms`, setRooms);
     setRooms(Object.values(rooms));
-    getData(`/${deviceId}`, setData);
-    // console.log(data);
+    getData('/', setData);
+    console.log('data:',data);
     getLatestValue(`/${deviceId}/pitemp`, setPitemp);
     getLatestValue(`/${deviceId}/temp`, setTemperature);
     getLatestValue(`/${deviceId}/humidity`, setHumidity);
     getLatestValue(`/${deviceId}/btry`, setBattery);
 
-    // Fetch scheduled ON/OFF times
     onValue(lightOnRef, (snapshot) => snapshot.exists() && setScheduledOnTime(snapshot.val()));
     onValue(lightOffRef, (snapshot) => snapshot.exists() && setScheduledOffTime(snapshot.val()));
 
   }, [deviceId]);
 
-  // Function to push 0 or 1 to Firebase for controlling lights
   const toggleLight = (light: string, state: boolean) => {
-    const lightState: number = state ? 1 : 0; // Convert boolean to 0/1
+    const lightState: number = state ? 1 : 0;
 
     push(ref(database, `${light}`), lightState)
       .then(() => console.log(`Light ${light} updated to ${lightState}`))
@@ -192,6 +183,91 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
         Alert.alert("Error", "Failed to update light state.");
       });
   };
+
+  const createRooms = async() => {
+    try {
+      await set(ref(database, `${deviceId}/rooms`), {
+        room1 : {
+          lights : {
+            light1 : {
+              name: 'Light 1',
+              state: true
+            },
+            light2 : {
+              name: 'Light 2',
+              state: false
+            }
+          },
+          fans: {
+            fan1: {
+              name: 'Fan 1',
+              state: true,
+              max: 6,
+              speed: 5
+            },
+            fan2: {
+              name: 'Fan 2',
+              state: true,
+              max: 5,
+              speed: 5
+            }
+          },
+          outlets: {
+            outlet1: {
+              name: 'outlet 1',
+              state: true
+            },
+            outlet2: {
+              name: 'outlet 2',
+              state: false
+            }
+          },
+          name: 'Bedroom'
+       },
+       room2: {
+        
+        lights : {
+          light1 : {
+            name: 'Light 1',
+            state: true
+          },
+          light2 : {
+            name: 'Light 2',
+            state: false
+          }
+        },
+        fans: {
+          fan1: {
+            name: 'Fan 1',
+            state: true,
+            max: 6,
+            speed: 5
+          },
+          fan2: {
+            name: 'Fan 2',
+            state: true,
+            max: 5,
+            speed: 5
+          }
+        },
+        outlets: {
+          outlet1: {
+            name: 'outlet 1',
+            state: true
+          },
+          outlet2: {
+            name: 'outlet 2',
+            state: false
+          }
+        },
+        name: 'kitchen'
+       }
+      }
+    )
+    }catch(error) {
+      console.log('error: ',error);
+    } 
+  }
 
   // Function to update the scheduled times in Firebase
   const saveSchedule = () => {
@@ -215,84 +291,78 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
     } else {
       Alert.alert("Error", "Please provide both ON and OFF times.");
     }
-  };
+  }
 
   const DisplayRooms = () => {
-    console.log(rooms);
+    // console.log(rooms);
     if(rooms) {
-      // console.log(rooms);
+      console.log(rooms);
       return Object.values(rooms).map((room: any, index: number) => {
         return (
-          <Rooms theme = {theme} name = {room.name} nav = {navigation} id = {index} key = {index} setRoomName = {updateRoomName} />
-          
+          <Rooms theme = {theme} name = {room.name} nav = {navigation} id = {index} key = {index} edit = {edit} setEdit = {setEdit} changes = {chnages} setChanges = {setChanges} />
         );
       });
    }
   }
 
+  const updateRooms = () => {
+    console.log('chnages:',chnages);
+    for(const [key, value] of Object.entries(chnages)) {
+      updateRoomName(key as string, value as string);
+    }
+  }
+
   return (
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
+    <ScrollView 
+      contentContainerStyle={styles.scrollContainer}
+    >
       <Menu navigation={navigation}/>
+      {/* <Pressable
+        style = {{backgroundColor: 'white'}}
+        onPress={createRooms}
+      ><Text style = {{color: 'black'}}>Click Me </Text></Pressable> */}
       <View style={styles.container}>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Temperature</Text>
-          <Text style={styles.cardValue}>{temperature}°C</Text>
-          <Text style={styles.cardTitle}>Humidity</Text>
-          <Text style={styles.cardValue}>{humidity}%</Text>
-          <Text style={styles.cardTitle}>Battery</Text>
-          <Text style={styles.cardValue}>{battery}%</Text>
-          <Text style={styles.cardTitle}>Pi Temperature</Text>
-          <Text style={styles.cardValue}>{pitemp}</Text>
-        </View>
-        <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
-          {DisplayRooms()}
-        </View>
+        <Pressable onPress={() => updateRooms()}>
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Temperature</Text>
+            <Text style={styles.cardValue}>{temperature}°C</Text>
+            <Text style={styles.cardTitle}>Humidity</Text>
+            <Text style={styles.cardValue}>{humidity}%</Text>
+            <Text style={styles.cardTitle}>Battery</Text>
+            <Text style={styles.cardValue}>{battery}%</Text>
+            <Text style={styles.cardTitle}>Pi Temperature</Text>
+            <Text style={styles.cardValue}>{pitemp}</Text>
+          </View>
+          <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+            {DisplayRooms()}
+          </View>
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Light 3</Text>
-          <Switch
-            value={light3}
-            onValueChange={(value: boolean) => {
-              setLight3(value);
-              toggleLight("light3", value);
-            }}
-          />
-          <Text style={styles.cardTitle}>Scheduled ON Time</Text>
-          <TextInput
-            style={styles.input}
-            value={scheduledOnTime}
-            onChangeText={setScheduledOnTime}
-            placeholder="HH:MM"
-          />
-          <Text style={styles.cardTitle}>Scheduled OFF Time</Text>
-          <TextInput
-            style={styles.input}
-            value={scheduledOffTime}
-            onChangeText={setScheduledOffTime}
-            placeholder="HH:MM"
-          />
-          <Button title="Save Schedule" onPress={saveSchedule} />
-        </View>
-
-        {/* Scheduled Times 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Scheduled ON Time</Text>
-          <TextInput
-            style={styles.input}
-            value={scheduledOnTime}
-            onChangeText={setScheduledOnTime}
-            placeholder="HH:MM"
-          />
-          <Text style={styles.cardTitle}>Scheduled OFF Time</Text>
-          <TextInput
-            style={styles.input}
-            value={scheduledOffTime}
-            onChangeText={setScheduledOffTime}
-            placeholder="HH:MM"
-          />
-          <Button title="Save Schedule" onPress={saveSchedule} />
-        </View>*/}
-
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Light 3</Text>
+            <Switch
+              value={light3}
+              onValueChange={(value: boolean) => {
+                setLight3(value);
+                toggleLight("light3", value);
+              }}
+            />
+            <Text style={styles.cardTitle}>Scheduled ON Time</Text>
+            <TextInput
+              style={styles.input}
+              value={scheduledOnTime}
+              onChangeText={setScheduledOnTime}
+              placeholder="HH:MM"
+            />
+            <Text style={styles.cardTitle}>Scheduled OFF Time</Text>
+            <TextInput
+              style={styles.input}
+              value={scheduledOffTime}
+              onChangeText={setScheduledOffTime}
+              placeholder="HH:MM"
+            />
+            <Button title="Save Schedule" onPress={saveSchedule} />
+          </View>
+        </Pressable>
       </View>
     </ScrollView>
   );
@@ -302,13 +372,20 @@ export default Dashboard;
 
 const Rooms = (props: any) => {
 
-  const [edit, setEdit] = useState<boolean>(false);
+  const [ name, setName ] = useState<string>(props.name);
   const theme = props.theme;
   const { width, height } = Dimensions.get("window");
   const isPortrait = height > width;
-  const cardSize = isPortrait ? width * 0.3 : width * 0.15; // Adjust size based on orientation
+  const cardSize = isPortrait ? width * 0.3 : width * 0.15;
   const navigation = props.nav;
 
+  useEffect(() => {
+    props.setChanges( (prev: any) => {
+      return { ...prev, [props.id + 1]: name };
+    });
+    console.log('changes:',props.changes);
+  }, [name]);
+  
   const styles = StyleSheet.create({
     card: {
       backgroundColor: theme.background,
@@ -338,30 +415,26 @@ const Rooms = (props: any) => {
       width: cardSize * 0.8,
       color: theme.text,
       textAlign: "center",
+      borderWidth: 1,
+      borderColor: 'white',
     },
   });
 
-  useEffect(() => {
-    if(edit) {
-      console.log("Edit is true");
-    }
-  }, [edit]);
-
   return (
     <Pressable 
-      onPress={() => !edit ? navigation.navigate("room/[id]", { id: props.id + 1 }) : null}
-      onLongPress={() => setEdit(true)}
+      onPress={() => !props.edit ? navigation.navigate("room/[id]", { id: props.id + 1 }) : null}
+      onLongPress={() => props.setEdit(true)}
     >
       <View style={styles.card}>
         {
-          edit ? (
+          props.edit ? (
             <TextInput
               style={styles.input}
-              value={props.name}
-              onChangeText={(text) => props.setRoomName(props.id, text)}
+              value={name}
+              onChangeText={(text) => setName(text)}
             />
           ):(
-            <Text style={styles.cardTitle}>{props.name}</Text>
+            <Text style={styles.cardTitle}>{name}</Text>
           )
         }
       </View>
