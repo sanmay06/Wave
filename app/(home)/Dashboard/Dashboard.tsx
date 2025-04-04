@@ -112,7 +112,7 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
   const [scheduledOffTime, setScheduledOffTime] = useState<string>("");
   const [rooms, setRooms] = useState<any>("");
   const [data, setData] = useState<any>("");
-  const [ deviceId, setDeviceId ] = useState<string>();
+  const [ deviceId, setDeviceId ] = useState<string>('');
   const { user }: { user: any | null } = useAuth();
   const [ chnages, setChanges ] = useState<any>({});
 
@@ -130,7 +130,9 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
     });
     setRooms((prevRooms: any) => ({ ...prevRooms, [`room${roomId}`]: { ...prevRooms[`room${roomId}`], name: newName } }));
   };
+
   useEffect(() => {
+    console.log(user)
       if(user && user.photoURL) {
           setDeviceId(user.photoURL as string);
       }
@@ -138,39 +140,40 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
   }, [user]);
 
   useEffect(() => {
-    const lightOnRef = ref(database, "schedule/light_schedule_on");
-    const lightOffRef = ref(database, "schedule/light_schedule_off");
+    if(deviceId != '') {
+      const lightOnRef = ref(database, "schedule/light_schedule_on");
+      const lightOffRef = ref(database, "schedule/light_schedule_off");
 
 
-    const getLatestValue = (refPath: string, setState: Function) => {
-      const refQuery = query(ref(database, refPath), orderByKey(), limitToLast(1));
-      onValue(refQuery, (snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          const latestKey = Object.keys(data)[0]; 
-          const latestValue = data[latestKey];
-          if (typeof latestValue === 'object') {
-            const valueKey = Object.keys(latestValue)[0];
-            setState(String(latestValue[valueKey]));
-          } else {
-            setState(String(latestValue));
+      const getLatestValue = (refPath: string, setState: Function) => {
+        const refQuery = query(ref(database, refPath), orderByKey(), limitToLast(1));
+        onValue(refQuery, (snapshot) => {
+          if (snapshot.exists()) {
+            const data = snapshot.val();
+            const latestKey = Object.keys(data)[0]; 
+            const latestValue = data[latestKey];
+            if (typeof latestValue === 'object') {
+              const valueKey = Object.keys(latestValue)[0];
+              setState(String(latestValue[valueKey]));
+            } else {
+              setState(String(latestValue));
+            }
           }
-        }
-      });
-    };
+        });
+      };
 
-    getData(`/${deviceId}/rooms`, setRooms);
-    setRooms(Object.values(rooms));
-    getData('/', setData);
-    console.log('data:',data);
-    getLatestValue(`/${deviceId}/pitemp`, setPitemp);
-    getLatestValue(`/${deviceId}/temp`, setTemperature);
-    getLatestValue(`/${deviceId}/humidity`, setHumidity);
-    getLatestValue(`/${deviceId}/btry`, setBattery);
+      getData(`/${deviceId}/rooms`, setRooms);
+      setRooms(Object.values(rooms));
+      getData('/', setData);
+      console.log('data:',data);
+      getLatestValue(`/${deviceId}/pitemp`, setPitemp);
+      getLatestValue(`/${deviceId}/temp`, setTemperature);
+      getLatestValue(`/${deviceId}/humidity`, setHumidity);
+      getLatestValue(`/${deviceId}/btry`, setBattery);
 
-    onValue(lightOnRef, (snapshot) => snapshot.exists() && setScheduledOnTime(snapshot.val()));
-    onValue(lightOffRef, (snapshot) => snapshot.exists() && setScheduledOffTime(snapshot.val()));
-
+      onValue(lightOnRef, (snapshot) => snapshot.exists() && setScheduledOnTime(snapshot.val()));
+      onValue(lightOffRef, (snapshot) => snapshot.exists() && setScheduledOffTime(snapshot.val()));
+    }
   }, [deviceId]);
 
   const toggleLight = (light: string, state: boolean) => {
@@ -183,91 +186,6 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
         Alert.alert("Error", "Failed to update light state.");
       });
   };
-
-  const createRooms = async() => {
-    try {
-      await set(ref(database, `${deviceId}/rooms`), {
-        room1 : {
-          lights : {
-            light1 : {
-              name: 'Light 1',
-              state: true
-            },
-            light2 : {
-              name: 'Light 2',
-              state: false
-            }
-          },
-          fans: {
-            fan1: {
-              name: 'Fan 1',
-              state: true,
-              max: 6,
-              speed: 5
-            },
-            fan2: {
-              name: 'Fan 2',
-              state: true,
-              max: 5,
-              speed: 5
-            }
-          },
-          outlets: {
-            outlet1: {
-              name: 'outlet 1',
-              state: true
-            },
-            outlet2: {
-              name: 'outlet 2',
-              state: false
-            }
-          },
-          name: 'Bedroom'
-       },
-       room2: {
-        
-        lights : {
-          light1 : {
-            name: 'Light 1',
-            state: true
-          },
-          light2 : {
-            name: 'Light 2',
-            state: false
-          }
-        },
-        fans: {
-          fan1: {
-            name: 'Fan 1',
-            state: true,
-            max: 6,
-            speed: 5
-          },
-          fan2: {
-            name: 'Fan 2',
-            state: true,
-            max: 5,
-            speed: 5
-          }
-        },
-        outlets: {
-          outlet1: {
-            name: 'outlet 1',
-            state: true
-          },
-          outlet2: {
-            name: 'outlet 2',
-            state: false
-          }
-        },
-        name: 'kitchen'
-       }
-      }
-    )
-    }catch(error) {
-      console.log('error: ',error);
-    } 
-  }
 
   // Function to update the scheduled times in Firebase
   const saveSchedule = () => {

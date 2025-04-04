@@ -38,20 +38,19 @@ const useAuth = () => {
     const snapshot = await get(refe);
     if(snapshot.exists() && snapshot.val().profile.email === "") {
       try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        console.log("User registered:", userCredential.user);
-
+        // console.log("User registered:", userCredential.user);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+        const user = userCredential.user;
+        setUser(user);
         await update(ref(database, `/${deviceID}/profile`), {
           email: email,
           uname: username,
-          phone_Number: phoneNumber,
+          phone_number: phoneNumber,
           address: address,
           device_id: deviceID,
         });
-
-        updateUser(username, phoneNumber, deviceID);
+        updateUser(username, deviceID, user)
         // uploadImage(uri, deviceID);
-
         return "success";
 
       } catch (error) {
@@ -81,7 +80,8 @@ const useAuth = () => {
     }
   };
 
-  const updateUser = async (name, device_id) => {
+  const updateUser = async (name, device_id, user) => {
+    console.log(user);
     if(user) {
       updateProfile(user, {
         displayName: name,
@@ -91,7 +91,7 @@ const useAuth = () => {
       }).catch((error) => {
         console.error("Error updating user:", error);
       });
-    }
+    }else console.log("no User")
   };  
 
   return { user, loading, error, login, logout, logged , register, googleRegister, updateUser };

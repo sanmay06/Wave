@@ -3,6 +3,7 @@ import { Text, StyleSheet, View, TextInput, Pressable, Dimensions, TouchableOpac
 import { ThemeContext } from '@/hooks/ThemeProvider';
 import { auth } from '@/firebaseConfig';
 import useAuth from '@/hooks/Auth';
+import ForgotPasswordModal from '@/components/ui/ForgotPass';
 
 function Login({navigation}) {
 
@@ -21,6 +22,7 @@ function Login({navigation}) {
     const [ password, setpass ] = useState('');
     const [ msg, setmsg ] = useState("");
     const [passvis, setpassvis] = useState(true);
+    const [ forgotPass, setForgotPass ] = useState(false);
 
     const styles = StyleSheet.create({
         mainContainer: {
@@ -114,6 +116,14 @@ function Login({navigation}) {
             >
                 <Text style = {styles.buttonText}>Submit</Text>
             </TouchableOpacity>
+            <ForgotPasswordModal
+                visible={forgotPass}
+                onClose={() => setForgotPass(false)}
+            />
+            <Text 
+                style = {styles.buttonText}
+                onPress={() => setForgotPass(true)}
+            >Forgot Password?</Text>
             <View style = {{alignItems:"center"}}>
                 <View style= {styles.hr}></View>
                 <Text style = {styles.login}>new user? </Text><Pressable onPress={() => navigation.navigate('register')} style={styles.link}><Text style = {styles.login}>Register here</Text></Pressable>

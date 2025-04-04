@@ -139,11 +139,16 @@ function Profile({navigation}) {
         async function getData() {
             const snap = await get(ref(database, `${deviceId}/profile`))
             console.log(snap.val());
-            setName(snap.val().uname);
-            setPhone(snap.val().phone_number);
-            setEmail(snap.val().email);
-            setDeviceId(snap.val().device_id);
-            setAddress(snap.val().address);
+            if(snap.val()) {
+                if(snap.val().uname)
+                    setName(snap.val().uname);
+                if(snap.val().phone_number)
+                    setPhone(snap.val().phone_number);
+                if(snap.val().email)
+                    setEmail(snap.val().email);
+                if(snap.val().address)
+                setAddress(snap.val().address);
+            }
         }
         
         if(deviceId)

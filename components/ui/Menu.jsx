@@ -45,7 +45,7 @@ const Menu = (props) => {
 
     return (
         <View style={styles.container} >
-            <View style = {{ flexDirection:'row' }}>
+            <View style = {{ flexDirection:'row', justifyContent: 'space-between', verticalAlign: 'center', alignItems: 'center'}}>
                 {props.back && 
                     <TouchableOpacity 
                         onPress={() => navigation.goBack()}

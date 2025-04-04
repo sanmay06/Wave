@@ -6,10 +6,10 @@ import { ThemeContext } from "@/hooks/ThemeProvider";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import useAuth from "@/hooks/Auth";
 import { ScrollView } from "react-native-gesture-handler";
-import * as ImagePicker from "react-native-image-picker";
+import ForgotPasswordModal from "@/components/ui/ForgotPass";
 
 function Register({ navigation }) {
-    const { loggged, googleRegister, register, updateUser, uploadImage } = useAuth();
+    const { googleRegister, register } = useAuth();
     const { theme } = useContext(ThemeContext);
     const { width } = Dimensions.get('window');
 
@@ -23,8 +23,7 @@ function Register({ navigation }) {
     const [name, setName] = useState('');
     const [photo, setPhoto] = useState('');
     const [deviceId, setDeviceId] = useState('');
-    const [imageUri, setImageUri] = useState(null);
-    const [uploading, setUploading] = useState(false);
+    const [forgotPass, setForgotPass] = useState(false);
 
     const styles = StyleSheet.create({
         mainContainer: {
@@ -205,7 +204,7 @@ function Register({ navigation }) {
                 <TouchableOpacity
                     style={styles.button}
                     onPress={() => {
-                        register(email, password, name, deviceId, phone, photo,"" ,address).then((res) => {
+                        register(email, password, name, deviceId, phone, photo, address).then((res) => {
                             if (res === "success") {
                                 navigation.navigate('login');
                             }else 
