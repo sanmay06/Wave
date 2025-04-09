@@ -1,0 +1,48 @@
+import * as Notifications from 'expo-notifications';
+import * as Device from 'expo-device';
+
+export const registerForPushNotifications = async () => {
+    if (!Device.isDevice) {
+      alert('Must use physical device for Push Notifications');
+      return;
+    }
+  
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+  
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+  
+    if (finalStatus !== 'granted') {
+      alert('Permission not granted for notifications');
+      return;
+    }
+  
+    const tokenData = await Notifications.getExpoPushTokenAsync({
+      projectId: 'your-project-id', // 🔥 Replace this!
+    });
+  
+    console.log('Expo Push Token:', tokenData.data);
+  };
+
+export async function showTemp(device, temp) {
+    await Notifications.scheduleNotificationAsync({
+        content: {
+            title: '🌡Temperature Alert',
+            body: `The temperature of ${device} is ${temp}°C`,
+        },
+        trigger: null,
+    });
+}
+
+export async function showBattery(device, battery) {
+    await Notifications.scheduleNotificationAsync({
+        content: {
+            title: '🔋Battery Alert',
+            body: `The battery of ${device} is ${battery}% \n Please charge your device`,
+        },
+        trigger: null,
+    });
+}

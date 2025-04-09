@@ -101,13 +101,13 @@ const Outlet = (props) => {
                 <Text style={styles.cardTitle}>{name}</Text>
               )
             }
-            <Pressable
+            <View
               style={styles.button}
               // value={props.light}
             >
               {props.state ? <MaterialCommunityIcons name="power-plug-outline" size={24} color={color} />:<MaterialCommunityIcons name="power-plug-off-outline" size={24} color={color} />}
               {/* <Text style={styles.cardValue}> {props.light ? "ON" : "OFF"} </Text> */}
-            </Pressable>
+            </View>
           </Pressable>
     )
 }

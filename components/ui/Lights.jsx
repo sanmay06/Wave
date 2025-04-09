@@ -92,12 +92,12 @@ const Light = (props) => {
                 <Text style={styles.cardTitle}>{name}</Text>
               )
             }
-            <Pressable
+            <View
               style={styles.button}
               // value={props.light}
             >
               {/* <Text style={styles.cardValue}> {props.light ? "ON" : "OFF"} </Text> */}
-            </Pressable>
+            </View>
           </Pressable>
     )
 }
