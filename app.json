@@ -22,7 +22,11 @@
         "backgroundColor": "#ffffff"
       },
       "permissions": [
-        "RECEIVE_BOOT_COMPLETED"
+        "RECEIVE_BOOT_COMPLETED",
+        "RECORD_AUDIO",
+        "VIBRATE",
+        "WAKE_LOCK",
+        "SYSTEM_ALERT_WINDOW"
       ],
       "package": "com.anonymous.wave"
     },
