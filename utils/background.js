@@ -2,7 +2,7 @@ import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
 import { showTemp, showBattery } from './notifications';
 import { database } from '@/firebaseConfig';
-import { ref, onValue, query, orderByKey, limitToLast } from 'firebase/database';
+import { ref, onValue, query, orderByKey, limitToLast, get } from 'firebase/database';
 import * as Device from 'expo-device';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
@@ -10,22 +10,22 @@ import { Platform } from 'react-native';
 const TASK_NAME = 'background-fetch';
 
 async function fecthData(deviceId) {
-    const getLatest = (refPath) => {
+    const getLatest = async (refPath) => {
         const refQuery = query(ref(database, refPath), orderByKey(), limitToLast(1));
-        onValue(refQuery, (snapshot) => {
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                const latestKey = Object.keys(data)[0]; 
-                const latestValue = data[latestKey];
-                if (typeof latestValue === 'object') {
-                  const valueKey = Object.keys(latestValue)[0];
-                  return String(latestValue[valueKey]);
-                } else {
-                  return String(latestValue);
-                }
-            }
-        })
-    }
+        const snapshot = await get(refQuery);
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const latestKey = Object.keys(data)[0];
+          const latestValue = data[latestKey];
+          if (typeof latestValue === 'object') {
+            const valueKey = Object.keys(latestValue)[0];
+            return String(latestValue[valueKey]);
+          } else {
+            return String(latestValue);
+          }
+        }
+        return null;
+    };
 
     return {
         pitemp: getLatest(`/${deviceId}/pitemp`),
@@ -43,6 +43,7 @@ TaskManager.defineTask(TASK_NAME, async () => {
         const maxTemp = 20;
         const maxBattery = 90;
         const { pitemp, temp, btry } = await fecthData(deviceId);
+        await showTemp('test', temp);
         if (temp > maxTemp) {
             await showTemp('Room Temperature', temp);
         }
