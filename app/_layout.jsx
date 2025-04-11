@@ -16,10 +16,10 @@ export default function RootLayout() {
 
   const { user } = useAuth();
 
-  useEffect(() => {
-    registerForPushNotifications();
-    registerBackgroundFetchAsync();
-  }, []);
+  // useEffect(() => {
+  //   registerForPushNotifications();
+  //   registerBackgroundFetchAsync();
+  // }, []);
   
   useEffect(() => {
     if (user?.photoURL) {
@@ -30,13 +30,13 @@ export default function RootLayout() {
   return (
       <ThemeProvider>
         {/* <NavigationContainer> */}
-          <SafeAreaView>
+          {/* <SafeAreaView> */}
             <Stack.Navigator initialRouteName='login' screenOptions={{headerShown: false}}>
               <Stack.Screen name = "login" component={Login} />
               <Stack.Screen name = "home" component={Home} />
               <Stack.Screen name = "register" component={Register} />
             </Stack.Navigator>
-          </SafeAreaView>
+          {/* </SafeAreaView> */}
         {/* </NavigationContainer> */}
         </ThemeProvider>
   );

@@ -10,9 +10,12 @@ function Login({navigation}) {
     const { error, login, logged } = useAuth();
 
     useEffect(() => {
-        if(logged)
-            navigation.navigate("home");
-      console.log(logged);
+        const checkLogin = async () => {
+            const logg = await(logged());
+            if(logg)
+                navigation.navigate("home");
+        }
+        checkLogin();
     }, [logged])
 
     const { theme } = useContext(ThemeContext);

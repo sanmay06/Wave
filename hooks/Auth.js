@@ -4,13 +4,13 @@ import { auth } from "@/firebaseConfig";
 import { uploadBytes, getDownloadURL, getMetadata } from "firebase/storage";
 import { ref, get, set, push, update } from "firebase/database";
 import { database } from "@/firebaseConfig";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { storage } from "@/firebaseConfig";
 
 const useAuth = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const[ logged, setlogged] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -20,14 +20,14 @@ const useAuth = () => {
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    setlogged(auth.currentUser !== null);
-  }, [user])
-
   const login = async (email, password) => {
     setError(null);
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      await AsyncStorage.setItem('deviceId', auth.currentUser.photoURL);
+      await AsyncStorage.setItem('email', email);
+      await AsyncStorage.setItem('password', password);
+      console.log("Logged in successfully");
     } catch (err) {
       setError(err.message);
     }
@@ -74,11 +74,35 @@ const useAuth = () => {
   const logout = async (navigation) => {
     try {
       await signOut(auth);
+      await AsyncStorage.removeItem('deviceId');
+      await AsyncStorage.removeItem('email');
+      await AsyncStorage.removeItem('password');
       navigation.navigate('login')
     } catch (err) {
       console.error("Logout error:", err);
     }
   };
+
+  const logged = async () => {
+    if(user) {
+      return true;
+    }
+    try {
+      const email = await AsyncStorage.getItem('email');
+      const password = await AsyncStorage.getItem('password');
+      if(email && password) {
+        await signInWithEmailAndPassword(auth, email, password);
+        const deviceId = await AsyncStorage.setItem('deviceId', auth.currentUser.photoURL);
+        console.log("Logged in successfully");
+        return true;
+      }
+    }
+    catch (err) {
+      console.error("Login error:", err);
+      return false;
+    }
+    return false;
+  }
 
   const updateUser = async (name, device_id, user) => {
     console.log(user);
