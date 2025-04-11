@@ -21,7 +21,7 @@ export const registerForPushNotifications = async () => {
     }
   
     const tokenData = await Notifications.getExpoPushTokenAsync({
-      projectId: 'your-project-id', // 🔥 Replace this!
+      projectId: '3bde5411-a19c-49e0-ae46-605164d31e8d', // 🔥 Replace this!
     });
   
     console.log('Expo Push Token:', tokenData.data);
