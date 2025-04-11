@@ -1,7 +1,8 @@
 {
   "expo": {
     "name": "wave",
-    "slug": "wave",
+    "slug": "testing-background",
+    "owner": "slackowl",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -9,14 +10,20 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.wave",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff",
-        "permissions": ["RECEIVE_BOOT_COMPLETED"]
+        "backgroundColor": "#ffffff"
       },
+      "permissions": [
+        "RECEIVE_BOOT_COMPLETED"
+      ],
       "package": "com.anonymous.wave"
     },
     "web": {
@@ -44,7 +51,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "487491b5-8171-4ed9-987b-9fc01388de83"
+        "projectId": "3bde5411-a19c-49e0-ae46-605164d31e8d"
       }
     }
   }
