@@ -28,9 +28,9 @@ async function fecthData(deviceId) {
     };
 
     return {
-        pitemp: getLatest(`/${deviceId}/pitemp`),
-        temp: getLatest(`/${deviceId}/temp`),
-        btry: getLatest(`/${deviceId}/btry`),
+        pitemp: await getLatest(`/${deviceId}/pitemp`),
+        temp: await getLatest(`/${deviceId}/temp`),
+        btry: await getLatest(`/${deviceId}/btry`),
     }
 
 }
