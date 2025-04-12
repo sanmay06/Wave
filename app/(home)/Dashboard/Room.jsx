@@ -232,6 +232,7 @@ function Room({navigation , route}) {
             justifyContent: 'center',
         },
         componentBox: {
+            width: '100%',
             flexDirection: 'column',
             flexWrap: 'wrap',
         },
@@ -239,7 +240,7 @@ function Room({navigation , route}) {
             width: '100% ',
             fontSize: 20,
             color: theme.text,
-            backgroundColor: theme.primary
+            backgroundColor: 'grey'
         }
     })
 

@@ -57,9 +57,9 @@ const Outlet = (props) => {
           color: theme.primary,
         },
         button: { 
-          height: 40,
-          width: 40,
-          borderRadius: 20,
+          height: screenWidth * 0.2,
+          width: screenWidth * 0.2,
+          borderRadius: screenWidth * 0.1,
           backgroundColor: props.state ? "#FFD700" : theme.border,
           borderWidth: 3,
           borderColor: props.state ? "#FFD700" : theme.text,
@@ -105,7 +105,7 @@ const Outlet = (props) => {
               style={styles.button}
               // value={props.light}
             >
-              {props.state ? <MaterialCommunityIcons name="power-plug-outline" size={24} color={color} />:<MaterialCommunityIcons name="power-plug-off-outline" size={24} color={color} />}
+              {props.state ? <MaterialCommunityIcons name="power-plug-outline" size={screenWidth * 0.15} color={color} />:<MaterialCommunityIcons name="power-plug-off-outline" size={24} color={color} />}
               {/* <Text style={styles.cardValue}> {props.light ? "ON" : "OFF"} </Text> */}
             </View>
           </Pressable>

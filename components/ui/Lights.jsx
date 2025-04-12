@@ -52,9 +52,9 @@ const Light = (props) => {
           color: theme.primary,
         },
         button: { 
-          height: 40,
-          width: 40,
-          borderRadius: 20,
+          height: screenWidth * 0.2,
+          width: screenWidth * 0.2,
+          borderRadius: screenWidth * 0.1,
           backgroundColor: props.light ? "#FFD700" : theme.border,
           borderWidth: 3,
           borderColor: props.light ? "#FFD700" : theme.text,
