@@ -20,10 +20,6 @@ type DashboardProps = {
   navigation: DashboardScreenNavigationProp;
 };
 
-useEffect(() => {
-  showTemp('test', 1000);
-}, []);
-
 const getData = async (path: string, setData: any) => {
   const snapshot = await get(ref(database, path)); 
 

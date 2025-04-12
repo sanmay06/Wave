@@ -43,7 +43,6 @@ TaskManager.defineTask(TASK_NAME, async () => {
         const maxTemp = 20;
         const maxBattery = 90;
         const { pitemp, temp, btry } = await fecthData(deviceId);
-        await showTemp('test', temp);
         if (temp > maxTemp) {
             await showTemp('Room Temperature', temp);
         }
