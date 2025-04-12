@@ -6,6 +6,7 @@ import { ThemeContext } from "@/hooks/ThemeProvider";
 import Menu  from "@/components/ui/Menu";
 import { StackNavigationProp } from "@react-navigation/stack";
 import useAuth from "@/hooks/Auth";
+import { showTemp } from "@/utils/notifications";
 
 type RootStackParamList = {
   Dashboard: undefined;
@@ -19,6 +20,9 @@ type DashboardProps = {
   navigation: DashboardScreenNavigationProp;
 };
 
+useEffect(() => {
+  showTemp('test', 1000);
+}, []);
 
 const getData = async (path: string, setData: any) => {
   const snapshot = await get(ref(database, path)); 
