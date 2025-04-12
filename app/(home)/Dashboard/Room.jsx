@@ -226,54 +226,97 @@ function Room({navigation , route}) {
 
     const styles = StyleSheet.create({
         container: {
-            minHeight: '100%',
-            flex:1,
+            flex: 1,
             backgroundColor: theme.background,
-            justifyContent: 'center',
         },
         componentBox: {
+            flexGrow: 1,
+            padding: 10,
             width: '100%',
-            flexDirection: 'column',
-            flexWrap: 'wrap',
         },
         compText: {
-            width: '100% ',
             fontSize: 20,
             color: theme.text,
-            backgroundColor: 'grey'
+            backgroundColor: 'grey',
+            paddingVertical: 6,
+            paddingHorizontal: 12,
+            marginBottom: 8,
+            borderRadius: 4,
         }
-    })
+    });
+
 
     return (
         <View style={styles.container}>
             <Menu back={true} navigation={navigation} />
-            <ScrollView contentContainerStyle = {styles.componentBox}>
-                <Pressable
-                    onPress = { () => setChanges() }
-                >
-                    <View>
-                        <Text style={styles.compText}>Lights</Text>
-                        <View style = {{flexDirection: 'row', flexWrap: 'wrap'}}>
-                            {lights && lights.map((light, id) => <Light key={id} theme={theme} name={light.name} light={light.state} toggleLight={toggleLight} id={id} setChanges={setLc} edit={edit} setEdit={setEdit}/>)}
-
-                        </View> 
-                    </View>
-                    <View style = {styles.componentBox}>
-                        <Text style={styles.compText}>Fans</Text>
-                        <View style = {{flexDirection: 'row', flexWrap: 'wrap'}}>
-                            {fans && fans.map((fan, id) => <Fan key={id} theme={theme} name={fan.name} state={fan.state} toggle={toggleFans} max = {fan.max} speed = {fan.speed} increase={increase} decrease={decrease} id={id} setChanges={setFc} edit={edit} setEdit={setEdit}/>)}
-                        </View>
-                    </View>
-                    <View style = {styles.componentBox}>
-                        <Text style={styles.compText}>Outlets</Text>
-                        <View style = {{flexDirection: 'row', flexWrap: 'wrap'}}>
-                            {outlets && outlets.map((outlet, id) => <Outlet key={id} theme={theme} name={outlet.name} state={outlet.state} toggle={toggleOutlet} id={id} setChanges={setOc} edit={edit} setEdit={setEdit}/>)}
-                        </View>
-                    </View>
+            <ScrollView contentContainerStyle={styles.componentBox}>
+                <Pressable onPress={() => setChanges()} style={{ marginBottom: 16 }}>
+                    <Text style={{ color: theme.text, textAlign: 'center' }}>Save Changes</Text>
                 </Pressable>
+
+                <View style={{ marginBottom: 24 }}>
+                    <Text style={styles.compText}>Lights</Text>
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                        {lights && lights.map((light, id) => (
+                            <Light
+                                key={id}
+                                theme={theme}
+                                name={light.name}
+                                light={light.state}
+                                toggleLight={toggleLight}
+                                id={id}
+                                setChanges={setLc}
+                                edit={edit}
+                                setEdit={setEdit}
+                            />
+                        ))}
+                    </View>
+                </View>
+
+                <View style={{ marginBottom: 24 }}>
+                    <Text style={styles.compText}>Fans</Text>
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                        {fans && fans.map((fan, id) => (
+                            <Fan
+                                key={id}
+                                theme={theme}
+                                name={fan.name}
+                                state={fan.state}
+                                toggle={toggleFans}
+                                max={fan.max}
+                                speed={fan.speed}
+                                increase={increase}
+                                decrease={decrease}
+                                id={id}
+                                setChanges={setFc}
+                                edit={edit}
+                                setEdit={setEdit}
+                            />
+                        ))}
+                    </View>
+                </View>
+
+                <View>
+                    <Text style={styles.compText}>Outlets</Text>
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                        {outlets && outlets.map((outlet, id) => (
+                            <Outlet
+                                key={id}
+                                theme={theme}
+                                name={outlet.name}
+                                state={outlet.state}
+                                toggle={toggleOutlet}
+                                id={id}
+                                setChanges={setOc}
+                                edit={edit}
+                                setEdit={setEdit}
+                            />
+                        ))}
+                    </View>
+                </View>
             </ScrollView>
         </View>
-    )
-} 
+    );
+}
 
 export default Room;
