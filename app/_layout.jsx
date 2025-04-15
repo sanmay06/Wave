@@ -25,8 +25,8 @@ export default function RootLayout() {
   const { user } = useAuth();
 
   useEffect(() => {
-    // registerForPushNotifications();
-    // registerBackgroundFetchAsync();
+    registerForPushNotifications();
+    registerBackgroundFetchAsync();
   }, []);
   
   useEffect(() => {
