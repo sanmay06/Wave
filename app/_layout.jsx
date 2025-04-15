@@ -8,16 +8,15 @@ import Home from './(home)/_layout';
 import Register from './register';
 import useAuth from '@/hooks/Auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { SafeAreaView } from 'react-native';
 import * as Notifications from 'expo-notifications';
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
-});  
+// Notifications.setNotificationHandler({
+//   handleNotification: async () => ({
+//     shouldShowAlert: true,
+//     shouldPlaySound: true,
+//     shouldSetBadge: false,
+//   }),
+// });  
 
 const Stack = createNativeStackNavigator();
 
@@ -26,8 +25,8 @@ export default function RootLayout() {
   const { user } = useAuth();
 
   useEffect(() => {
-    registerForPushNotifications();
-    registerBackgroundFetchAsync();
+    // registerForPushNotifications();
+    // registerBackgroundFetchAsync();
   }, []);
   
   useEffect(() => {
@@ -39,13 +38,11 @@ export default function RootLayout() {
   return (
       <ThemeProvider>
         {/* <NavigationContainer> */}
-          {/* <SafeAreaView> */}
             <Stack.Navigator initialRouteName='login' screenOptions={{headerShown: false}}>
               <Stack.Screen name = "login" component={Login} />
               <Stack.Screen name = "home" component={Home} />
               <Stack.Screen name = "register" component={Register} />
             </Stack.Navigator>
-          {/* </SafeAreaView> */}
         {/* </NavigationContainer> */}
         </ThemeProvider>
   );

@@ -27,21 +27,21 @@ export const registerForPushNotifications = async () => {
     console.log('Expo Push Token:', tokenData.data);
   };
 
-export async function showTemp(device, temp) {
+export async function showTemp(device, temp, time) {
     await Notifications.scheduleNotificationAsync({
         content: {
             title: '🌡Temperature Alert',
-            body: `The temperature of ${device} is ${temp}°C`,
+            body: `The temperature of ${device} is ${temp}°C\n Received at ${time}`,
         },
         trigger: null,
     });
 }
 
-export async function showBattery(device, battery) {
+export async function showBattery(device, battery, time) {
     await Notifications.scheduleNotificationAsync({
         content: {
             title: '🔋Battery Alert',
-            body: `The battery of ${device} is ${battery}% \n Please charge your device`,
+            body: `The battery of ${device} is ${battery}% \n Please charge your device\n Received at ${time}`,
         },
         trigger: null,
     });

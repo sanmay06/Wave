@@ -6,7 +6,6 @@ import { ThemeContext } from "@/hooks/ThemeProvider";
 import Menu  from "@/components/ui/Menu";
 import { StackNavigationProp } from "@react-navigation/stack";
 import useAuth from "@/hooks/Auth";
-import { showTemp } from "@/utils/notifications";
 
 type RootStackParamList = {
   Dashboard: undefined;
@@ -26,6 +25,7 @@ const getData = async (path: string, setData: any) => {
   if (snapshot.exists()) {
     let obj = snapshot.val();
     setData(obj);
+    // console.log("Data fetched:", obj);
   } else {
     console.log("No data available");
   }
@@ -102,7 +102,7 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
     },
   });
 
-  const [light3, setLight3] = useState<boolean>(false);
+  const [light, setLight] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
   const [temperature, setTemperature] = useState<string>("");
   const [pitemp, setPitemp] = useState<string>("");
@@ -117,10 +117,12 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
   const [ chnages, setChanges ] = useState<any>({});
 
   const updateRoomName = (roomId: string, newName: string) => {
+    if(edit === false)
+      return;
     setEdit(false);
     set(ref(database,`${deviceId}/rooms/room${roomId}/name`), newName)
     .then(() =>{ 
-      console.log(`Room ${roomId} name updated to ${newName}`)
+      // console.log(`Room ${roomId} name updated to ${newName}`)
       getData(`/${deviceId}/rooms`, setRooms);
       setRooms(Object.values(rooms));
   })
@@ -132,17 +134,17 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
   };
 
   useEffect(() => {
-    console.log(user)
+    // console.log(user)
       if(user && user.photoURL) {
           setDeviceId(user.photoURL as string);
       }
-      console.log("Device ID:", deviceId);
+      // console.log("Device ID:", deviceId);
   }, [user]);
 
   useEffect(() => {
     if(deviceId != '') {
-      const lightOnRef = ref(database, "schedule/light_schedule_on");
-      const lightOffRef = ref(database, "schedule/light_schedule_off");
+      const lightOnRef = ref(database, `${deviceId}/schedule/light_schedule_on`);
+      const lightOffRef = ref(database, `${deviceId}/schedule/light_schedule_off`);
 
 
       const getLatestValue = (refPath: string, setState: Function) => {
@@ -165,7 +167,8 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
       getData(`/${deviceId}/rooms`, setRooms);
       setRooms(Object.values(rooms));
       getData('/', setData);
-      console.log('data:',data);
+      getData(`/${deviceId}/masterSwitch`, setLight);
+      // console.log('data:',data);
       getLatestValue(`/${deviceId}/pitemp`, setPitemp);
       getLatestValue(`/${deviceId}/temp`, setTemperature);
       getLatestValue(`/${deviceId}/humidity`, setHumidity);
@@ -177,10 +180,10 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
   }, [deviceId]);
 
   const toggleLight = (light: string, state: boolean) => {
-    const lightState: number = state ? 1 : 0;
+    const State: number = state ? 1 : 0;
 
-    push(ref(database, `${light}`), lightState)
-      .then(() => console.log(`Light ${light} updated to ${lightState}`))
+    set(ref(database, `${deviceId}/masterSwitch`), State)
+      // .then(() => console.log(`Switch updated to ${State}`))
       .catch((error) => {
         console.error("Error updating light state:", error);
         Alert.alert("Error", "Failed to update light state.");
@@ -189,19 +192,20 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
 
   // Function to update the scheduled times in Firebase
   const saveSchedule = () => {
-    const lightOnRef = ref(database, "schedule/light_schedule_on");
-    const lightOffRef = ref(database, "schedule/light_schedule_off");
+    const lightOnRef = ref(database, `${deviceId}/schedule/light_schedule_on`);
+    const lightOffRef = ref(database, `${deviceId}/schedule/light_schedule_off`);
+
 
     if (scheduledOnTime && scheduledOffTime) {
       set(lightOnRef, scheduledOnTime)
-        .then(() => console.log("Scheduled ON time saved:", scheduledOnTime))
+        // .then(() => console.log("Scheduled ON time saved:", scheduledOnTime))
         .catch((error) => {
           console.error("Error saving scheduled ON time:", error);
           Alert.alert("Error", "Failed to save scheduled ON time.");
         });
 
       set(lightOffRef, scheduledOffTime)
-        .then(() => console.log("Scheduled OFF time saved:", scheduledOffTime))
+        // .then(() => console.log("Scheduled OFF time saved:", scheduledOffTime))
         .catch((error) => {
           console.error("Error saving scheduled OFF time:", error);
           Alert.alert("Error", "Failed to save scheduled OFF time.");
@@ -214,7 +218,7 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
   const DisplayRooms = () => {
     // console.log(rooms);
     if(rooms) {
-      console.log(rooms);
+      // console.log(rooms);
       return Object.values(rooms).map((room: any, index: number) => {
         return (
           <Rooms theme = {theme} name = {room.name} nav = {navigation} id = {index} key = {index} edit = {edit} setEdit = {setEdit} changes = {chnages} setChanges = {setChanges} />
@@ -224,7 +228,7 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
   }
 
   const updateRooms = () => {
-    console.log('chnages:',chnages);
+    // console.log('chnages:',chnages);
     for(const [key, value] of Object.entries(chnages)) {
       updateRoomName(key as string, value as string);
     }
@@ -255,15 +259,18 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
             {DisplayRooms()}
           </View>
 
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Light 3</Text>
+          <View style={{backgroundColor: theme.background, borderRadius: 25, padding: 20, marginBottom: 15, shadowColor: "#000", shadowOpacity: 0.1, shadowOffset: { width: 0, height: 2 }, elevation: 5, borderColor: theme.border, borderWidth: 1,flexDirection: 'row', justifyContent: 'space-between', width: '80%', }}>
+            <Text style={styles.cardTitle}>Master Switch</Text>
             <Switch
-              value={light3}
+              value={light}
               onValueChange={(value: boolean) => {
-                setLight3(value);
+                setLight(value);
                 toggleLight("light3", value);
               }}
             />
+          </View>
+            
+          <View style={styles.card}>
             <Text style={styles.cardTitle}>Scheduled ON Time</Text>
             <TextInput
               style={styles.input}
@@ -301,7 +308,7 @@ const Rooms = (props: any) => {
     props.setChanges( (prev: any) => {
       return { ...prev, [props.id + 1]: name };
     });
-    console.log('changes:',props.changes);
+    // console.log('changes:',props.changes);
   }, [name]);
   
   const styles = StyleSheet.create({

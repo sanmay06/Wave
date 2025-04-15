@@ -40,19 +40,20 @@ TaskManager.defineTask(TASK_NAME, async () => {
         const deviceId = await AsyncStorage.getItem('deviceId');
         // const { user } = useAuth();
         // const deviceId = user.photoURL;
+        const time = new Date().getTime();
         const maxTemp = 20;
         const maxBattery = 90;
         const { pitemp, temp, btry } = await fecthData(deviceId);
         if (temp > maxTemp) {
-            await showTemp('Room Temperature', temp);
+            await showTemp('Room Temperature', temp, time);
         }
     
         if (btry < maxBattery) {
-            await showBattery('Rasbery PI Battery', btry);
+            await showBattery('Rasbery PI Battery', btry, time);
         }
     
         if(pitemp > 90) {
-            await showTemp('PI Temperature', pitemp);
+            await showTemp('PI Temperature', pitemp, time);
         }
         return BackgroundFetch.BackgroundFetchResult.NewData;
     } catch (error) {
