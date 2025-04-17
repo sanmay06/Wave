@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, Button, Pressable, TouchableOpacity, TextInput } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import {MotiView ,  MotiText} from 'moti';
+import {MotiView,  MotiText} from 'moti';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { Easing } from 'react-native-reanimated';
 
@@ -75,54 +75,54 @@ const styles = StyleSheet.create({
     return (
           <Pressable
             style={styles.card}
-            onPress={() => props.toggle(props.name) }
+            onPress={() => { if (!props.edit) props.toggle(props.name) }}
             onLongPress={() => props.setEdit(true)}
           >
-           {
-              props.edit ? (
-                <TextInput
-                  style={styles.input}
-                  value={name}
-                  onChangeText={(text) => setName(text)}
-                />
-              ):(
-                <Text style={styles.cardTitle}>{name}</Text>
-              )
-            }
-            <MotiView
-              from={{ rotate: '0deg' }}
-              animate={props.state ? { rotate: '999999999deg' } : { rotate: '0deg' }}
-              transition={{ 
-                type: 'timing' , 
-                duration: speed * 10000000000, 
-                loop: true, 
-                easing: Easing.linear
-              }}
-              style={{ transform: [{ rotate: '0deg' }] }} 
-            >
-              <MaterialCommunityIcons name="fan" size={screenWidth * 0.25} color={theme.text} />
-            </MotiView>
-            <View style={styles.speedCont}>
-              <Pressable
-                onPress={ () => {
-                  if(props.speed > 0)
-                    props.decrease(props.name)
+            {
+                props.edit ? (
+                  <TextInput
+                    style={styles.input}
+                    value={name}
+                    onChangeText={(text) => {setName(text); props.change(true)}}
+                  />
+                ):(
+                  <Text style={styles.cardTitle}>{name}</Text>
+                )
+              }
+              <MotiView
+                from={{ rotate: '0deg' }}
+                animate={props.state ? { rotate: '999999999deg' } : { rotate: '0deg' }}
+                transition={{ 
+                  type: 'timing' , 
+                  duration: speed * 10000000000, 
+                  loop: true, 
+                  easing: Easing.linear
                 }}
+                style={{ transform: [{ rotate: '0deg' }] }} 
               >
-                <AntDesign name="minussquareo" size={screenWidth * 0.2} color={theme.text} />
-              </Pressable>
-              <View style={styles.speedBox}>
-                <Text style={styles.cardValue}>{ props.speed }</Text>
+                <MaterialCommunityIcons name="fan" size={screenWidth * 0.25} color={theme.text} />
+              </MotiView>
+              <View style={styles.speedCont}>
+                <Pressable
+                  onPress={ () => {
+                    if(props.speed > 0)
+                      props.decrease(props.name)
+                  }}
+                >
+                  <AntDesign name="minussquareo" size={screenWidth * 0.2} color={theme.text} />
+                </Pressable>
+                <View style={styles.speedBox}>
+                  <Text style={styles.cardValue}>{ props.speed }</Text>
+                </View>
+                <Pressable
+                  onPress={ () => {
+                    if(props.speed < props.max)
+                      props.increase(props.name)
+                  }}
+                >
+                  <AntDesign name="plussquareo" size={screenWidth * 0.2} color={theme.text} />
+                </Pressable>
               </View>
-              <Pressable
-                onPress={ () => {
-                  if(props.speed < props.max)
-                    props.increase(props.name)
-                }}
-              >
-                <AntDesign name="plussquareo" size={screenWidth * 0.2} color={theme.text} />
-              </Pressable>
-            </View>
           </Pressable>
     )
 }

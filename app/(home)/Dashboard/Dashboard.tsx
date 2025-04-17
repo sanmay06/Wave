@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { View, Text, Switch, Alert, Button, TextInput, ScrollView, StyleSheet, Linking, Dimensions, Pressable } from "react-native";
 import { ref, onValue, set, query, orderByKey, limitToLast, push, get } from "firebase/database";
+import { MotiView } from "moti";
 import { database } from "../../../firebaseConfig";
 import { ThemeContext } from "@/hooks/ThemeProvider";
 import Menu  from "@/components/ui/Menu";
@@ -100,6 +101,15 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
       fontSize: 16,
       fontWeight: "bold",
     },
+    compText: {
+      fontSize: 20,
+      color: theme.text,
+      backgroundColor: 'grey',
+      paddingVertical: 6,
+      paddingHorizontal: 12,
+      marginBottom: 8,
+      borderRadius: 4,
+  }
   });
 
   const [light, setLight] = useState<boolean>(false);
@@ -245,7 +255,11 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
       ><Text style = {{color: 'black'}}>Click Me </Text></Pressable> */}
       <View style={styles.container}>
         <Pressable onPress={() => updateRooms()}>
-          <View style={styles.card}>
+          <MotiView 
+            style={styles.card}
+            from={{ opacity: 0, translateY: -50 }}
+            animate={{ opacity: 1, translateY: 0 }}
+          >
             <Text style={styles.cardTitle}>Temperature</Text>
             <Text style={styles.cardValue}>{temperature}°C</Text>
             <Text style={styles.cardTitle}>Humidity</Text>
@@ -254,10 +268,14 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
             <Text style={styles.cardValue}>{battery}%</Text>
             <Text style={styles.cardTitle}>Pi Temperature</Text>
             <Text style={styles.cardValue}>{pitemp}</Text>
+          </MotiView>
+          <View style={{ marginBottom: 24 }}>
+            <Text style={styles.compText}>Rooms</Text>
+            <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+              {DisplayRooms()}
+            </View>
           </View>
-          <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
-            {DisplayRooms()}
-          </View>
+         
 
           <View style={{backgroundColor: theme.background, borderRadius: 25, padding: 20, marginBottom: 15, shadowColor: "#000", shadowOpacity: 0.1, shadowOffset: { width: 0, height: 2 }, elevation: 5, borderColor: theme.border, borderWidth: 1,flexDirection: 'row', justifyContent: 'space-between', width: '80%', }}>
             <Text style={styles.cardTitle}>Master Switch</Text>
@@ -350,7 +368,11 @@ const Rooms = (props: any) => {
       onPress={() => !props.edit ? navigation.navigate("room/[id]", { id: props.id + 1 }) : null}
       onLongPress={() => props.setEdit(true)}
     >
-      <View style={styles.card}>
+      <MotiView 
+        style={styles.card}
+        from={{ opacity: 0, translateY: -50 }}
+        animate={{ opacity: 1, translateY: 0 }}
+      >
         {
           props.edit ? (
             <TextInput
@@ -362,7 +384,7 @@ const Rooms = (props: any) => {
             <Text style={styles.cardTitle}>{name}</Text>
           )
         }
-      </View>
+      </MotiView>
     </Pressable>
   );
 };

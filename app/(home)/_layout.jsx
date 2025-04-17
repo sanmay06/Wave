@@ -3,7 +3,7 @@ import Settings from './Settings';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Profile from './Profile';
 import Dash from './Dashboard/_layout';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useContext } from 'react';
 import { ThemeContext } from '@/hooks/ThemeProvider';
 
@@ -14,7 +14,7 @@ function Home() {
     const { theme } = useContext(ThemeContext);
 
     return (
-        <SafeAreaProvider>
+        <SafeAreaView style={{ flex: 1}}>
             <Tab.Navigator
                 screenOptions={({ route }) => ({
                     tabBarIcon: ({ focused, color, size}) => {
@@ -42,7 +42,7 @@ function Home() {
                 <Tab.Screen name= "analysis" component={Settings} />
                 <Tab.Screen name = "profile" component={Profile} />
             </Tab.Navigator>
-        </SafeAreaProvider>
+        </SafeAreaView>
         
     );
 };

@@ -78,7 +78,7 @@ const Light = (props) => {
     return (
           <Pressable
             style={styles.card}
-            onPress={() => props.toggleLight(props.name) }
+            onPress={() => { if(!props.edit) props.toggleLight(props.name) }}
             onLongPress={() => props.setEdit(true)}
           >
              {
@@ -86,7 +86,7 @@ const Light = (props) => {
                 <TextInput
                   style={styles.input}
                   value={name}
-                  onChangeText={(text) => setName(text)}
+                  onChangeText={(text) => {setName(text); props.change(true)}}
                 />
               ):(
                 <Text style={styles.cardTitle}>{name}</Text>

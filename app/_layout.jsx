@@ -9,6 +9,7 @@ import Register from './register';
 import useAuth from '@/hooks/Auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Notifications.setNotificationHandler({
 //   handleNotification: async () => ({
@@ -37,12 +38,14 @@ export default function RootLayout() {
 
   return (
       <ThemeProvider>
+        <SafeAreaProvider>
         {/* <NavigationContainer> */}
             <Stack.Navigator initialRouteName='login' screenOptions={{headerShown: false}}>
               <Stack.Screen name = "login" component={Login} />
               <Stack.Screen name = "home" component={Home} />
               <Stack.Screen name = "register" component={Register} />
             </Stack.Navigator>
+          </SafeAreaProvider>
         {/* </NavigationContainer> */}
         </ThemeProvider>
   );

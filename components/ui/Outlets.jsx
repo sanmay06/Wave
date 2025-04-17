@@ -87,7 +87,7 @@ const Outlet = (props) => {
     return (
           <Pressable
             style={styles.card}
-            onPress={() => props.toggle(props.name) }
+            onPress={() => {if(!props.edit) props.toggle(props.name) }}
             onLongPress={() => props.setEdit(true)}
           >
              {
@@ -95,7 +95,7 @@ const Outlet = (props) => {
                 <TextInput
                   style={styles.input}
                   value={name}
-                  onChangeText={(text) => setName(text)}
+                  onChangeText={(text) => {setName(text); props.change(true)}}
                 />
               ):(
                 <Text style={styles.cardTitle}>{name}</Text>
