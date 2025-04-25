@@ -25,10 +25,10 @@ export default function RootLayout() {
 
   const { user } = useAuth();
 
-  useEffect(() => {
-    registerForPushNotifications();
-    registerBackgroundFetchAsync();
-  }, []);
+  // useEffect(() => {
+  //   registerForPushNotifications();
+  //   registerBackgroundFetchAsync();
+  // }, []);
   
   useEffect(() => {
     if (user?.photoURL) {

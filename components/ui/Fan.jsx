@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
       borderRadius: screenWidth / 10,
       height: screenWidth,
       width: screenWidth,
-      padding: screenWidth * 0.05,
+      padding: 20,
       margin: screenWidth * 0.02,
       shadowColor: "#000",
       shadowOpacity: 0.1,
@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
       borderColor: 'white',
       height: screenWidth * 0.2,
       width: screenWidth * 0.2,
+      borderRadius: screenWidth * 0.05,
       alignItems: 'center',
       justifyContent: 'center',
     }

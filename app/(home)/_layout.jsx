@@ -6,6 +6,7 @@ import Dash from './Dashboard/_layout';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useContext } from 'react';
 import { ThemeContext } from '@/hooks/ThemeProvider';
+import Commune from './community/_layout';
 
 const Tab = createBottomTabNavigator();
 
@@ -26,6 +27,8 @@ function Home() {
                             icon = focused ? 'analytics' : 'analytics-outline';
                         if(route.name === "profile")
                             icon = focused ? 'person-circle' : 'person-circle-outline';
+                        if(route.name === "community")
+                            icon = focused ? 'people' : 'people-outline';
 
                         return <Ionicons name={icon} size={size} color={color} />
                     },
@@ -41,6 +44,7 @@ function Home() {
                 <Tab.Screen name= "dashboard" component={Dash} />
                 <Tab.Screen name= "analysis" component={Settings} />
                 <Tab.Screen name = "profile" component={Profile} />
+                <Tab.Screen name = 'community' component={Commune} />
             </Tab.Navigator>
         </SafeAreaView>
         

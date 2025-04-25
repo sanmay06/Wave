@@ -18,10 +18,10 @@ function Profile({navigation}) {
     const [address, setAddress] = useState('');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
-    const [photo, setPhoto] = useState('');
     const [disabled, setDisabled] = useState(false);
     const [ deviceId, setDeviceId ] = useState();
-    
+    const [ pincode, setPin ] = useState();
+
     const { user, updateUser } = useAuth(); 
     useEffect(() => {
         if(user) {
@@ -94,48 +94,7 @@ function Profile({navigation}) {
         }
     });
 
-    // Removed image selection function
-    /*
-    const pickImage = () => {
-        ImagePicker.launchImageLibrary({ mediaType: "photo" }, (response) => {
-            if (response.didCancel) {
-                Alert.alert("Cancelled", "Image selection was cancelled.");
-            } else if (response.errorMessage) {
-                Alert.alert("Error", response.errorMessage);
-            } else {
-                setImageUri(response.assets[0].uri);
-            }
-        });
-    };
-    */
-
-    // Removed image upload function
-    /*
-    const handleUploadImage = async () => {
-        if (!imageUri) {
-            Alert.alert("No Image", "Please select an image first.");
-            return;
-        }
-
-        setUploading(true);
-        try {
-            const downloadURL = await uploadImage(imageUri, deviceId);
-            setPhoto(downloadURL); // Set the uploaded image URL
-            Alert.alert("Upload Successful", "Image uploaded successfully!");
-        } catch (error) {
-            Alert.alert("Upload Failed", error.message);
-        }
-        setUploading(false);
-    };
-    */
-
     useEffect(() => {
-        // if (user) {
-        //     if (user.displayName) setName(user.displayName);
-        //     if (user.email) setEmail(user.email);
-        //     if (user.phoneNumber) setPhone(user.phoneNumber);
-        //     if (user.photoURL) setPhoto(user.photoURL);
-        // }
         async function getData() {
             const snap = await get(ref(database, `${deviceId}/profile`))
             console.log(snap.val());
@@ -148,6 +107,8 @@ function Profile({navigation}) {
                     setEmail(snap.val().email);
                 if(snap.val().address)
                 setAddress(snap.val().address);
+                if(snap.val().pincode)
+                    setPin(snap.val().pincode);
             }
         }
         
@@ -164,6 +125,7 @@ function Profile({navigation}) {
                 device_id: deviceId,
                 address: address,
                 email: email,
+                pincode: pincode,
             });
 
             console.log("Profile updated successfully");
@@ -226,6 +188,15 @@ function Profile({navigation}) {
                     placeholder="Enter your Address"
                     value={address}
                     onChangeText={(text) => setAddress(text)}
+                />
+            </View>
+            <View>
+                <Text style={styles.text}>Pincode</Text>
+                <TextInput
+                    style={styles.inputText}
+                    placeholder="Enter your Pincode"
+                    value={pincode}
+                    onChangeText={(text) => setPin(text)}
                 />
             </View>
             <TouchableOpacity

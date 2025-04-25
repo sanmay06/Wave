@@ -25,6 +25,7 @@ function Room({navigation , route}) {
     const [ lc, setLc ] = useState({});
     const [ fc, setFc ] = useState({});
     const [ oc, setOc ] = useState({});
+    const [ name, setName ] = useState('');
     const [ changes, setChange ] = useState(false);
     
     const { user } = useAuth();     
@@ -101,6 +102,9 @@ function Room({navigation , route}) {
                 }
                 setOutlets(a);
                 console.log(outlets);
+            }
+            if(data.name) {
+                setName(data.name);
             }
             // console.log('fans:', a);            
             // console.log(arr);
@@ -240,6 +244,12 @@ function Room({navigation , route}) {
             paddingHorizontal: 12,
             marginBottom: 8,
             borderRadius: 4,
+        },
+        title: {
+            fontSize: 24,
+            fontWeight: 'bold',
+            color: theme.text,
+            textAlign: 'center',
         }
     });
 
@@ -251,7 +261,8 @@ function Room({navigation , route}) {
                 {/* {changes && <Pressable onPress={() => { setChanges(); setChange(false)}} style={{ marginBottom: 16 }} >
                     <Text style={{ color: theme.text, textAlign: 'center' }}>Save Changes</Text>
                 </Pressable>} */}
-                <Pressable onPress={() => {edit ? setEdit(false) : setEdit(true); setChange(false)}} style={{ marginBottom: 16 }} >
+                <Pressable onPress={() => edit && (setEdit(false), setChange())} style={{ marginBottom: 16 }} >
+                    <Text style={styles.title}>Room: {name}</Text>
                     <View style={{ marginBottom: 24 }}>
                         <Text style={styles.compText}>Lights</Text>
                         <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>

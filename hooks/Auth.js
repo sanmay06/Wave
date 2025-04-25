@@ -118,7 +118,9 @@ const useAuth = () => {
     }else console.log("no User")
   };  
 
-  return { user, loading, error, login, logout, logged , register, googleRegister, updateUser };
+  const deviceID = user ? user.photoURL : null;
+
+  return { user, loading, error, login, logout, logged , register, googleRegister, updateUser, deviceID };
 };
 
 export default useAuth;

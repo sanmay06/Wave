@@ -1,5 +1,4 @@
 import {createNativeStackNavigator } from '@react-navigation/native-stack';
-import { ThemeProvider } from '@/hooks/ThemeProvider';
 import Dashboard from './Dashboard';
 import Room from './Room';
 
