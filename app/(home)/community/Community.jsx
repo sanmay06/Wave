@@ -128,15 +128,15 @@ const CommMenu = (props) => {
         <View style={styles.container}>
           <Text style={styles.header}>Community Menu</Text>
     
-          <TouchableOpacity style={styles.card}>
+          <TouchableOpacity style={styles.card} onPress={ () => props.nav.navigate("community/[page]", { id: props.community, page: "posts" })}>
             <Text style={styles.menuItem}>Community Posts</Text>
           </TouchableOpacity>
     
-          <TouchableOpacity style={styles.card}>
+          <TouchableOpacity style={styles.card} onPress={ () => props.nav.navigate("community/[page]", { id: props.community, page: "proposals" })}>
             <Text style={styles.menuItem}>Community Proposals</Text>
           </TouchableOpacity>
     
-          <TouchableOpacity style={styles.card}>
+          <TouchableOpacity style={styles.card} onPress={ () => props.nav.navigate("community/[page]", { id: props.community, page: "emergency" })}>
             <Text style={styles.menuItem}>Emergency Pings</Text>
           </TouchableOpacity>
         </View>
