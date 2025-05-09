@@ -71,7 +71,7 @@ const Posts = (props) => {
                     const post = posts[key];
                     return (
                         <TouchableOpacity
-                            onPress={() => navigation.navigate("community/[page]/info", { id: props.id, page: 'posts' })}
+                            onPress={() => navigation.navigate("community/[page]/info", { id: props.id, page: 'posts', postId: key })}
                             style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}
                             key={key}
                         >   
@@ -137,7 +137,7 @@ const Proposals = (props) => {
                     const post = proposals[key];
                     return (
                         <TouchableOpacity
-                            onPress={() => navigation.navigate("community/[page]/info", { id: props.id, page: 'posts' })}
+                            onPress={() => navigation.navigate("community/[page]/info", { id: props.id, page: 'proposals', postId: key })}
                             style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}
                             key={key}
                         >   
@@ -205,7 +205,7 @@ const Emergency = (props) => {
                     const post = posts[key];
                     return (
                         <TouchableOpacity
-                            onPress={() => navigation.navigate("community/[page]/info", { id: props.id, page: 'emergency' })}
+                            onPress={() => navigation.navigate("community/[page]/info", { id: props.id, page: 'emergency', postId: key })}
                             style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}
                             key={key}
                         >   
