@@ -5,6 +5,7 @@ import useAuth from '@/hooks/Auth';
 import { ThemeContext } from '@/hooks/ThemeProvider';
 import { ref, get, set, push, update } from "firebase/database";
 import { database } from '@/firebaseConfig';
+import { useRoute } from '@react-navigation/native';
 // import { storage } from '@/firebaseConfig.js';
 // import { getDownloadURL, ref } from "firebase/storage";
 // import * as ImagePicker from "react-native-image-picker";
@@ -12,6 +13,7 @@ import { database } from '@/firebaseConfig';
 function Profile({navigation}) {
     const { theme } = useContext(ThemeContext);
     const width = Dimensions.get('window').width;
+    const { params } = useRoute();
 
     // console.log("tenent:",user);
     const [phone, setPhone] = useState('');
@@ -22,13 +24,17 @@ function Profile({navigation}) {
     const [ deviceId, setDeviceId ] = useState();
     const [ pincode, setPin ] = useState();
 
-    const { user, updateUser } = useAuth(); 
     useEffect(() => {
-        if(user) {
-            setDeviceId(user.photoURL);
-        }
-        console.log("Device ID:", deviceId,"user",user);
-    }, [user]);
+        setDeviceId(params.deviceID);
+    }, []);
+
+    const { user, updateUser } = useAuth(); 
+    // useEffect(() => {
+    //     if(user) {
+    //         setDeviceId(user.photoURL);
+    //     }
+    //     console.log("Device ID:", deviceId,"user",user);
+    // }, [user]);
 
     const styles = StyleSheet.create({
         mainContainer: {

@@ -54,11 +54,15 @@ function Room({navigation , route}) {
         }
     }
 
+    // useEffect(() => {
+    //     if(user) {
+    //         setDeviceId(user.photoURL);
+    //     }
+    // }, [user]);
+
     useEffect(() => {
-        if(user) {
-            setDeviceId(user.photoURL);
-        }
-    }, [user]);
+        setDeviceId(route.params.deviceID);
+    }, []);
 
     async function getData() {
         try {

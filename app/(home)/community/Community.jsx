@@ -5,21 +5,24 @@ import useAuth from "@/hooks/Auth";
 import { database } from "@/firebaseConfig";
 import { get, ref, set } from "firebase/database";
 import Menu from "@/components/ui/Menu";
+import { useRoute } from "@react-navigation/native";
 
 const Community = ({ navigation }) => {
 
-    const { user } = useAuth();
+    // const { user } = useAuth();
+    const route = useRoute();
 
     const { theme } = useContext(ThemeContext);
-    const [ deviceId, setDeviceId ] = useState("");
+    // const [ deviceId, setDeviceId ] = useState("");
+    const deviceId = route.params.deviceID;
 
     const [ community, setCommunity ] = useState("");
 
-    useEffect(() => {
-        if(user) {
-            setDeviceId(user.photoURL);
-        }
-    }, [user]);
+    // useEffect(() => {
+    //     if(user) {
+    //         setDeviceId(user.photoURL);
+    //     }
+    // }, [user]);
 
     useEffect(() => {
         if(deviceId) {

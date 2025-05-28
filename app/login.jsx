@@ -1,19 +1,22 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Text, StyleSheet, View, TextInput, Pressable, Dimensions, TouchableOpacity } from 'react-native';
 import { ThemeContext } from '@/hooks/ThemeProvider';
-import { auth } from '@/firebaseConfig';
 import useAuth from '@/hooks/Auth';
 import ForgotPasswordModal from '@/components/ui/ForgotPass';
 
 function Login({navigation}) {
 
-    const { error, login, logged } = useAuth();
+    const { error, login, logged, user } = useAuth();
 
     useEffect(() => {
         const checkLogin = async () => {
-            const logg = await(logged());
-            if(logg)
-                navigation.navigate("home");
+            const logg = await logged(navigation);
+            if(logg.check) {
+                // const devId = logg.deviceID;
+                console.log(logg);
+                console.log("Logged in with device ID: ", logg.deviceID);
+                navigation.navigate("home", { deviceID: logg.deviceID });
+            }
         }
         checkLogin();
     }, [logged])

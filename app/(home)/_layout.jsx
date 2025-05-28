@@ -7,12 +7,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useContext } from 'react';
 import { ThemeContext } from '@/hooks/ThemeProvider';
 import Commune from './community/_layout';
+import { useRoute } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 
 function Home() {
 
     const { theme } = useContext(ThemeContext);
+    const { params } = useRoute();
 
     return (
         <SafeAreaView style={{ flex: 1}}>
@@ -41,10 +43,10 @@ function Home() {
                     headerShown: false,
                 })}
             >
-                <Tab.Screen name= "dashboard" component={Dash} />
-                <Tab.Screen name= "analysis" component={Settings} />
-                <Tab.Screen name = "profile" component={Profile} />
-                <Tab.Screen name = 'community' component={Commune} />
+                <Tab.Screen name= "dashboard" component={Dash} initialParams={{deviceID: params.deviceID}}/>
+                <Tab.Screen name= "analysis" component={Settings} initialParams={{deviceID: params.deviceID}}/>
+                <Tab.Screen name = "profile" component={Profile} initialParams={{deviceID: params.deviceID}}/>
+                <Tab.Screen name = 'community' component={Commune} initialParams={{deviceID: params.deviceID}}/>
             </Tab.Navigator>
         </SafeAreaView>
         

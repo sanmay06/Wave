@@ -7,13 +7,15 @@ import { ThemeContext } from '@/hooks/ThemeProvider';
 import Svg, { Path, Circle, Text } from 'react-native-svg';
 import Menu from '@/components/ui/Menu';
 import useAuth from '@/hooks/Auth';
+import { useRoute } from '@react-navigation/native';
+
 const db = database;
 const screenWidth = Dimensions.get('window').width;
 const MAX_VISIBLE_POINTS = 4;
 
 const Settings = ({navigation}) => {
   const { theme } = useContext(ThemeContext);
-  
+  const { params } = useRoute();
   const [temperature, setTemperature] = useState([]);
   const [humidity, setHumidity] = useState([]);
   const [battery, setBattery] = useState([]);
@@ -22,12 +24,16 @@ const Settings = ({navigation}) => {
   const [pitemp, setPitemp] = useState([]);
   const [ deviceId, setDeviceId ] = useState();
     
-  const { user } = useAuth(); 
+  // const { user } = useAuth(); 
+  // useEffect(() => {
+  //     if(user) {
+  //         setDeviceId(user.photoURL);
+  //     }
+  // }, [user]);
+
   useEffect(() => {
-      if(user) {
-          setDeviceId(user.photoURL);
-      }
-  }, [user]);
+    setDeviceId(params.deviceID);
+  }, []);
 
   useEffect(() => {
     const fetchData = (refPath, setData) => {

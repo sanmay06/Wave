@@ -12,6 +12,7 @@ const Create = ({ navigation, route }) => {
     const { theme } = useContext(ThemeContext);
     const { id, page } = route.params; 
     const { width } = Dimensions.get('window');
+    const deviceId = route.params.deviceID;
 
     const styles = StyleSheet.create({
         mainContainer: {
@@ -83,9 +84,9 @@ const Create = ({ navigation, route }) => {
             <Menu navigation={navigation} back={true} />
             <Text style={styles.h1}>Create {page}</Text>
             { 
-                page === 'posts'? <Posts id = {id} navigation={navigation} style={styles}/> :
-                page === 'proposals' ? <Proposals id = {id} navigation={navigation} style={styles}/> :
-                page === 'emergency' ? <Emergency id = {id} navigation={navigation} style={styles}/> : null
+                page === 'posts'? <Posts id = {id} navigation={navigation} style={styles} did = {deviceId}/> :
+                page === 'proposals' ? <Proposals id = {id} navigation={navigation} style={styles} did = {deviceId}/> :
+                page === 'emergency' ? <Emergency id = {id} navigation={navigation} style={styles} did = {deviceId}/> : null
             }
         </View>
     );
@@ -97,13 +98,13 @@ const Posts = (props) => {
     const [title, setTitle] = useState('');
     const [desc, setDesc] = useState('');
     const styles = props.style;
-    const navigation = props.navigation
+    const navigation = props.navigation;
+    const deviceId = props.did;
 
     const createPost = async() => {
         try {
             if(!user) return;
             const postId = Date.now().toString() + user.uid + Math.floor(Math.random() * 1000).toString();
-            const deviceId = user.photoURL;
             const resp = await get(ref(database, `${deviceId}/profile/pincode`));
             const pincode = resp.val();
             console.log("Pincode:", pincode);
@@ -155,12 +156,12 @@ const Proposals = (props) => {
     const navigation = props.navigation
     const [ options, setOptions ] = useState({});
     const [ count, setCount ] = useState(1); 
+    const deviceId = props.did;
 
     const createPost = async() => {
         try {
-            if(!user) return;
+            // if(!user) return;
             const postId = Date.now().toString() + user.uid + Math.floor(Math.random() * 1000).toString();
-            const deviceId = user.photoURL;
             const resp = await get(ref(database, `${deviceId}/profile/pincode`));
             const pincode = resp.val();
             console.log("Pincode:", pincode);
@@ -251,13 +252,13 @@ const Emergency = (props) => {
     const [title, setTitle] = useState('');
     const [desc, setDesc] = useState('');
     const styles = props.style;
-    const navigation = props.navigation
+    const navigation = props.navigation;
+    const deviceId = props.did;
 
     const createPost = async() => {
         try {
             if(!user) return;
             const postId = Date.now().toString() + user.uid + Math.floor(Math.random() * 1000).toString();
-            const deviceId = user.photoURL;
             const resp = await get(ref(database, `${deviceId}/profile/pincode`));
             const pincode = resp.val();
             console.log("Pincode:", pincode);

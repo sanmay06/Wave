@@ -85,23 +85,33 @@ const useAuth = () => {
 
   const logged = async () => {
     if(user) {
-      return true;
+      const deviceID =  await user.photoURL;
+      // navigation.navigate("home", { deviceID: deviceID });
+      // console.log("Logged in with device ID:", deviceID);
+      return { check: true, deviceID: deviceID };
     }
     try {
       const email = await AsyncStorage.getItem('email');
       const password = await AsyncStorage.getItem('password');
       if(email && password) {
         await signInWithEmailAndPassword(auth, email, password);
-        const deviceId = await AsyncStorage.setItem('deviceId', auth.currentUser.photoURL);
-        console.log("Logged in successfully");
-        return true;
+        const deviceID = auth.currentUser?.photoURL;
+
+      if (deviceID) {
+        await AsyncStorage.setItem('deviceId', deviceID);
+      }
+
+      // console.log("Logged in successfully");
+      // console.log("Logged in with device ID:", deviceID);
+      // navigation.navigate("home", { deviceID: deviceID });
+      return { check: true, deviceID: deviceID };
       }
     }
     catch (err) {
       console.error("Login error:", err);
-      return false;
+      return { check: false };
     }
-    return false;
+    return { check:false };
   }
 
   const updateUser = async (name, device_id, user) => {

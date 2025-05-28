@@ -7,6 +7,7 @@ import { ThemeContext } from "@/hooks/ThemeProvider";
 import Menu  from "@/components/ui/Menu";
 import { StackNavigationProp } from "@react-navigation/stack";
 import useAuth from "@/hooks/Auth";
+import { useRoute } from "@react-navigation/native";
 
 type RootStackParamList = {
   Dashboard: undefined;
@@ -32,8 +33,8 @@ const getData = async (path: string, setData: any) => {
   }
 };
 
-const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme } = useContext<any>(ThemeContext); // Correctly calling useContext inside the component
-  
+const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  
+  const { theme } = useContext<any>(ThemeContext); // Correctly calling useContext inside the component
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -123,8 +124,19 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
   const [rooms, setRooms] = useState<any>("");
   const [data, setData] = useState<any>("");
   const [ deviceId, setDeviceId ] = useState<string>('');
-  const { user }: { user: any | null } = useAuth();
+  // const { user }: { user: any | null } = useAuth();
   const [ chnages, setChanges ] = useState<any>({});
+  const route:any = useRoute();
+  console.log('route:',route.params);
+
+  useEffect(() => {
+    if (route?.params?.deviceID) {
+      setDeviceId(route.params.deviceID);
+    } else {
+      // console.log("No device ID provided");
+      Alert.alert("Error", "No device ID provided.");
+    }
+  }, []);
 
   const updateRoomName = (roomId: string, newName: string) => {
     if(edit === false)
@@ -132,7 +144,6 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
     setEdit(false);
     set(ref(database,`${deviceId}/rooms/room${roomId}/name`), newName)
     .then(() =>{ 
-      // console.log(`Room ${roomId} name updated to ${newName}`)
       getData(`/${deviceId}/rooms`, setRooms);
       setRooms(Object.values(rooms));
   })
@@ -143,13 +154,13 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
     setRooms((prevRooms: any) => ({ ...prevRooms, [`room${roomId}`]: { ...prevRooms[`room${roomId}`], name: newName } }));
   };
 
-  useEffect(() => {
-    // console.log(user)
-      if(user && user.photoURL) {
-          setDeviceId(user.photoURL as string);
-      }
-      // console.log("Device ID:", deviceId);
-  }, [user]);
+  // useEffect(() => {
+  //   // console.log(user)
+  //     if(user && user.photoURL) {
+  //         setDeviceId(user.photoURL as string);
+  //     }
+  //     // console.log("Device ID:", deviceId);
+  // }, [user]);
 
   useEffect(() => {
     if(deviceId != '') {
@@ -231,7 +242,7 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {  const { theme
       // console.log(rooms);
       return Object.values(rooms).map((room: any, index: number) => {
         return (
-          <Rooms theme = {theme} name = {room.name} nav = {navigation} id = {index} key = {index} edit = {edit} setEdit = {setEdit} changes = {chnages} setChanges = {setChanges} />
+          <Rooms theme = {theme} deviceID = {deviceId} name = {room.name} nav = {navigation} id = {index} key = {index} edit = {edit} setEdit = {setEdit} changes = {chnages} setChanges = {setChanges} />
         );
       });
    }
@@ -365,7 +376,7 @@ const Rooms = (props: any) => {
 
   return (
     <Pressable 
-      onPress={() => !props.edit ? navigation.navigate("room/[id]", { id: props.id + 1 }) : null}
+      onPress={() => !props.edit ? navigation.navigate("room/[id]", { id: props.id + 1, deviceID: props.deviceID }) : null}
       onLongPress={() => props.setEdit(true)}
     >
       <MotiView 

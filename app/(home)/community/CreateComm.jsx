@@ -5,19 +5,22 @@ import { database } from '@/firebaseConfig';
 import { get, ref, set, child } from 'firebase/database';
 import { ThemeContext } from '@/hooks/ThemeProvider';
 import Menu from '@/components/ui/Menu';
+import { useRoute } from '@react-navigation/native';
 
 function CreateComm({navigation}) {
 
-    const { user } = useAuth();
+    // const { user } = useAuth();
     const { theme } = useContext(ThemeContext);
     const { width } = Dimensions.get('window');
-    const [ deviceId, setDeviceId ] = useState('');
+    // const [ deviceId, setDeviceId ] = useState('');
     const [ pincode, setPincode ] = useState('');
     const [ cummunityId, setCommunityId ] = useState('');
     const [ name, setName ] = useState('');
     const [ type, setType ] = useState('');
     const [ description, setDescription ] = useState('');
     const [ memberCount, setMemberCount ] = useState(1);
+
+    const deviceId = useRoute().params.deviceID;
 
     const styles = StyleSheet.create({
         mainContainer: {
@@ -86,11 +89,11 @@ function CreateComm({navigation}) {
         },
     });
 
-    useEffect(() => {
-        if(user) {
-            setDeviceId(user.photoURL);
-        }
-    }, [user]);
+    // useEffect(() => {
+    //     if(user) {
+    //         setDeviceId(user.photoURL);
+    //     }
+    // }, [user]);
 
     useEffect(() => {
         const getPinCode = async () => {

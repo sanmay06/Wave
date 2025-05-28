@@ -11,7 +11,7 @@ function CommPage({navigation, route}) {
 
     const { theme } = useContext(ThemeContext);
     const { user } = useAuth();
-    const { id, page } = route.params;
+    const { id, page, DeviceID } = route.params;
     console.log("Community ID:", id); // Log the community ID to verify it's being passed correctly
     return (
         <View style = {{width: '100%', height: '100%', backgroundColor: 'white'}}>

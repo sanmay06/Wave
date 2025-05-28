@@ -9,7 +9,7 @@ import { ThemeContext } from '@/hooks/ThemeProvider';
 
 const Info = ({ navigation, route }) => {
 
-    const { id, page, postId } = route.params;
+    const { id, page, postId, deviceID } = route.params;
     console.log('Info', id, page, postId);
 
     const styles = StyleSheet.create({
@@ -82,9 +82,9 @@ const Info = ({ navigation, route }) => {
         <View style={styles.container}>
             <Menu navigation = {navigation} back = {true} />
             {
-                page === 'posts'? <Post id = {id} postId = {postId} styles = {styles}/> :
-                page === 'proposals'? <Proposals id = {id} postId = {postId} styles = {styles}/> :
-                page === 'emergency'? <Emergency id = {id} postId = {postId} styles = {styles}/> : null
+                page === 'posts'? <Post id = {id} postId = {postId} styles = {styles} deviceId = {deviceID}/> :
+                page === 'proposals'? <Proposals id = {id} postId = {postId} styles = {styles} deviceId = {deviceID}/> :
+                page === 'emergency'? <Emergency id = {id} postId = {postId} styles = {styles} deviceId = {deviceID}/> : null
             }
         </View>
     )
@@ -94,19 +94,21 @@ export default Info;
 
 const Post = (props) => {
 
-    const { user } = useAuth();
+    // const { user } = useAuth();
     const styles = props.styles;
 
+    const deviceId = props.deviceId
+
     const [ like, setLike ] = useState(0);
-    const [ deviceId, setDeviceId ] = useState(null);
+    // const [ deviceId, setDeviceId ] = useState(null);
     const [ post, setPost ] = useState(null);
     const [ lcount, setlCount ] = useState(0);
     const [ dcount, setdCount ] = useState(0);
 
-    useEffect(() => {
-        if(user) 
-            setDeviceId(user.photoURL);
-    }, [user]);
+    // useEffect(() => {
+    //     if(user) 
+    //         setDeviceId(user.photoURL);
+    // }, [user]);
 
     useEffect(() => {
         // console.log('Device ID:', deviceId);
@@ -261,16 +263,18 @@ const toggleLike = async (type) => {
 
 const Proposals = (props) => {
     const styles = props.styles;
-    const { user } = useAuth();
+    // const { user } = useAuth();
 
     const [proposal, setProposal] = useState(null);
-    const [deviceId, setDeviceId] = useState(null);
+    // const [deviceId, setDeviceId] = useState(null);
     const [selected, setSelected] = useState(null);
     const [pincode, setPincode] = useState(null);
 
-    useEffect(() => {
-        if (user) setDeviceId(user.photoURL);
-    }, [user]);
+    const deviceId = props.deviceId
+
+    // useEffect(() => {
+    //     if (user) setDeviceId(user.photoURL);
+    // }, [user]);
 
     useEffect(() => {
         const fetchProposal = async () => {
@@ -382,13 +386,15 @@ const Emergency = (props) => {
 
     const styles = props.styles;
     const [ proposal, setProposal ] = useState(null);
-    const [ deviceId, setDeviceId ] = useState(null);   
-    const { user } = useAuth();
+    // const [ deviceId, setDeviceId ] = useState(null);   
+    // const { user } = useAuth();
 
-    useEffect(() => {
-        if(user) 
-            setDeviceId(user.photoURL);
-    }, [user]);
+    const deviceId = props.deviceId
+
+    // useEffect(() => {
+    //     if(user) 
+    //         setDeviceId(user.photoURL);
+    // }, [user]);
 
     useEffect(() => {
         const fetchProposal = async () => {
