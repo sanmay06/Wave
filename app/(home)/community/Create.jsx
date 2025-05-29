@@ -174,7 +174,7 @@ const Proposals = (props) => {
                 votes: {},
             }).then(() => {
                 console.log("Post Created:", postId);
-                navigation.navigate("community/[page]", { id: props.id, page: 'proposals' });
+                navigation.navigate("community/[page]", { id: props.id, page: 'proposals', deviceID: deviceId });
             })
         }catch (error) {
             console.log(error);
@@ -271,7 +271,7 @@ const Emergency = (props) => {
                 dislikes: 0,
             }).then(() => {
                 console.log("Post Created:", postId);
-                navigation.navigate("community/[page]", { id: props.id, page: 'emergency' });
+                navigation.navigate("community/[page]", { id: props.id, page: 'emergency', deviceID: deviceId });
 
             })
         }catch (error) {

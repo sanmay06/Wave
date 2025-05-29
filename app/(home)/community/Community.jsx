@@ -13,16 +13,9 @@ const Community = ({ navigation }) => {
     const route = useRoute();
 
     const { theme } = useContext(ThemeContext);
-    // const [ deviceId, setDeviceId ] = useState("");
     const deviceId = route.params.deviceID;
 
     const [ community, setCommunity ] = useState("");
-
-    // useEffect(() => {
-    //     if(user) {
-    //         setDeviceId(user.photoURL);
-    //     }
-    // }, [user]);
 
     useEffect(() => {
         if(deviceId) {
@@ -84,7 +77,7 @@ const Community = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <Menu navigation={navigation} />
-            {community ? <CommMenu nav={navigation} community = {community} theme = {theme}/>: <Communities navigation = {navigation} setComm = {setCommunity}/>}
+            {community ? <CommMenu nav={navigation} community = {community} theme = {theme} deviceID = {deviceId}/>: <Communities navigation = {navigation} setComm = {setCommunity} devId = {deviceId}/>}
         </View>
     );
 };
@@ -131,15 +124,15 @@ const CommMenu = (props) => {
         <View style={styles.container}>
           <Text style={styles.header}>Community Menu</Text>
     
-          <TouchableOpacity style={styles.card} onPress={ () => props.nav.navigate("community/[page]", { id: props.community, page: "posts" })}>
+          <TouchableOpacity style={styles.card} onPress={ () => props.nav.navigate("community/[page]", { id: props.community, page: "posts", deviceID : props.deviceID })}>
             <Text style={styles.menuItem}>Community Posts</Text>
           </TouchableOpacity>
     
-          <TouchableOpacity style={styles.card} onPress={ () => props.nav.navigate("community/[page]", { id: props.community, page: "proposals" })}>
+          <TouchableOpacity style={styles.card} onPress={ () => props.nav.navigate("community/[page]", { id: props.community, page: "proposals", deviceID : props.deviceID })}>
             <Text style={styles.menuItem}>Community Proposals</Text>
           </TouchableOpacity>
     
-          <TouchableOpacity style={styles.card} onPress={ () => props.nav.navigate("community/[page]", { id: props.community, page: "emergency" })}>
+          <TouchableOpacity style={styles.card} onPress={ () => props.nav.navigate("community/[page]", { id: props.community, page: "emergency",deviceID : props.deviceID })}>
             <Text style={styles.menuItem}>Emergency Pings</Text>
           </TouchableOpacity>
         </View>
@@ -151,11 +144,11 @@ const Communities = ( props ) => {
     const [ communities, setCommunity ] = useState();
     const { user } = useAuth();
     const { theme } = useContext(ThemeContext);
-    const [ deviceId, setDeviceId ] = useState();
     const [ pin, setPin ] = useState("");
     const { height, width } = Dimensions.get("window");
     const isPortrait = height > width; 
     const screenWidth = isPortrait ? width * 0.35 : width * 0.15;
+    const deviceId = props.devId;
 
     const styles = StyleSheet.create({
         container: {
@@ -239,7 +232,7 @@ const Communities = ( props ) => {
                 set(ref(database, `${deviceId}/community`), communityId);
                 console.log("Community joined:", communityId);
                 set(ref(database, `communities/${pin}/${communityId}/members/${user.uid}`), {
-                    isAdmin: true,
+                    isAdmin: false,
                     joinedAt: new Date().toString()
                 })
                 props.setComm(communityId);
@@ -267,7 +260,7 @@ const Communities = ( props ) => {
             <Menu navigation={props.navigation} />
             <Text style={styles.title}>Community</Text>
             <Text style={styles.description}>Join our community and connect with others!</Text>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('create')}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('create', { deviceID: deviceId })}>
                 <Text style={styles.buttonText}>Want to create a community?</Text>
             </TouchableOpacity>
             <Text style={styles.description}>Communities</Text>

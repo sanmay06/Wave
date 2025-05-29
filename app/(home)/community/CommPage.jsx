@@ -10,16 +10,16 @@ import { get, ref } from 'firebase/database';
 function CommPage({navigation, route}) {
 
     const { theme } = useContext(ThemeContext);
-    const { user } = useAuth();
-    const { id, page, DeviceID } = route.params;
+    const { id, page, deviceID } = route.params;
     console.log("Community ID:", id); // Log the community ID to verify it's being passed correctly
     return (
         <View style = {{width: '100%', height: '100%', backgroundColor: 'white'}}>
             <Menu navigation={navigation} back={true} />
             {/* <Text  style={styles.h1}>Community Page</Text> */}
-            { page === 'posts'? <Posts id = {id} navigation={navigation}/> :
-              page === 'proposals' ? <Proposals id = {id} navigation={navigation}/> :
-              page === 'emergency' ? <Emergency id = {id} navigation={navigation}/> : null
+            { 
+              page === 'posts'? <Posts id = {id} navigation={navigation} devId = {deviceID}/> :
+              page === 'proposals' ? <Proposals id = {id} navigation={navigation} devId = {deviceID}/> :
+              page === 'emergency' ? <Emergency id = {id} navigation={navigation} devId = {deviceID}/> : null
             }
         </View>
     );
@@ -71,7 +71,7 @@ const Posts = (props) => {
                     const post = posts[key];
                     return (
                         <TouchableOpacity
-                            onPress={() => navigation.navigate("community/[page]/info", { id: props.id, page: 'posts', postId: key })}
+                            onPress={() => navigation.navigate("community/[page]/info", { id: props.id, page: 'posts', postId: key, deviceID: props.devId })}
                             style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}
                             key={key}
                         >   
@@ -137,7 +137,7 @@ const Proposals = (props) => {
                     const post = proposals[key];
                     return (
                         <TouchableOpacity
-                            onPress={() => navigation.navigate("community/[page]/info", { id: props.id, page: 'proposals', postId: key })}
+                            onPress={() => navigation.navigate("community/[page]/info", { id: props.id, page: 'proposals', postId: key, deviceID: props.devId })}
                             style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}
                             key={key}
                         >   
@@ -205,7 +205,7 @@ const Emergency = (props) => {
                     const post = posts[key];
                     return (
                         <TouchableOpacity
-                            onPress={() => navigation.navigate("community/[page]/info", { id: props.id, page: 'emergency', postId: key })}
+                            onPress={() => navigation.navigate("community/[page]/info", { id: props.id, page: 'emergency', postId: key, deviceID: props.devId })}
                             style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}
                             key={key}
                         >   
