@@ -59,14 +59,29 @@ const Menu = (props) => {
                     <Text style={styles.subtitle}>By Automattrix</Text>
                 </View>        
             </View>
-            <TouchableOpacity 
-                onPress={() => {
-                    logout(navigation)
-                    // navigation.navigate('login')
-                }}
-            >
-                <Ionicons name="exit-outline" size={45} color={theme.menuText} />
-            </TouchableOpacity>
+            
+            <View>
+                {
+                    props.invite &&
+                        <TouchableOpacity 
+                            onPress={() => props.setClicked(true)}
+                            style = {{ paddingRight: 10 }}
+                        >
+                            props.clicked ?
+                                <Ionicons nmae = "mail-unread-outline" size={45} color = {theme.menuText} />
+                            :
+                                <Ionicons name="mail-outline" size={45} color={theme.menuText} />
+                        </TouchableOpacity>
+                }
+                <TouchableOpacity 
+                    onPress={() => {
+                        logout(navigation)
+                        // navigation.navigate('login')
+                    }}
+                >
+                    <Ionicons name="exit-outline" size={45} color={theme.menuText} />
+                </TouchableOpacity>
+            </View>
         </View>
     )
 }

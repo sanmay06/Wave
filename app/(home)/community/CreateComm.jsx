@@ -89,12 +89,6 @@ function CreateComm({navigation}) {
         },
     });
 
-    // useEffect(() => {
-    //     if(user) {
-    //         setDeviceId(user.photoURL);
-    //     }
-    // }, [user]);
-
     useEffect(() => {
         const getPinCode = async () => {
             if(deviceId)

@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Text, View, StyleSheet, ScrollView, Pressable } from 'react-native';
 import Light from '@/components/ui/Lights';
 import { database } from '@/firebaseConfig';
-import { ref, get, update, set } from 'firebase/database';
+import { ref, get, update, set, onValue } from 'firebase/database';
 import { ThemeContext } from '@/hooks/ThemeProvider';
 import Menu from '@/components/ui/Menu';
 import Fan from '@/components/ui/Fan';
@@ -54,29 +54,24 @@ function Room({navigation , route}) {
         }
     }
 
-    // useEffect(() => {
-    //     if(user) {
-    //         setDeviceId(user.photoURL);
-    //     }
-    // }, [user]);
-
     useEffect(() => {
         setDeviceId(route.params.deviceID);
     }, []);
 
-    async function getData() {
-        try {
-            let data = await get(ref(database, `/${deviceId}/rooms/room${id}`));
-            setData(data.val());
-        }catch(error) {
-            console.log("Error occurred:" + error.message);
-        }
-    }
-
+    //getting the data
     useEffect(() => {
-        getData();
+        if(!deviceId) return;
+
+        const refe = ref(database, `/${deviceId}/rooms/room${id}`);
+
+        const unsubscribe = onValue(refe, (snapshot) => {
+            setData(snapshot.val());
+        });
+
+        return () => unsubscribe;
     }, [deviceId]);
 
+    //loading the data
     useEffect(() => {
         if(data) {
             if(data.lights) {
@@ -155,18 +150,7 @@ function Room({navigation , route}) {
         )
     }
 
-    useEffect(() => {
-        console.log("Lights:", lc);
-    }, [lc]);
-
-    useEffect(() => {
-        console.log("Fans:", fc);
-    }, [fc]);
-
-    useEffect(() => {
-        console.log("Outlets:", oc);
-    }, [oc]);
-
+    //updating everything
     useEffect(() => {
         async function updateData(){
             if(!lights)
@@ -265,19 +249,19 @@ function Room({navigation , route}) {
                 {/* {changes && <Pressable onPress={() => { setChanges(); setChange(false)}} style={{ marginBottom: 16 }} >
                     <Text style={{ color: theme.text, textAlign: 'center' }}>Save Changes</Text>
                 </Pressable>} */}
-                <Pressable onPress={() => edit && (setEdit(false), setChange())} style={{ marginBottom: 16 }} >
+                <Pressable onPress={() => edit && (setEdit(false), setChanges())} style={{ marginBottom: 16 }} >
                     <Text style={styles.title}>Room: {name}</Text>
                     <View style={{ marginBottom: 24 }}>
                         <Text style={styles.compText}>Lights</Text>
                         <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                             {lights && lights.map((light, id) => (
                                 <MotiView
+                                    key={id}
                                     from={{ opacity: 0, translateY: -50 }}
                                     animate={{ opacity: 1, translateY: 0 }}
                                     transition={{ type: 'timing', duration: 300, delay: id * 100 }}
                                 >
                                     <Light
-                                        key={id}
                                         theme={theme}
                                         name={light.name}
                                         light={light.state}
@@ -298,12 +282,12 @@ function Room({navigation , route}) {
                         <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                             {fans && fans.map((fan, id) => (
                                 <MotiView
+                                    key={id}
                                     from={{ opacity: 0, translateY: -50 }}
                                     animate={{ opacity: 1, translateY: 0 }}
                                     transition={{ type: 'timing', duration: 300, delay: id * 100 }}
                                 >
                                     <Fan
-                                        key={id}
                                         theme={theme}
                                         name={fan.name}
                                         state={fan.state}
@@ -328,12 +312,12 @@ function Room({navigation , route}) {
                         <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                             {outlets && outlets.map((outlet, id) => (
                                 <MotiView
-                                from={{ opacity: 0, translateY: -50 }}
-                                animate={{ opacity: 1, translateY: 0 }}
-                                transition={{ type: 'timing', duration: 300, delay: id * 100 }}
-                            >
+                                    key={id}
+                                    from={{ opacity: 0, translateY: -50 }}
+                                    animate={{ opacity: 1, translateY: 0 }}
+                                    transition={{ type: 'timing', duration: 300, delay: id * 100 }}
+                                >
                                     <Outlet
-                                        key={id}
                                         theme={theme}
                                         name={outlet.name}
                                         state={outlet.state}

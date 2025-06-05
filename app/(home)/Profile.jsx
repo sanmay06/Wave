@@ -3,43 +3,41 @@ import { Text, View, StyleSheet, TextInput, Dimensions, TouchableOpacity, Button
 import Menu from '@/components/ui/Menu';
 import useAuth from '@/hooks/Auth';
 import { ThemeContext } from '@/hooks/ThemeProvider';
-import { ref, get, set, push, update } from "firebase/database";
+import { ref, get, set, push, update, onValue } from "firebase/database";
 import { database } from '@/firebaseConfig';
 import { useRoute } from '@react-navigation/native';
-// import { storage } from '@/firebaseConfig.js';
-// import { getDownloadURL, ref } from "firebase/storage";
-// import * as ImagePicker from "react-native-image-picker";
+import { ScrollView } from 'moti';
+import * as Location from 'expo-location';
+import EvilIcons from '@expo/vector-icons/EvilIcons';
+
 
 function Profile({navigation}) {
     const { theme } = useContext(ThemeContext);
     const width = Dimensions.get('window').width;
     const { params } = useRoute();
 
-    // console.log("tenent:",user);
-    const [phone, setPhone] = useState('');
-    const [address, setAddress] = useState('');
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [disabled, setDisabled] = useState(false);
+    const [ edit, setEdit ] = useState(true);
     const [ deviceId, setDeviceId ] = useState();
-    const [ pincode, setPin ] = useState();
+    const [ data, setData ] = useState({
+        uname: '',
+        email: '',
+        phone_number: '',
+        address: '',
+        latitude: '',
+        longitude: '',
+        pincode: ''
+    });
 
     useEffect(() => {
         setDeviceId(params.deviceID);
     }, []);
 
-    const { user, updateUser } = useAuth(); 
-    // useEffect(() => {
-    //     if(user) {
-    //         setDeviceId(user.photoURL);
-    //     }
-    //     console.log("Device ID:", deviceId,"user",user);
-    // }, [user]);
+    const { updateUser } = useAuth(); 
 
     const styles = StyleSheet.create({
         mainContainer: {
             backgroundColor: theme.background,
-            flex: 1,
+            width: '100%',
             alignItems: 'center',
             width: '100%',
             height: '100%',
@@ -96,124 +94,191 @@ function Profile({navigation}) {
             width: 250,
         },
         buttonText: {
-            color: theme.button.color
+            color: theme.button.color,
         }
     });
 
     useEffect(() => {
-        async function getData() {
-            const snap = await get(ref(database, `${deviceId}/profile`))
-            console.log(snap.val());
-            if(snap.val()) {
-                if(snap.val().uname)
-                    setName(snap.val().uname);
-                if(snap.val().phone_number)
-                    setPhone(snap.val().phone_number);
-                if(snap.val().email)
-                    setEmail(snap.val().email);
-                if(snap.val().address)
-                setAddress(snap.val().address);
-                if(snap.val().pincode)
-                    setPin(snap.val().pincode);
+        const unsubscribe = onValue(ref(database, `${deviceId}/profile`), (snapshot) => {
+            if(snapshot.exists()) {
+                const profileData = snapshot.val();
+                setData(profileData);
             }
-        }
+        });
         
-        if(deviceId)
-            getData();
+        return () => unsubscribe;
     }, [deviceId]);
 
-    const saveChanges = async () => {
-        updateUser(name, deviceId);
-        try {
-            await update(ref(database, `${deviceId}/profile`), {
-                uname: name,
-                phone_number: phone,
-                device_id: deviceId,
-                address: address,
-                email: email,
-                pincode: pincode,
-            });
-
-            console.log("Profile updated successfully");
-        } catch (error) {
-            console.error("Error updating profile:", error);
-        }
-    };
-
+    
     return (
         <View style={styles.mainContainer}>
             <Menu navigation={navigation} />
-            <View>
-                <Text style={styles.text}>Username</Text>
-                <TextInput
-                    style={styles.inputText}
-                    placeholder="Enter a Username"
-                    value={name}
-                    onChangeText={(text) => setName(text)}
-                />
-            </View>
-            <View>
-                <Text style={styles.text}>Device ID</Text>
-                <TextInput
-                    style={styles.inputText}
-                    placeholder="Enter your Device ID"
-                    value={deviceId}
-                    onChangeText={(text) => setDeviceId(text)}
-                />
+            <View style={{ width: '100%', alignItems: 'center', marginTop: 20 }}>
+                <Text style={styles.text}>Profile</Text>
+                <View style={styles.hr} />
             </View>
 
-            {/* Removed image-related UI */}
-            {/* <Text style={styles.text}>Upload a diff Profile Picture:</Text>
-            <Button title="Pick an Image" onPress={pickImage} />
-            {imageUri && <Image source={{ uri: imageUri }} style={{ width: 100, height: 100, marginTop: 10 }} />}
-            <Button title="Upload Image" onPress={handleUploadImage} disabled={uploading} />
-            {photo && <Image source={{ uri: photo }} style={{ width: 100, height: 100, marginTop: 10 }} />} */}
+            {edit? 
+                <DisplayProfile data = {data} style = {styles} setEdit = {setEdit} deviceID = {deviceId}/> :
+                <EditProfile data={data} styles={styles} updateUser={updateUser} deviceId={deviceId} setEdit = {setEdit} setData = {setData}/>
+            }
 
-            <View>
-                <Text style={styles.text}>E-Mail</Text>
-                <TextInput
-                    style={styles.inputText}
-                    placeholder="Enter your E-Mail"
-                    value={email}
-                    onChangeText={(text) => setEmail(text)}
-                />
-            </View>
-            <View>
-                <Text style={styles.text}>Phone Number</Text>
-                <TextInput
-                    style={styles.inputText}
-                    placeholder="Enter your Phone Number"
-                    value={phone}
-                    onChangeText={(text) => setPhone(text)}
-                />
-            </View>
-            <View>
-                <Text style={styles.text}>Address</Text>
-                <TextInput
-                    style={styles.addressTest}
-                    placeholder="Enter your Address"
-                    value={address}
-                    onChangeText={(text) => setAddress(text)}
-                />
-            </View>
-            <View>
-                <Text style={styles.text}>Pincode</Text>
-                <TextInput
-                    style={styles.inputText}
-                    placeholder="Enter your Pincode"
-                    value={pincode}
-                    onChangeText={(text) => setPin(text)}
-                />
-            </View>
-            <TouchableOpacity
-                style={styles.button}
-                onPress={() => { saveChanges() }}
-                disabled={disabled}
-            >
-                <Text style={styles.buttonText}>Save</Text>
-            </TouchableOpacity>
         </View>
     );
 }
 
 export default Profile;
+
+const DisplayProfile = ( props ) => {
+    const data = props.data;
+    const styles = props.style;
+
+    return (
+        <View style={{ alignItems: 'center', width: '100%' }}>
+            <Text style={styles.text}>Username: {data?.uname}</Text>
+            <Text style={styles.text}>Device ID: {props.deviceID}</Text>
+            <Text style={styles.text}>E-Mail: {data?.email}</Text>
+            <Text style={styles.text}>Phone Number: {data?.phone_number}</Text>
+            <Text style={styles.text}>Address: {data?.address }</Text>
+            <Text style={styles.text}>Latitude: {data?.latitude }</Text>
+            <Text style={styles.text}>Longitude: {data?.longitude }</Text>
+            <TouchableOpacity
+                style={styles.button}
+                onPress={() => props.setEdit(false)}
+            >
+                <Text style={styles.buttonText}>Edit</Text>
+            </TouchableOpacity>
+        </View>
+    )
+};
+
+const EditProfile = ( props ) => {
+
+    const data = props.data;
+    const styles = props.styles;
+    const deviceId = props.deviceId;    
+    const width = Dimensions.get('window').width;
+    const setData = props.setData;
+
+    const saveChanges = async () => {
+        props.updateUser(data.uname, deviceId);
+        try {
+            await update(ref(database, `${deviceId}/profile`), data);
+            console.log("Profile updated successfully");
+        } catch (error) {
+            console.error("Error updating profile:", error);
+        }
+        props.setEdit(true);
+    };
+
+    const getLocation = async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert("Permission to access location was denied");
+            return;
+        }
+
+        let location = await Location.getCurrentPositionAsync({});
+        setData({
+            ...data,
+            latitude: location.coords.latitude.toString(),
+            longitude: location.coords.longitude.toString()
+        });
+    }
+
+    return (
+            <ScrollView contentContainerStyle={{ alignItems: 'center', width: '100%', flexGrow: 1 }} 
+                showsVerticalScrollIndicator={false}
+            >
+                <View style = {{width: width - 20}}></View>
+                <View >
+                    <Text style={styles.text}>Username</Text>
+                    <TextInput
+                        style={styles.inputText}
+                        placeholder="Enter a Username"
+                        value={data?.uname? data.uname : ''}
+                        onChangeText={(text) => setData({ ...data, uname: text })}
+                        // editable={!disabled}
+                    />
+                </View>
+                <View>
+                    <Text style={styles.text}>Device ID</Text>
+                    <TextInput
+                        style={styles.inputText}
+                        placeholder="Enter your Device ID"
+                        value={deviceId}
+                        editable={false}
+                    />
+                </View>
+
+                <View>
+                    <Text style={styles.text}>E-Mail</Text>
+                    <TextInput
+                        style={styles.inputText}
+                        placeholder="Enter your E-Mail"
+                        value={data.email}
+                        onChangeText={(text) => setData({ ...data, email: text })}
+                        editable={false}
+
+                    />
+                </View>
+                <View>
+                    <Text style={styles.text}>Phone Number</Text>
+                    <TextInput
+                        style={styles.inputText}
+                        placeholder="Enter your Phone Number"
+                        value={data.phone_number}
+                        onChangeText={(text) => setData({ ...data, phone_number: text })}
+                        // editable={!disabled}
+                    />
+                </View>
+                <View>
+                    <Text style={styles.text}>Address</Text>
+                    <TextInput
+                        style={styles.addressTest}
+                        placeholder="Enter your Address"
+                        value={data.address}
+                        onChangeText={(text) => setData({ ...data, address: text })}
+                        // editable={!disabled}
+                    />
+                </View>
+
+                <View>
+                    <Text style={styles.text}>Latitude</Text>
+                    <TextInput
+                        style={styles.inputText}
+                        value={data.latitude}
+                        // onChangeText={(text) => setData({ ...data, latitude: text })}
+                        editable={false}
+                    />
+                </View>
+
+                <View>
+                    <Text style={styles.text}>Longitude</Text>
+                    <TextInput
+                        style={styles.inputText}
+                        value={data.longitude}
+                        // onChangeText={(text) => setData({ ...data, longitude: text })}
+                        editable={false}
+                    />
+                </View>
+
+                <TouchableOpacity
+                    style={[styles.button, { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '80%', height: 40 }]}
+                    onPress={getLocation}
+                >
+                    <Text style = {styles.text}>Get Location</Text><EvilIcons name="location" size={20} color="black" />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => { saveChanges() }}
+                    // disabled={disabled}
+                >
+                    <Text style={styles.buttonText}>Save</Text>
+                </TouchableOpacity>
+            </ScrollView>
+    );
+
+
+};

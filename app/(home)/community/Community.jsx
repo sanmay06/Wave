@@ -11,11 +11,19 @@ const Community = ({ navigation }) => {
 
     // const { user } = useAuth();
     const route = useRoute();
-
+    const { getUserId } = useAuth();
     const { theme } = useContext(ThemeContext);
     const deviceId = route.params.deviceID;
+    const [ admin, setAdmin ] = useState(false);
 
     const [ community, setCommunity ] = useState("");
+
+    useEffect(() => {
+        const getID = async () => {
+            const id = await getUserId();
+            if(!id) return;
+        }
+    }, [community]);
 
     useEffect(() => {
         if(deviceId) {
@@ -34,8 +42,7 @@ const Community = ({ navigation }) => {
     }, [deviceId]);
 
     useEffect(() => {
-        // if(community) 
-        // navigation.navigate("community/[id]", { id: community });
+        console.log("Community:", community);
     }, [community]);
 
     const { height, width } = Dimensions.get("window");
@@ -87,6 +94,7 @@ export default Community;
 const CommMenu = (props) => {
     
     const theme = props.theme;
+    console.log("community:", props.community);
     const styles = StyleSheet.create({
         container: {
           flex: 1,
@@ -142,7 +150,7 @@ const CommMenu = (props) => {
 const Communities = ( props ) => {
     const navigation = props.navigation;
     const [ communities, setCommunity ] = useState();
-    const { user } = useAuth();
+    const { user, getUserId } = useAuth();
     const { theme } = useContext(ThemeContext);
     const [ pin, setPin ] = useState("");
     const { height, width } = Dimensions.get("window");
@@ -190,12 +198,12 @@ const Communities = ( props ) => {
         }
     });
 
-    useEffect(() => {
-        console.log("User:", user);
-        if(user && user.photoURL) 
-            setDeviceId(user.photoURL);
-        // console.log(user.photoURL)
-    }, [user]);
+    // useEffect(() => {
+    //     console.log("User:", user);
+    //     if(user && user.photoURL) 
+    //         setDeviceId(user.photoURL);
+    //     // console.log(user.photoURL)
+    // }, [user]);
 
     useEffect(() => {
         async function getCommunity() {

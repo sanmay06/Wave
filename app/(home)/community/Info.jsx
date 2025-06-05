@@ -14,7 +14,6 @@ const Info = ({ navigation, route }) => {
 
     const styles = StyleSheet.create({
         container:{
-            // flexGrow: 1,
             padding: 16,
             width: '100%',
             backgroundColor: '#121212',

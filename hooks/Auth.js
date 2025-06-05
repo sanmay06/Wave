@@ -33,7 +33,7 @@ const useAuth = () => {
     }
   };
 
-  const register = async (email, password, username, deviceID, phoneNumber, uri, address) => {
+  const register = async (email, password, username, deviceID, phoneNumber, address, latitude, longitude) => {
     const refe = ref(database, `/${deviceID}`);
     const snapshot = await get(refe);
     if(snapshot.exists() && snapshot.val().profile.email === "") {
@@ -48,6 +48,8 @@ const useAuth = () => {
           phone_number: phoneNumber,
           address: address,
           device_id: deviceID,
+          latitude: latitude,
+          longitude: longitude,
         });
         updateUser(username, deviceID, user)
         // uploadImage(uri, deviceID);
@@ -59,16 +61,6 @@ const useAuth = () => {
       }
     } else 
       return "Device ID not found or already registered";
-  };
-  
-  const googleRegister = async() => {
-    const provider = new GoogleAuthProvider();
-    try {
-        const result = await signInWithPopup(auth, provider);
-        console.log("google sing un : ", result.user);
-    }catch (error) {
-        console.log("google error: ", error.message);
-    }
   };
 
   const logout = async (navigation) => {
@@ -100,10 +92,6 @@ const useAuth = () => {
       if (deviceID) {
         await AsyncStorage.setItem('deviceId', deviceID);
       }
-
-      // console.log("Logged in successfully");
-      // console.log("Logged in with device ID:", deviceID);
-      // navigation.navigate("home", { deviceID: deviceID });
       return { check: true, deviceID: deviceID };
       }
     }
@@ -113,6 +101,10 @@ const useAuth = () => {
     }
     return { check:false };
   }
+
+  const getUserId = async () => {
+      return user??uid;
+  };
 
   const updateUser = async (name, device_id, user) => {
     console.log(user);
@@ -130,7 +122,7 @@ const useAuth = () => {
 
   const deviceID = user ? user.photoURL : null;
 
-  return { user, loading, error, login, logout, logged , register, googleRegister, updateUser, deviceID };
+  return { user, loading, error, login, logout, logged , register, updateUser, deviceID, getUserId };
 };
 
 export default useAuth;

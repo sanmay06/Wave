@@ -1,15 +1,12 @@
 import React, { useState, useContext, useEffect } from "react";
-import { 
-    Text, View, TouchableOpacity, StyleSheet, Dimensions, TextInput, Pressable, Image, Alert, Button 
-} from "react-native";
+import { Text, View, TouchableOpacity, StyleSheet, Dimensions, TextInput, Pressable, Alert } from "react-native";
 import { ThemeContext } from "@/hooks/ThemeProvider";
-import AntDesign from '@expo/vector-icons/AntDesign';
 import useAuth from "@/hooks/Auth";
 import { ScrollView } from "react-native-gesture-handler";
-import ForgotPasswordModal from "@/components/ui/ForgotPass";
+import EvilIcons from '@expo/vector-icons/EvilIcons';
 
 function Register({ navigation }) {
-    const { googleRegister, register } = useAuth();
+    const { register } = useAuth();
     const { theme } = useContext(ThemeContext);
     const { width } = Dimensions.get('window');
 
@@ -21,9 +18,9 @@ function Register({ navigation }) {
     const [phone, setPhone] = useState('');
     const [address, setAddress] = useState('');
     const [name, setName] = useState('');
-    const [photo, setPhoto] = useState('');
     const [deviceId, setDeviceId] = useState('');
-    const [forgotPass, setForgotPass] = useState(false);
+    const [ latitude, setLatitude ] = useState('');
+    const [ longitude, setLongitude ] = useState('');
 
     const styles = StyleSheet.create({
         mainContainer: {
@@ -98,35 +95,17 @@ function Register({ navigation }) {
         else setmsg("");
     }, [conpass, password]);
 
-    // Pick Image Function
-    // const pickImage = () => {
-    //     ImagePicker.launchImageLibrary({ mediaType: "photo" }, (response) => {
-    //         if (response.didCancel) {
-    //             Alert.alert("Cancelled", "Image selection was cancelled.");
-    //         } else if (response.errorMessage) {
-    //             Alert.alert("Error", response.errorMessage);
-    //         } else {
-    //             setImageUri(response.assets[0].uri);
-    //         }
-    //     });
-    // };
-
-    // const handleUploadImage = async () => {
-    //     if (!imageUri) {
-    //         Alert.alert("No Image", "Please select an image first.");
-    //         return;
-    //     }
-
-    //     setUploading(true);
-    //     try {
-    //         const downloadURL = await uploadImage(imageUri);
-    //         setPhoto(downloadURL); // Set the uploaded image URL
-    //         Alert.alert("Upload Successful", "Image uploaded successfully!");
-    //     } catch (error) {
-    //         Alert.alert("Upload Failed", error.message);
-    //     }
-    //     setUploading(false);
-    // };
+    const getLocation = async () => {
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert("Permission to access location was denied");
+                return;
+            }
+    
+            let location = await Location.getCurrentPositionAsync({});
+            setLatitude(location.coords.latitude.toString())
+            setLongitude(location.coords.longitude.toString())
+        }
 
     return (
         <ScrollView 
@@ -169,12 +148,32 @@ function Register({ navigation }) {
                     multiline
                 />
 
-                {/* Image Upload Section */}
-                {/* <Text style={styles.text}>Upload Profile Picture:</Text>
-                <Button title="Pick an Image" onPress={pickImage} />
-                {imageUri && <Image source={{ uri: imageUri }} style={{ width: 100, height: 100, marginTop: 10 }} />}
-                <Button title="Upload Image" onPress={handleUploadImage} disabled={uploading} />
-                {photo && <Image source={{ uri: photo }} style={{ width: 100, height: 100, marginTop: 10 }} />} */}
+<View>
+                    <Text style={styles.text}>Latitude</Text>
+                    <TextInput
+                        style={styles.inputText}
+                        value={latitude}
+                        // onChangeText={(text) => setData({ ...data, latitude: text })}
+                        editable={false}
+                    />
+                </View>
+
+                <View>
+                    <Text style={styles.text}>Longitude</Text>
+                    <TextInput
+                        style={styles.inputText}
+                        value={longitude}
+                        // onChangeText={(text) => setData({ ...data, longitude: text })}
+                        editable={false}
+                    />
+                </View>
+
+                <TouchableOpacity
+                    style={[styles.button, { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '80%', height: 40 }]}
+                    onPress={getLocation}
+                >
+                    <Text style = {styles.text}>Get Location</Text><EvilIcons name="location" size={20} color="black" />
+                </TouchableOpacity>
 
                 <Text style={styles.text}>Enter password:</Text>
                 <TextInput
@@ -204,7 +203,7 @@ function Register({ navigation }) {
                 <TouchableOpacity
                     style={styles.button}
                     onPress={() => {
-                        register(email, password, name, deviceId, phone, photo, address).then((res) => {
+                        register(email, password, name, deviceId, phone, address, latitude, longitude).then((res) => {
                             if (res === "success") {
                                 navigation.navigate('login');
                             }else 
@@ -215,14 +214,6 @@ function Register({ navigation }) {
                 }
                 >
                     <Text style={styles.buttonText}>Submit</Text>
-                </TouchableOpacity>
-
-                <Text style={styles.text}>or Sign in with</Text>
-                <TouchableOpacity 
-                    onPress={googleRegister}
-                    style={styles.googleButton}
-                >
-                    <AntDesign name="google" size={32} color={theme.text} />
                 </TouchableOpacity>
 
                 <View style={styles.hr} />

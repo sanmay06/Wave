@@ -189,7 +189,7 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {
       setRooms(Object.values(rooms));
       getData('/', setData);
       getData(`/${deviceId}/masterSwitch`, setLight);
-      // console.log('data:',data);
+      console.log('data:',data);
       getLatestValue(`/${deviceId}/pitemp`, setPitemp);
       getLatestValue(`/${deviceId}/temp`, setTemperature);
       getLatestValue(`/${deviceId}/humidity`, setHumidity);
