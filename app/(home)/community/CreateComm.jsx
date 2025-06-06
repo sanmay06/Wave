@@ -1,20 +1,16 @@
-import useAuth from '@/hooks/Auth';
 import React, { useState, useEffect, useContext } from 'react';
 import { View, Text,ScrollView,StyleSheet, Dimensions, TextInput, TouchableOpacity } from 'react-native';
 import { database } from '@/firebaseConfig';
-import { get, ref, set, child } from 'firebase/database';
+import { get, ref, set, child, query, push } from 'firebase/database';
 import { ThemeContext } from '@/hooks/ThemeProvider';
 import Menu from '@/components/ui/Menu';
 import { useRoute } from '@react-navigation/native';
 
 function CreateComm({navigation}) {
 
-    // const { user } = useAuth();
     const { theme } = useContext(ThemeContext);
     const { width } = Dimensions.get('window');
-    // const [ deviceId, setDeviceId ] = useState('');
-    const [ pincode, setPincode ] = useState('');
-    const [ cummunityId, setCommunityId ] = useState('');
+    const [ position, setPosition ] = useState('');
     const [ name, setName ] = useState('');
     const [ type, setType ] = useState('');
     const [ description, setDescription ] = useState('');
@@ -90,18 +86,21 @@ function CreateComm({navigation}) {
     });
 
     useEffect(() => {
-        const getPinCode = async () => {
+        const getPosition = async () => {
             if(deviceId)
                 try {
-                    const response = await get(ref(database, `${deviceId}/profile/pincode`));
-                    setPincode(response.val());
+                    const response = await get(ref(database, `${deviceId}/profile`));
+                    setPosition(
+                        {
+                            latitude: response.val().latitude,
+                            longitude: response.val().longitude,
+                        }
+                    );
                 }catch (error) {
                     console.log(error);
                 }
         }
-        getPinCode();
-        console.log("Device ID:", deviceId);
-        console.log("Pincode:", pincode);
+        getPosition();
     }, [deviceId]);
 
     return (
@@ -133,51 +132,41 @@ function CreateComm({navigation}) {
                 <RadioButton text = 'Invite only' selected = {type == 'Invite only'} pressed = {() => setType('Invite only')} theme = {theme}/>
             </View>
             <TouchableOpacity style = {[styles.button, { backgroundColor: theme.button.background }]} onPress = {() => {
-                if(name && description && memberCount && type && pincode) {
-
-                    const baseId = user.uid + name;
-                    const communityRef = ref(database, `communities/${pincode}`);
-                    get(child(communityRef, baseId)).then((snapshot) => {
-                        let finalId = baseId;
-                        
-                        if (snapshot.exists()) {
-                            // ID exists, so create a new unique ID
-                            finalId = baseId + "_" + Date.now(); // You could also increment a number instead
-                        }
-                        setCommunityId(finalId);
-
-                        const communityData = {
-                            name: name,
-                            type: type,
-                            createdBy: user.uid,
-                            createdAt: new Date().toString(),
-                            description: description,
-                            memberCount: memberCount,
-                            members: {
-                                [user.uid]: {
-                                    isAdmin: true,
-                                    joinedAt: new Date().toString(),
-                                }
+                if(name && description && memberCount && type && position) {
+                    
+                    const communityData = {
+                        name: name,
+                        type: type,
+                        location: {
+                            latitude: position.latitude,
+                            longitude: position.longitude,
+                        },
+                        createdBy: user.uid,
+                        createdAt: new Date().toString(),
+                        description: description,
+                        memberCount: memberCount,
+                        members: {
+                            [user.uid]: {
+                                isAdmin: true,
+                                joinedAt: new Date().toString(),
                             }
-                        };
+                        }
+                    };
 
-                        if (type === "invite only") {
-                            communityData.requests = {};
-                        }
-                        try {               
-                            set(ref(database, `communities/${pincode}/${finalId}`), communityData)
-                            .then(() => {
-                                console.log('Community created successfully!');
-                            })
-                            .catch((error) => {
-                                console.log('Error creating community:', error);
-                            });
-                        
-                            set(ref(database, `${deviceId}/community`), finalId)
-                        }catch (error) {
-                            console.log(error);
-                        }
-                    });
+                    if (type === "invite only") {
+                        communityData.requests = {};
+                    }
+
+                    try {
+                        const pushRef = push(ref(database, 'communities'));
+                        const communityId = pushRef.key;
+                        set(pushRef, communityData);
+                        console.log('Community created successfully!');
+                        set(ref(database, `${deviceId}/community`), communityId);
+                    }catch (error) {
+                        console.log(error);
+                    }
+                    navigation.navigate('community', { deviceID: deviceId });
                 }
             }}>
                 <Text style = {[styles.buttonText, { color: theme.button.color }]}>Create Community</Text>

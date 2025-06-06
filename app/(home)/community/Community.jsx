@@ -1,9 +1,9 @@
 import React, { useContext, useState, useEffect } from "react";
-import { View, Text, StyleSheet, Dimensions, Button, Pressable, TouchableOpacity, TextInput } from "react-native";
+import { View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, TextInput } from "react-native";
 import { ThemeContext } from "@/hooks/ThemeProvider";
 import useAuth from "@/hooks/Auth";
 import { database } from "@/firebaseConfig";
-import { get, ref, set } from "firebase/database";
+import { get, query, ref, set, push, orderByChild, startAt, endAt } from "firebase/database";
 import Menu from "@/components/ui/Menu";
 import { useRoute } from "@react-navigation/native";
 
@@ -24,6 +24,15 @@ const Community = ({ navigation }) => {
             if(!id) return;
         }
     }, [community]);
+
+    // const test = async() => {
+    //     try {
+    //         await set(ref(database, 'communities'), {});
+    //         await set(ref(database, `${deviceId}/community`), null);
+    //     }catch (error) {
+    //         console.log(error);
+    //     }
+    // }
 
     useEffect(() => {
         if(deviceId) {
@@ -84,6 +93,9 @@ const Community = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <Menu navigation={navigation} />
+            {/* <TouchableOpacity style={styles.button} onPress={test}>
+                <Text style={styles.buttonText}>Test</Text>
+            </TouchableOpacity> */}
             {community ? <CommMenu nav={navigation} community = {community} theme = {theme} deviceID = {deviceId}/>: <Communities navigation = {navigation} setComm = {setCommunity} devId = {deviceId}/>}
         </View>
     );
@@ -150,7 +162,7 @@ const CommMenu = (props) => {
 const Communities = ( props ) => {
     const navigation = props.navigation;
     const [ communities, setCommunity ] = useState();
-    const { user, getUserId } = useAuth();
+    const { user } = useAuth();
     const { theme } = useContext(ThemeContext);
     const [ pin, setPin ] = useState("");
     const { height, width } = Dimensions.get("window");
@@ -198,37 +210,61 @@ const Communities = ( props ) => {
         }
     });
 
-    // useEffect(() => {
-    //     console.log("User:", user);
-    //     if(user && user.photoURL) 
-    //         setDeviceId(user.photoURL);
-    //     // console.log(user.photoURL)
-    // }, [user]);
+    const getBoundaries = async() => {
+        try {
+            const res = await get(ref(database, `${deviceId}/profile`));
+            console.log("res:", res.val());
+            const latitude = res.val().latitude;
+            const longitude = res.val().longitude;
+
+            const delta = 1 / 111.32;
+
+            const result = {
+                minLat: latitude - delta,
+                maxLat: latitude + delta,
+                minLong: longitude - delta,
+                maxLong: longitude + delta,
+            };
+            
+            console.log("Boundaries:", result);
+            return result;
+        }catch (error) {
+            console.log(error);
+        }
+    }
 
     useEffect(() => {
         async function getCommunity() {
             try {
-                const res = await get(ref(database, `${deviceId}/profile/pincode`));
-                console.log("res:", res.val());
-                if(res.exists) {
-                    const pincode = res.val();
-                    setPin(pincode);
-                    const response = await get(ref(database, `/communities/${pincode}`));
-                    console.log("Response:", response.val());
-                    if(response.exists()){
-                        const comm = response.val();
-                        console.log(response.val());
-                        // if(comm != "")
-                            setCommunity(comm);
-                        // else
-                        //     setCommunity(null);
+                const {  minLat, maxLat, minLong, maxLong } = await getBoundaries();
+                const q = query(
+                    ref(database, 'communities'),
+                    orderByChild('location/latitude'),
+                    startAt(minLat),
+                    endAt(maxLat)
+                );
+
+                await get(q).then( (snapshot) => {
+                    if(snapshot.exists()) {
+                        const results = Object.entries(snapshot.val())
+                            .map( ([key, obj]) => ({
+                                id: key,
+                                ...obj,
+                            }))
+                            .filter((item) => 
+                                item.location.longitude >= minLong &&
+                                item.location.longitude <= maxLong
+                            );
+
+                        setCommunity(results);
+                        console.log("Communities in range:", results);
                     }
-                }
+                });
             }catch (error) {
                 console.log(error);
             }
         }
-        console.log("Device ID:", deviceId);
+        // console.log("Device ID:", deviceId);
         if(deviceId) {
             getCommunity();
         }
@@ -264,7 +300,7 @@ const Communities = ( props ) => {
     }, [communities]);
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
             <Menu navigation={props.navigation} />
             <Text style={styles.title}>Community</Text>
             <Text style={styles.description}>Join our community and connect with others!</Text>
@@ -293,7 +329,7 @@ const Communities = ( props ) => {
                     <Text style={styles.description}>No communities available in ur area. Try creating one</Text>
                 )}
             </View>
-        </View>
+        </ScrollView>
     )
 
 }

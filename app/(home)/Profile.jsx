@@ -181,8 +181,8 @@ const EditProfile = ( props ) => {
         let location = await Location.getCurrentPositionAsync({});
         setData({
             ...data,
-            latitude: location.coords.latitude.toString(),
-            longitude: location.coords.longitude.toString()
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude
         });
     }
 
