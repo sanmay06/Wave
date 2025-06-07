@@ -1,16 +1,27 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { Text, View, StyleSheet, TouchableOpacity } from 'react-native'
+import { Text, View, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native'
 import { database } from '@/firebaseConfig';
-import { set, ref, get, update, onValue } from 'firebase/database';
+import { set, ref, get, update, onValue, push, query, orderByChild } from 'firebase/database';
 import useAuth from '@/hooks/Auth';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Menu from '@/components/ui/Menu';
 import { ThemeContext } from '@/hooks/ThemeProvider';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const Info = ({ navigation, route }) => {
 
     const { id, page, postId, deviceID } = route.params;
     console.log('Info', id, page, postId);
+    const [ uid, setUid ] = useState(null);
+    const { user } = useAuth();
+    const [ uname, setUname ] = useState(null);
+
+    useEffect(() => {
+        if(user) {
+            setUid(user.uid);
+            setUname(user.displayName);
+        }
+    }, [user]);
 
     const styles = StyleSheet.create({
         container:{
@@ -19,6 +30,7 @@ const Info = ({ navigation, route }) => {
             backgroundColor: '#121212',
             minHeight: '100%',
             alignItems: 'center',
+            flexGrow: 1,
         },
         h1: {
             color: '#FFFFFF',
@@ -75,17 +87,44 @@ const Info = ({ navigation, route }) => {
             alignItems: 'center',
             marginTop: 12,
         },
+        inputContainer: {
+            backgroundColor: '#2E2E2E',
+            borderRadius: 8,
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+            marginTop: 12,
+            shadowColor: '#000',
+            shadowOpacity: 0.2,
+            shadowOffset: { width: 0, height: 2 },
+            shadowRadius: 4,
+            elevation: 5,
+          },
+          input: {
+            flex: 1,
+            color: '#FFFFFF',
+            fontSize: 16,
+            paddingVertical: 4,
+            paddingRight: 8,
+            width: '80%'
+          },
+          sendButton: {
+            padding: 6,
+            justifyContent: 'center',
+            alignItems: 'center',
+          },
     });
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
             <Menu navigation = {navigation} back = {true} />
-            {
-                page === 'posts'? <Post id = {id} postId = {postId} styles = {styles} deviceId = {deviceID}/> :
-                page === 'proposals'? <Proposals id = {id} postId = {postId} styles = {styles} deviceId = {deviceID}/> :
-                page === 'emergency'? <Emergency id = {id} postId = {postId} styles = {styles} deviceId = {deviceID}/> : null
-            }
-        </View>
+            <View style = {[{flex: 1, width: '100%'}]}>
+                    {
+                        page === 'posts'? <Post id = {id} postId = {postId} styles = {styles} deviceId = {deviceID} uid = {uid} name = {uname}/> :
+                        page === 'proposals'? <Proposals id = {id} postId = {postId} styles = {styles} deviceId = {deviceID} uid = {uid} name = {uname}/> :
+                        page === 'emergency'? <Emergency id = {id} postId = {postId} styles = {styles} deviceId = {deviceID} uid = {uid} name = {uname}/> : null
+                    }
+            </View>
+        </ScrollView>
     )
 }
 
@@ -96,41 +135,77 @@ const Post = (props) => {
     // const { user } = useAuth();
     const styles = props.styles;
 
-    const deviceId = props.deviceId
+    const deviceId = props.deviceId;
 
     const [ like, setLike ] = useState(0);
-    // const [ deviceId, setDeviceId ] = useState(null);
     const [ post, setPost ] = useState(null);
     const [ lcount, setlCount ] = useState(0);
     const [ dcount, setdCount ] = useState(0);
-
-    // useEffect(() => {
-    //     if(user) 
-    //         setDeviceId(user.photoURL);
-    // }, [user]);
+    const [ comments, setComments ] = useState([]);
+    const [ comment, setComment ] = useState('');
+    const uid = props.uid;
 
     useEffect(() => {
         // console.log('Device ID:', deviceId);
-        const fetchPost = async () => {
-            try {
-                if(!deviceId) return;
-                const res = await get(ref(database, `${deviceId}/profile/pincode`));
-                const pincode = res.val();
-                const resp = await get(ref(database, `communities/${pincode}/${props.id}/posts/${props.postId}`))
-                setPost(resp.val());
-                setlCount(resp.val().likes.count ?? 0);
-                setdCount(resp.val().dislikes.count ?? 0);
-                if(resp.val().likes[deviceId] !== null && resp.val().likes[deviceId] === 1) {
+
+        const unsub = onValue(ref(database, `communities/${props.id}/posts/${props.postId}`), (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                setPost(data);
+                setlCount(data.likes.count ?? 0);
+                setdCount(data.dislikes.count ?? 0);
+                if (data.likes[deviceId] !== null && data.likes[deviceId] === 1) {
                     setLike(1);
-                }else if(resp.val().dislikes[deviceId] === 1) 
+                } else if (data.dislikes[deviceId] === 1) {
                     setLike(-1);
-                // console.log('Post:', resp.val());
-            } catch (error) {
-                console.log('Error fetching post:', error);
+                } else {
+                    setLike(0);
+                }
             }
-        };
-        fetchPost();
+        })
+
+        return () => unsub();
     }, [deviceId]);
+
+    useEffect(() => {
+
+        const q = query(
+            ref(database, `communities/${props.id}/posts/${props.postId}/comments`),
+            orderByChild('createdAt'),
+        )
+        const unsubscribe = onValue(q, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                const commentsArray = Object.entries(data).map(([key, value]) => ({
+                    id: key,
+                    ...value,
+                }));
+                setComments(commentsArray);
+                console.log('Comments:', commentsArray);
+            } else {
+                setComments([]);
+            }
+        })
+
+        return () => unsubscribe();
+
+    }, []);
+
+const saveComment = async() => {
+    try {
+        if(!uid || !comment.trim()) return;
+        const pref = push(ref(database, `communities/${props.id}/posts/${props.postId}/comments`));
+        set(pref, {
+            userId: uid,
+            comment: comment.trim(),
+            createdAt: Date.now(),
+            username: props.name,
+        })
+    }catch(error) {
+        console.log('Error saving comment:', error);  
+    }
+    setComment('');
+}
 
 const toggleLike = async (type) => {
   try {
@@ -191,84 +266,108 @@ const toggleLike = async (type) => {
 
 
     return (
-        <View style={styles.card}>
-            <Text style = {styles.h1}>Post</Text>
-            <View style = {styles.secCard}>
-                <Text style = {styles.label}>Title: </Text>
-                <Text style = {styles.value}>{post ?post.title: null}</Text>
-            </View>
-            <View style = {styles.secCard}>
-                <Text style = {styles.label}>Description: </Text>
-                <Text style = {styles.value}>{post ? post.desc: null}</Text>
-            </View>
-            <View style = {styles.misContainer}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 16 }}>
-                    {/* Like */}
-                    <View style={{ alignItems: 'center', marginRight: 24 }}>
-                        <TouchableOpacity 
-                            style={{
-                                padding: 10,
-                                borderRadius: 12,
-                                backgroundColor: '#2E2E2E',
-                            }}
-                            onPress={() => toggleLike('like')}
-                        >
-                            <AntDesign 
-                                name={like === 1 ? "like1" : "like2"} 
-                                size={24} 
-                                color={like === 1 ? "#00FF00" : "#FFFFFF"} 
-                            />
-                        </TouchableOpacity>
-                        <Text style={{ color: '#FFFFFF', fontSize: 16, marginTop: 6 }}>
-                            {lcount??  0}
-                        </Text>
-                    </View>
+        
+            <View style={styles.card}>
+                <Text style = {styles.h1}>Post</Text>
+                <View style = {styles.secCard}>
+                    <Text style = {styles.label}>Title: </Text>
+                    <Text style = {styles.value}>{post ?post.title: null}</Text>
+                </View>
+                <View style = {styles.secCard}>
+                    <Text style = {styles.label}>Description: </Text>
+                    <Text style = {styles.value}>{post ? post.desc: null}</Text>
+                </View>
+                <View style = {styles.misContainer}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 16 }}>
+                        {/* Like */}
+                        <View style={{ alignItems: 'center', marginRight: 24 }}>
+                            <TouchableOpacity 
+                                style={{
+                                    padding: 10,
+                                    borderRadius: 12,
+                                    backgroundColor: '#2E2E2E',
+                                }}
+                                onPress={() => toggleLike('like')}
+                            >
+                                <AntDesign 
+                                    name={like === 1 ? "like1" : "like2"} 
+                                    size={24} 
+                                    color={like === 1 ? "#00FF00" : "#FFFFFF"} 
+                                />
+                            </TouchableOpacity>
+                            <Text style={{ color: '#FFFFFF', fontSize: 16, marginTop: 6 }}>
+                                {lcount??  0}
+                            </Text>
+                        </View>
 
-                    {/* Dislike */}
-                    <View style={{ alignItems: 'center' }}>
-                        <TouchableOpacity 
-                            style={{
-                                padding: 10,
-                                borderRadius: 12,
-                                backgroundColor: '#2E2E2E',
-                            }}
-                            onPress={() => toggleLike('dislike')}
-                        >
-                            <AntDesign 
-                                name={like === -1 ? "dislike1" : "dislike2"} 
-                                size={24} 
-                                color={like === -1 ? "#FF0000" : "#FFFFFF"} 
-                            />
-                        </TouchableOpacity>
-                        <Text style={{ color: '#FFFFFF', fontSize: 16, marginTop: 6 }}>
-                            {dcount?? 0}
-                        </Text>
+                        {/* Dislike */}
+                        <View style={{ alignItems: 'center' }}>
+                            <TouchableOpacity 
+                                style={{
+                                    padding: 10,
+                                    borderRadius: 12,
+                                    backgroundColor: '#2E2E2E',
+                                }}
+                                onPress={() => toggleLike('dislike')}
+                            >
+                                <AntDesign 
+                                    name={like === -1 ? "dislike1" : "dislike2"} 
+                                    size={24} 
+                                    color={like === -1 ? "#FF0000" : "#FFFFFF"} 
+                                />
+                            </TouchableOpacity>
+                            <Text style={{ color: '#FFFFFF', fontSize: 16, marginTop: 6 }}>
+                                {dcount?? 0}
+                            </Text>
+                        </View>
+                    </View>
+                    <View>
+                        <View style = {{flexDirection: 'row', alignItems: 'center'}}>
+                            <Text style = {styles.label}>Posted By: </Text>
+                            <Text style = {styles.label}>{post ? post.createdBy: null}</Text>
+                        </View>
+                        <View style = {{flexDirection: 'row', alignItems: 'center'}}>
+                            <Text style = {styles.label}>Posted On: </Text>
+                            <Text style = {styles.label}>{post ? new Date(post.createdAt).toLocaleDateString() : null}</Text>
+                        </View>
                     </View>
                 </View>
-                <View>
-                    <View style = {{flexDirection: 'row', alignItems: 'center'}}>
-                        <Text style = {styles.label}>Posted By: </Text>
-                        <Text style = {styles.label}>{post ? post.createdBy: null}</Text>
-                    </View>
-                    <View style = {{flexDirection: 'row', alignItems: 'center'}}>
-                        <Text style = {styles.label}>Posted On: </Text>
-                        <Text style = {styles.label}>{post ? new Date(post.createdAt).toLocaleDateString() : null}</Text>
-                    </View>
+                <View style={[{ flexDirection: 'row', alignItems: 'center' }, styles.inputContainer]}>
+                    <TextInput 
+                        style={styles.input}
+                        value={comment}
+                        onChangeText={setComment}
+                        placeholder="Type your comment"
+                        placeholderTextColor="#AAAAAA"
+                    />
+                    <TouchableOpacity style={styles.sendButton} onPress={saveComment}>
+                        <Ionicons name="send" size={24} color="#FFFFFF" />
+                    </TouchableOpacity>
+                </View>
+                <Text style = {styles.h3}>Comments</Text>
+                <View style={{ marginTop: 12, width: '100%' }}>
+                    {comments.length > 0? comments.map((c) => (
+                        <View key={c.id} style={{ marginBottom: 12, padding: 12, backgroundColor: '#2E2E2E', borderRadius: 8 }}>
+                            <Text style={{ color: '#FFFFFF', fontSize: 16 }}>{c.comment}</Text>
+                            <Text style={{ color: '#AAAAAA', fontSize: 14, marginTop: 4 }}>
+                                {c.username} - {new Date(c.createdAt).toLocaleDateString()}      
+                            </Text>
+                        </View>
+                    )) : <Text style={{ color: '#AAAAAA', fontSize: 16 }}>No comments yet</Text>}
                 </View>
             </View>
-        </View>
     )
 }
 
 const Proposals = (props) => {
     const styles = props.styles;
     // const { user } = useAuth();
+    const uid = props.uid;
 
     const [proposal, setProposal] = useState(null);
-    // const [deviceId, setDeviceId] = useState(null);
     const [selected, setSelected] = useState(null);
-    const [pincode, setPincode] = useState(null);
-
+    const [ comment, setComment ] = useState('');
+    const [ comments, setComments ] = useState([]);
     const deviceId = props.deviceId
 
     // useEffect(() => {
@@ -276,28 +375,47 @@ const Proposals = (props) => {
     // }, [user]);
 
     useEffect(() => {
-        const fetchProposal = async () => {
-            if (!deviceId) return;
-            const pinRes = await get(ref(database, `${deviceId}/profile/pincode`));
-            const pin = pinRes.val();
-            setPincode(pin);
+        const q = query(
+            ref(database,`communities/${props.id}/proposals/${props.postId}`),
+            orderByChild('createdAt'),
+        )
 
-            const proposalRef = ref(database, `communities/${pin}/${props.id}/proposals/${props.postId}`);
-            onValue(proposalRef, (snapshot) => {
-                const data = snapshot.val();
+        const qc = query (
+            ref(database, `communities/${props.id}/proposals/${props.postId}/comments`),
+            orderByChild('createdAt'),
+        )
+
+        const unsubC = onValue(qc, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                const commentsArray = Object.entries(data).map(([key, value]) => ({
+                    id: key,
+                    ...value,
+                }));
+                setComments(commentsArray);
+            } else {
+                setComments([]);
+            }
+        });
+
+        const unsub = onValue(q, (snapshot) => {
+            const data = snapshot.val();
+            if(data) {
                 setProposal(data);
                 if (data?.votes?.[deviceId] !== undefined) {
                     setSelected(data.votes[deviceId]);
                 }
-            });
-        };
-        fetchProposal();
-    }, [deviceId]);
+            }
+        })
+
+        return () => {unsub(); unsubC();}
+
+    }, []);
 
     const handleVote = async (index) => {
-        if (selected === index || !deviceId || !pincode) return;
+        if (selected === index || !deviceId) return;
     
-        const path = `communities/${pincode}/${props.id}/proposals/${props.postId}`;
+        const path = `communities/${props.id}/proposals/${props.postId}`;
         const previousVote = selected;
     
         const rawCounts = proposal?.voteCounts || {};
@@ -328,6 +446,21 @@ const Proposals = (props) => {
         setSelected(index);
     };
     
+    const saveComment = async() => {
+        try {
+            if(!uid || !comment.trim()) return;
+            const pref = push(ref(database, `communities/${props.id}/proposals/${props.postId}/comments`));
+            set(pref, {
+                userId: uid,
+                comment: comment.trim(),
+                createdAt: Date.now(),
+                username: props.name,
+            })
+        }catch(error) {
+            console.log('Error saving comment:', error);  
+        }
+        setComment('');
+    }
 
     const getWinningOptions = () => {
         if (!proposal?.voteCounts) return [];
@@ -376,7 +509,35 @@ const Proposals = (props) => {
                             </Text>
                         </TouchableOpacity>
                     );
-                })}
+                })
+            }
+            <View style = {styles.misContainer}>
+                <Text style={styles.label}>Posted By: {proposal?.createdBy}</Text>
+                <Text style={styles.label}>Posted At: {new Date(proposal?.createdAt).toLocaleDateString()}</Text>
+            </View>
+            <View style={[{ flexDirection: 'row', alignItems: 'center' }, styles.inputContainer]}>
+                    <TextInput 
+                        style={styles.input}
+                        value={comment}
+                        onChangeText={setComment}
+                        placeholder="Type your comment"
+                        placeholderTextColor="#AAAAAA"
+                    />
+                    <TouchableOpacity style={styles.sendButton} onPress={saveComment}>
+                        <Ionicons name="send" size={24} color="#FFFFFF" />
+                    </TouchableOpacity>
+                </View>
+                <Text style = {styles.h3}>Comments</Text>
+                <View style={{ marginTop: 12, width: '100%' }}>
+                    {comments.length > 0? comments.map((c) => (
+                        <View key={c.id} style={{ marginBottom: 12, padding: 12, backgroundColor: '#2E2E2E', borderRadius: 8 }}>
+                            <Text style={{ color: '#FFFFFF', fontSize: 16 }}>{c.comment}</Text>
+                            <Text style={{ color: '#AAAAAA', fontSize: 14, marginTop: 4 }}>
+                                {c.username} - {new Date(c.createdAt).toLocaleDateString()}      
+                            </Text>
+                        </View>
+                    )) : <Text style={{ color: '#AAAAAA', fontSize: 16 }}>No comments yet</Text>}
+                </View>
         </View>
     );
 };
@@ -396,19 +557,22 @@ const Emergency = (props) => {
     // }, [user]);
 
     useEffect(() => {
-        const fetchProposal = async () => {
-            try {
-                if(!deviceId) return;
-                const res = await get(ref(database, `${deviceId}/profile/pincode`));
-                const pincode = res.val();
-                const resp = await get(ref(database, `communities/${pincode}/${props.id}/emergency/${props.postId}`))
-                setProposal(resp.val());
-            } catch (error) {
-                console.log('Error fetching proposal:', error);
+        const q = query(
+            ref(database, `communities/${props.id}/emergency/${props.postId}`),
+            orderByChild('createdAt'),
+        );
+
+        const unsub = onValue(q, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                setProposal(data);
+            } else {
+                setProposal(null);
             }
-        }
-        fetchProposal();
-    }, [deviceId]);
+        });
+
+        return () => unsub();
+    }, []);
 
     return (
         <View style={styles.card}>
@@ -420,6 +584,10 @@ const Emergency = (props) => {
             <View style = {styles.secCard}>
                 <Text style = {styles.label}>Description: </Text>
                 <Text style = {styles.value}>{proposal ? proposal.desc: null}</Text>
+            </View>
+            <View style = {styles.misContainer}>
+                <Text style={styles.label}>Posted By: {proposal?.createdBy}</Text>
+                <Text style={styles.label}>Posted At: {new Date(proposal?.createdAt).toLocaleDateString()}</Text>
             </View>
         </View>
     )

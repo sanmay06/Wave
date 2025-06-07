@@ -5,6 +5,7 @@ import { get, ref, set, child, query, push } from 'firebase/database';
 import { ThemeContext } from '@/hooks/ThemeProvider';
 import Menu from '@/components/ui/Menu';
 import { useRoute } from '@react-navigation/native';
+import useAuth from '@/hooks/Auth';
 
 function CreateComm({navigation}) {
 
@@ -15,6 +16,7 @@ function CreateComm({navigation}) {
     const [ type, setType ] = useState('');
     const [ description, setDescription ] = useState('');
     const [ memberCount, setMemberCount ] = useState(1);
+    const { user } = useAuth();
 
     const deviceId = useRoute().params.deviceID;
 
@@ -119,24 +121,11 @@ function CreateComm({navigation}) {
                 value={description}
                 onChangeText={setDescription}
             />
-            <Text style={styles.text}>Enter the Maximum members that can join</Text>
-            <TextInput 
-                style={styles.inputText}
-                value={memberCount}
-                onChangeText={setMemberCount}
-                keyboardType="numeric"
-            />
-            <Text style={styles.text}>Select the type of community</Text>
-            <View style = {styles.radioBox}>
-                <RadioButton text = 'Anyone can join' selected = {type == 'Anyone can join'} pressed = {() => setType('Anyone can join')} theme={theme}/>
-                <RadioButton text = 'Invite only' selected = {type == 'Invite only'} pressed = {() => setType('Invite only')} theme = {theme}/>
-            </View>
             <TouchableOpacity style = {[styles.button, { backgroundColor: theme.button.background }]} onPress = {() => {
                 if(name && description && memberCount && type && position) {
                     
                     const communityData = {
                         name: name,
-                        type: type,
                         location: {
                             latitude: position.latitude,
                             longitude: position.longitude,
@@ -144,10 +133,8 @@ function CreateComm({navigation}) {
                         createdBy: user.uid,
                         createdAt: new Date().toString(),
                         description: description,
-                        memberCount: memberCount,
                         members: {
                             [user.uid]: {
-                                isAdmin: true,
                                 joinedAt: new Date().toString(),
                             }
                         }

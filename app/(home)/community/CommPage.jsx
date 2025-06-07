@@ -5,7 +5,7 @@ import { ThemeContext } from "@/hooks/ThemeProvider";
 import useAuth from '@/hooks/Auth';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { database } from '@/firebaseConfig';
-import { get, ref } from 'firebase/database';
+import { get, ref, onValue, orderByChild, query, set } from 'firebase/database';
 
 function CommPage({navigation, route}) {
 
@@ -29,53 +29,41 @@ export default CommPage;
 
 const Posts = (props) => {
 
-    const [ posts, setPosts ] = useState([]);
-    const [ deviceId, setDeviceId ] = useState('');
+    const [ posts, setPosts ] = useState();
     const { user } = useAuth();
 
-    useEffect(() => {
-        if(user) {
-            setDeviceId(user.photoURL);
-        }
-    }, [user]);
 
     useEffect(() => {
-        const fetchPosts = async () => {
-            console.log("user:", user);
-            try {
-                if(!user) return;
-                const deviceId = user.photoURL;
-                const respo = await get(ref(database, `${deviceId}/profile/pincode`));
-                const pincode = respo.val();
-                const resp = await get(ref(database, `communities/${pincode}/${props.id}/posts`))
-                // const data = resp.val();                
-                setPosts(resp.val());
-                console.log("Posts:", resp.val());
-            }catch(error) {
-                console.log(error);
-            }
-        }
-        fetchPosts();
-    }, [deviceId]);
 
-    useEffect(() => {
-        console.log("Posts:", posts);
-    }, [posts]);
+        // set(ref(database, `communities/${props.id}/posts`), {});
+
+        const q = query(ref(database, `communities/${props.id}/posts`), orderByChild('createdAt'));
+
+        const unsubscribe = onValue(q, (snapshat) => {
+            if(!snapshat.exists()) return;
+            const orderedPosts = Object.entries(snapshat.val()).map(([key, value]) => ({
+                key: key,
+                ...value
+            }));
+            setPosts(orderedPosts.reverse());
+        })
+        return () => unsubscribe();
+
+    }, []);
 
     const navigation = props.navigation;
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Text style = {styles.h1}>Posts</Text>
             {
-                posts? Object.keys(posts).map((key) => {
-                    const post = posts[key];
+                posts? posts.map((post) => {
                     return (
                         <TouchableOpacity
-                            onPress={() => navigation.navigate("community/[page]/info", { id: props.id, page: 'posts', postId: key, deviceID: props.devId })}
+                            onPress={() => navigation.navigate("community/[page]/info", { id: props.id, page: 'posts', postId: post.key, deviceID: props.devId })}
                             style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}
-                            key={key}
+                            key={post.key}
                         >   
-                            <View key={key} style={styles.card}>
+                            <View key={post.key} style={styles.card}>
                                 <Text style={styles.headText}>{post.title}</Text>
                                 <Text style = {styles.text}>{post.desc.length > 125 ? post.desc.substr(0, 125) + " ...": post.desc}</Text>
                                 {<Text style = {styles.create}>Created by: {post.createdBy}</Text>
@@ -99,33 +87,28 @@ const Posts = (props) => {
 const Proposals = (props) => {
 
     const [ proposals, setProposals ] = useState([]);
-    const [ deviceId, setDeviceId ] = useState('');
     const { user } = useAuth();
 
+    //fetching data
     useEffect(() => {
-        if(user) {
-            setDeviceId(user.photoURL);
-        }
-    }, [user]);
+        const q = query(
+            ref(database, `communities/${props.id}/proposals`),
+            orderByChild('createdAt'),
+        );
 
-    useEffect(() => {
-        const fetchPosts = async () => {
-            console.log("user:", user);
-            try {
-                if(!user) return;
-                const deviceId = user.photoURL;
-                const respo = await get(ref(database, `${deviceId}/profile/pincode`));
-                const pincode = respo.val();
-                const resp = await get(ref(database, `communities/${pincode}/${props.id}/proposals`))
-                // const data = resp.val();                
-                setProposals(resp.val());
-                console.log("Posts:", resp.val());
-            }catch(error) {
-                console.log(error);
+        const unsubscribe = onValue(q, (snapshot) => {
+            if(snapshot.exists()) {
+                const orderedProposals = Object.entries(snapshot.val()).map(([ key, value ]) => ({
+                    key: key,
+                    ...value
+                }));
+                setProposals(orderedProposals.reverse());
             }
-        }
-        fetchPosts();
-    }, [deviceId]);
+        })
+
+        return () => unsubscribe();
+
+    }, []);
 
     const navigation = props.navigation;
 
@@ -133,18 +116,17 @@ const Proposals = (props) => {
         <ScrollView contentContainerStyle={styles.container}>
             <Text style = {styles.h1}>Proposals</Text>
             {
-                proposals? Object.keys(proposals).map((key) => {
-                    const post = proposals[key];
+                proposals? proposals.map((proposal) => {
                     return (
                         <TouchableOpacity
-                            onPress={() => navigation.navigate("community/[page]/info", { id: props.id, page: 'proposals', postId: key, deviceID: props.devId })}
+                            onPress={() => navigation.navigate("community/[page]/info", { id: props.id, page: 'proposals', postId: proposal.key, deviceID: props.devId })}
                             style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}
-                            key={key}
+                            key={proposal.key}
                         >   
-                            <View key={key} style={styles.card}>
-                                <Text style={styles.headText}>{post.title}</Text>
-                                <Text style = {styles.text}>{post.desc.length > 125 ? post.desc.substr(0, 125) + " ...": post.desc}</Text>
-                                {<Text style = {styles.create}>Created by: {post.createdBy}</Text>
+                            <View style={styles.card}>
+                                <Text style={styles.headText}>{proposal.title}</Text>
+                                <Text style = {styles.text}>{proposal.desc.length > 125 ? proposal.desc.substr(0, 125) + " ...": proposal.desc}</Text>
+                                {<Text style = {styles.create}>Created by: {proposal.createdBy}</Text>
                                 /*<Text>Created at: {new Date(post.createdAt).toLocaleString()}</Text> */}
                             </View>
                         </TouchableOpacity>
@@ -174,42 +156,39 @@ const Emergency = (props) => {
     }, [user]);
 
     useEffect(() => {
-        const fetchPosts = async () => {
-            console.log("user:", user);
-            try {
-                if(!user) return;
-                const deviceId = user.photoURL;
-                const respo = await get(ref(database, `${deviceId}/profile/pincode`));
-                const pincode = respo.val();
-                const resp = await get(ref(database, `communities/${pincode}/${props.id}/emergency`))
-                // const data = resp.val();                
-                setPosts(resp.val());
-                console.log("Posts:", resp.val());
-            }catch(error) {
-                console.log(error);
-            }
-        }
-        fetchPosts();
-    }, [deviceId]);
+        const q = query(
+            ref(database, `communities/${props.id}/emergency`),
+            orderByChild('createdAt'),
+        );
 
-    useEffect(() => {
-        console.log("Posts:", posts);
-    }, [posts]);
+        const unsub = onValue(q, (snapshot) => {
+            const data = snapshot.val();
+            if(data) {
+                const orderedPosts = Object.entries(data).map(([key, value]) => ({
+                    key: key,
+                    ...value
+                }));
+                setPosts(orderedPosts.reverse());
+            }
+        })
+
+        return () => unsub();
+
+    }, [deviceId]);
 
     const navigation = props.navigation;
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Text style = {styles.h1}>Emergency Posts</Text>
             {
-                posts? Object.keys(posts).map((key) => {
-                    const post = posts[key];
+                posts.length > 0? posts.map((post) => {
                     return (
                         <TouchableOpacity
-                            onPress={() => navigation.navigate("community/[page]/info", { id: props.id, page: 'emergency', postId: key, deviceID: props.devId })}
+                            onPress={() => navigation.navigate("community/[page]/info", { id: props.id, page: 'emergency', postId: post.key, deviceID: props.devId })}
                             style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}
-                            key={key}
+                            key={post.key}
                         >   
-                            <View key={key} style={styles.card}>
+                            <View key={post.key} style={styles.card}>
                                 <Text style={styles.headText}>{post.title}</Text>
                                 <Text style = {styles.text}>{post.desc.length > 125 ? post.desc.substr(0, 125) + " ...": post.desc}</Text>
                                 {<Text style = {styles.create}>Created by: {post.createdBy}</Text>

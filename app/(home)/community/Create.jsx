@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Dimensions, TextInput, TouchableOpacity } from 
 import Menu from '@/components/ui/Menu';
 import { ThemeContext } from "@/hooks/ThemeProvider";
 import useAuth from '@/hooks/Auth';
-import { set, ref, get, update } from 'firebase/database';
+import { set, ref, get, update, push } from 'firebase/database';
 import { database } from '@/firebaseConfig';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -104,21 +104,22 @@ const Posts = (props) => {
     const createPost = async() => {
         try {
             if(!user) return;
-            const postId = Date.now().toString() + user.uid + Math.floor(Math.random() * 1000).toString();
-            const resp = await get(ref(database, `${deviceId}/profile/pincode`));
-            const pincode = resp.val();
-            console.log("Pincode:", pincode);
-            await set(ref(database, `communities/${pincode}/${props.id}/posts/${postId}`), {
+            const pushedId = await push(ref(database, `communities/${props.id}/posts`));
+            await set(pushedId, {
                 title: title,
                 desc: desc,
                 createdBy: user.displayName,
                 createdAt: Date.now(),
-                likes: 0,
-                dislikes: 0,
+                likes: {
+                    count: 0,
+                },
+                dislikes: {
+                    count: 0,
+                },
+                comments: {},
             }).then(() => {
-                console.log("Post Created:", postId);
+                console.log("Post Created:", pushedId.key);
                 navigation.navigate("community/[page]", { id: props.id, page: 'posts' });
-
             })
         }catch (error) {
             console.log(error);
@@ -160,20 +161,18 @@ const Proposals = (props) => {
 
     const createPost = async() => {
         try {
-            // if(!user) return;
-            const postId = Date.now().toString() + user.uid + Math.floor(Math.random() * 1000).toString();
-            const resp = await get(ref(database, `${deviceId}/profile/pincode`));
-            const pincode = resp.val();
-            console.log("Pincode:", pincode);
-            await set(ref(database, `communities/${pincode}/${props.id}/proposals/${postId}`), {
+            if(!user) return;
+            const pushRef = await push(ref(database, `communities/${props.id}/proposals/`));
+            await set(pushRef, {
                 title: title,
                 desc: desc,
                 options: options,
                 createdBy: user.displayName,
                 createdAt: Date.now(),
                 votes: {},
+                comments: {},
             }).then(() => {
-                console.log("Post Created:", postId);
+                console.log("Post Created:", pushRef.key);
                 navigation.navigate("community/[page]", { id: props.id, page: 'proposals', deviceID: deviceId });
             })
         }catch (error) {
@@ -258,11 +257,8 @@ const Emergency = (props) => {
     const createPost = async() => {
         try {
             if(!user) return;
-            const postId = Date.now().toString() + user.uid + Math.floor(Math.random() * 1000).toString();
-            const resp = await get(ref(database, `${deviceId}/profile/pincode`));
-            const pincode = resp.val();
-            console.log("Pincode:", pincode);
-            await set(ref(database, `communities/${pincode}/${props.id}/emergency/${postId}`), {
+            const pushref = push(ref(database, `communities/${props.id}/emergency`));
+            await set(pushref, {
                 title: title,
                 desc: desc,
                 createdBy: user.displayName,
@@ -270,7 +266,7 @@ const Emergency = (props) => {
                 likes: 0,
                 dislikes: 0,
             }).then(() => {
-                console.log("Post Created:", postId);
+                console.log("Post Created:", pushref.key);
                 navigation.navigate("community/[page]", { id: props.id, page: 'emergency', deviceID: deviceId });
 
             })

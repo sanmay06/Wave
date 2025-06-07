@@ -3,44 +3,40 @@ import { View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, TextI
 import { ThemeContext } from "@/hooks/ThemeProvider";
 import useAuth from "@/hooks/Auth";
 import { database } from "@/firebaseConfig";
-import { get, query, ref, set, push, orderByChild, startAt, endAt } from "firebase/database";
+import { get, query, ref, set, orderByChild, startAt, endAt, remove } from "firebase/database";
 import Menu from "@/components/ui/Menu";
 import { useRoute } from "@react-navigation/native";
-
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 const Community = ({ navigation }) => {
 
     // const { user } = useAuth();
     const route = useRoute();
-    const { getUserId } = useAuth();
+    const { user } = useAuth();
     const { theme } = useContext(ThemeContext);
     const deviceId = route.params.deviceID;
-    const [ admin, setAdmin ] = useState(false);
-
-    const [ community, setCommunity ] = useState("");
+    const [ userId, setUserId ] = useState("");
+    const [ community, setCommunity ] = useState();
 
     useEffect(() => {
-        const getID = async () => {
-            const id = await getUserId();
-            if(!id) return;
-        }
-    }, [community]);
-
-    // const test = async() => {
-    //     try {
-    //         await set(ref(database, 'communities'), {});
-    //         await set(ref(database, `${deviceId}/community`), null);
-    //     }catch (error) {
-    //         console.log(error);
-    //     }
-    // }
+        setUserId(user?.uid);
+    }, [user]);
 
     useEffect(() => {
         if(deviceId) {
             const getCommunity = async  () => {
                 try {
+                    if(!userId) return;
                     const response = await get(ref(database, `${deviceId}/community`));
                     if(response.exists()){
-                        setCommunity(response.val());
+                        const comm = response.val();
+                        console.log("Community ID:", comm);
+                        const resp = await get(ref(database, `communities/${comm}/members`));
+                        if(resp.exists()) {
+                            const members = resp.val();
+                            console.log("Members:", members);
+                            if(members[userId])
+                                setCommunity(response.val());
+                        }
                     }
                 }catch (error) {
                     console.error("Error fetching community data:", error);
@@ -48,11 +44,7 @@ const Community = ({ navigation }) => {
             }
             getCommunity();
         }
-    }, [deviceId]);
-
-    useEffect(() => {
-        console.log("Community:", community);
-    }, [community]);
+    }, [deviceId, userId]);
 
     const { height, width } = Dimensions.get("window");
     const isPortrait = height > width; 
@@ -93,9 +85,27 @@ const Community = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <Menu navigation={navigation} />
-            {/* <TouchableOpacity style={styles.button} onPress={test}>
-                <Text style={styles.buttonText}>Test</Text>
-            </TouchableOpacity> */}
+            <View style = {{display: 'flex',marginTop: 12, height:50 , flexDirection: "row", alignItems: 'center', verticalAlign: 'center', width: '95%', justifyContent: 'space-between', backgroundColor: theme.menuBackground}}>
+                <Text style={styles.title}>Communities</Text>
+                <TouchableOpacity onPress={async() => {
+                    await set(ref(database, `${deviceId}/community`), "");
+                    if(!userId || !community) return;
+                    const resp = await get(ref(database, `communities/${community}/members`));
+                    if(resp.exists()) {
+                        const memeber = resp.val();
+                        const count = Object.keys(memeber).length;
+                        
+                        if(count == 1 && memeber[userId]) {
+                            await remove(ref(database, `communities/${community}`));
+                            console.log("Community deleted as it had only one member", community);
+                        }
+                        await remove(ref(database, `communities/${community}/members/${userId}`));
+                    }
+                    setCommunity("");
+                }}>
+                    <MaterialIcons name="exit-to-app" size={32} color={theme.text} />
+                </TouchableOpacity>
+            </View>
             {community ? <CommMenu nav={navigation} community = {community} theme = {theme} deviceID = {deviceId}/>: <Communities navigation = {navigation} setComm = {setCommunity} devId = {deviceId}/>}
         </View>
     );
@@ -106,7 +116,7 @@ export default Community;
 const CommMenu = (props) => {
     
     const theme = props.theme;
-    console.log("community:", props.community);
+    // console.log("community:", props.community);
     const styles = StyleSheet.create({
         container: {
           flex: 1,
@@ -142,7 +152,7 @@ const CommMenu = (props) => {
     
       return (
         <View style={styles.container}>
-          <Text style={styles.header}>Community Menu</Text>
+          {/* <Text style={styles.header}>Community Menu</Text> */}
     
           <TouchableOpacity style={styles.card} onPress={ () => props.nav.navigate("community/[page]", { id: props.community, page: "posts", deviceID : props.deviceID })}>
             <Text style={styles.menuItem}>Community Posts</Text>
@@ -213,7 +223,7 @@ const Communities = ( props ) => {
     const getBoundaries = async() => {
         try {
             const res = await get(ref(database, `${deviceId}/profile`));
-            console.log("res:", res.val());
+            // console.log("res:", res.val());
             const latitude = res.val().latitude;
             const longitude = res.val().longitude;
 
@@ -226,7 +236,7 @@ const Communities = ( props ) => {
                 maxLong: longitude + delta,
             };
             
-            console.log("Boundaries:", result);
+            // console.log("Boundaries:", result);
             return result;
         }catch (error) {
             console.log(error);
@@ -257,77 +267,56 @@ const Communities = ( props ) => {
                             );
 
                         setCommunity(results);
-                        console.log("Communities in range:", results);
+                        // console.log("Communities in range:", results);
                     }
                 });
             }catch (error) {
                 console.log(error);
             }
         }
-        // console.log("Device ID:", deviceId);
-        if(deviceId) {
-            getCommunity();
-        }
-    }, [deviceId]);
+        getCommunity()
+    }, []);
 
     const joining = async (communityId, type) => {
         try {
-            if(type === "Anyone can join") {
-                set(ref(database, `${deviceId}/community`), communityId);
-                console.log("Community joined:", communityId);
-                set(ref(database, `communities/${pin}/${communityId}/members/${user.uid}`), {
-                    isAdmin: false,
-                    joinedAt: new Date().toString()
-                })
-                props.setComm(communityId);
-                // navigation.navigate("community/[id]", { id: communityId });
-            }
-            else {
-                console.log("Requesting to join");
-                set(ref(database, `communities/${pin}/${communityId}/requests/${user.uid}`), {
-                    requestedAt: new Date().toString(),
-                    name: user.displayName,
-                    deviceId: deviceId,
-                });
-            }
+            set(ref(database, `${deviceId}/community`), communityId);
+            console.log("Community joined:", communityId);
+            set(ref(database, `communities/${pin}/${communityId}/members/${user.uid}`), {
+                joinedAt: new Date().toString()
+            })
+            props.setComm(communityId);
         } catch (error) {
             console.log("Error joining community:", error);
         }
     }
 
-    useEffect(() => {
-        console.log('Communities:', communities);
-    }, [communities]);
-
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <Menu navigation={props.navigation} />
             <Text style={styles.title}>Community</Text>
             <Text style={styles.description}>Join our community and connect with others!</Text>
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('create', { deviceID: deviceId })}>
                 <Text style={styles.buttonText}>Want to create a community?</Text>
             </TouchableOpacity>
             <Text style={styles.description}>Communities</Text>
-            {/* {communities && communities.map((community, index) => (
-                <View key={index} style={{ marginVertical: 10 }}>
+            <View style={{ alignItems: "center", justifyContent: "center", width: "100%" }}>
+            {communities && communities.length > 0 ? (
+                communities.map((community, index) => (
+                    <View key={index} style={styles.card}>
                     <Text style={styles.description}>{community.name}</Text>
                     <Text style={styles.description}>{community.description}</Text>
-                </View>
-            ))} */}
-            <View style={{ alignItems: "center", justifyContent: "center", width: "100%" }}>
-                { communities && Object.keys(communities).length > 0 ? (
-                    Object.keys(communities).map((key, index) => (
-                        <View key={index} style={styles.card} >
-                            <Text style={styles.description}>{communities[key].name}</Text>
-                            <Text style={styles.description}>{communities[key].description}</Text>
-                            <TouchableOpacity onPress={ () => joining(key, communities[key].type)} style={styles.button}>
-                                <Text style={styles.buttonText}>{communities[key].type === "Anyone can join"? "join": "ask to join?"}</Text>
-                            </TouchableOpacity>
-                        </View>
-                    ))
+                    <TouchableOpacity
+                        onPress={() => joining(community.id)}
+                        style={styles.button}
+                    >
+                        <Text style={styles.buttonText}>Join</Text>
+                    </TouchableOpacity>
+                    </View>
+                ))
                 ) : (
-                    <Text style={styles.description}>No communities available in ur area. Try creating one</Text>
-                )}
+                <Text style={styles.description}>
+                    No communities available in your area. Try creating one.
+                </Text>
+            )}
             </View>
         </ScrollView>
     )
