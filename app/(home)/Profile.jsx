@@ -96,6 +96,11 @@ function Profile({navigation}) {
         },
         buttonText: {
             color: theme.button.color,
+        },
+        heading: {
+            fontSize: 35,
+            fontWeight: 'bold',
+            color: theme.primary,
         }
     });
 
@@ -112,19 +117,20 @@ function Profile({navigation}) {
 
     
     return (
-        <View style={styles.mainContainer}>
+        <View style = {{flex: 1}}>
             <RadialBackground />
-            <Menu navigation={navigation} />
-            <View style={{ width: '100%', alignItems: 'center', marginTop: 20 }}>
-                <Text style={styles.text}>Profile</Text>
-                <View style={styles.hr} />
-            </View>
+            <ScrollView contentContainerStyle={styles.mainContainer}>
+                <Menu navigation={navigation} />
+                <View style={{ width: '100%', alignItems: 'center', marginTop: 20 }}>
+                    <Text style={styles.heading}>Profile</Text>
+                </View>
 
-            {edit? 
-                <DisplayProfile data = {data} style = {styles} setEdit = {setEdit} deviceID = {deviceId}/> :
-                <EditProfile data={data} styles={styles} updateUser={updateUser} deviceId={deviceId} setEdit = {setEdit} setData = {setData}/>
-            }
+                {edit? 
+                    <DisplayProfile data = {data} style = {styles} setEdit = {setEdit} deviceID = {deviceId}/> :
+                    <EditProfile data={data} styles={styles} updateUser={updateUser} deviceId={deviceId} setEdit = {setEdit} setData = {setData}/>
+                }
 
+            </ScrollView>
         </View>
     );
 }
@@ -136,7 +142,7 @@ const DisplayProfile = ( props ) => {
     const styles = props.style;
 
     return (
-        <View style={{ alignItems: 'center', width: '100%' }}>
+        <ScrollView contentContainerStyle={{ alignItems: 'center', width: '100%' }}>
             <Text style={styles.text}>Username: {data?.uname}</Text>
             <Text style={styles.text}>Device ID: {props.deviceID}</Text>
             <Text style={styles.text}>E-Mail: {data?.email}</Text>
@@ -150,7 +156,7 @@ const DisplayProfile = ( props ) => {
             >
                 <Text style={styles.buttonText}>Edit</Text>
             </TouchableOpacity>
-        </View>
+        </ScrollView>
     )
 };
 
@@ -189,7 +195,7 @@ const EditProfile = ( props ) => {
     }
 
     return (
-            <ScrollView contentContainerStyle={{ alignItems: 'center', width: '100%', flexGrow: 1 }} 
+            <View style={{ alignItems: 'center', width: '100%', flexGrow: 1 }} 
                 showsVerticalScrollIndicator={false}
             >
                 <View style = {{width: width - 20}}></View>
@@ -279,7 +285,7 @@ const EditProfile = ( props ) => {
                 >
                     <Text style={styles.buttonText}>Save</Text>
                 </TouchableOpacity>
-            </ScrollView>
+            </View>
     );
 
 
