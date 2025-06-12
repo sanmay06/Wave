@@ -18,11 +18,12 @@ const Fan = (props) => {
 const styles = StyleSheet.create({
     card: {
       backgroundColor: theme.background,
-      borderRadius: screenWidth / 10,
-      height: screenWidth,
+      borderRadius: 25,
+      height: screenWidth ,
       width: screenWidth,
       padding: 20,
-      margin: screenWidth * 0.02,
+      margin: 10,
+      marginBottom: 15,
       shadowColor: "#000",
       shadowOpacity: 0.1,
       shadowOffset: { width: 0, height: 2 },
@@ -31,6 +32,11 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'space-evenly',
       borderWidth: 1,
+      shadowColor: props.state ? "#FFD700" : "#000",
+      shadowOpacity: props.state ? 0.8 : 0.3,
+      shadowRadius: props.state ? 15 : 5,
+      shadowOffset: { width: 0, height: 0 },
+      elevation: props.state ? 10 : 5, 
     },
     input: {
       fontSize: screenWidth * 0.1,
@@ -91,15 +97,17 @@ const styles = StyleSheet.create({
                 )
               }
               <MotiView
+                key={props.state + '-' + props.speed}
                 from={{ rotate: '0deg' }}
-                animate={props.state ? { rotate: '999999999deg' } : { rotate: '0deg' }}
+                animate={props.state ? { rotate: '360deg' } : { rotate: '0deg' }}
                 transition={{ 
-                  type: 'timing' , 
-                  duration: speed * 10000000000, 
-                  loop: true, 
+                  type: 'timing', 
+                  duration: speed * 1000, 
+                  loop: props.state? true: false, 
+                  repeatReverse: false,
                   easing: Easing.linear
+
                 }}
-                style={{ transform: [{ rotate: '0deg' }] }} 
               >
                 <MaterialCommunityIcons name="fan" size={screenWidth * 0.25} color={theme.text} />
               </MotiView>
@@ -128,4 +136,15 @@ const styles = StyleSheet.create({
     )
 }
 
-export default Fan;
+function areEqual(prevProps, nextProps) {
+  return (
+    prevProps.state === nextProps.state &&
+    prevProps.speed === nextProps.speed &&
+    prevProps.name === nextProps.name &&
+    prevProps.edit === nextProps.edit &&
+    prevProps.theme === nextProps.theme
+  );
+}
+
+// export default Fan;
+export default React.memo(Fan, areEqual);

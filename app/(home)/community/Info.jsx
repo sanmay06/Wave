@@ -5,16 +5,19 @@ import { set, ref, get, update, onValue, push, query, orderByChild } from 'fireb
 import useAuth from '@/hooks/Auth';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Menu from '@/components/ui/Menu';
-import { ThemeContext } from '@/hooks/ThemeProvider';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import RadialBackground from '@/components/ui/Background';
+import { ThemeContext } from '@/hooks/ThemeProvider';
 
 const Info = ({ navigation, route }) => {
+
 
     const { id, page, postId, deviceID } = route.params;
     console.log('Info', id, page, postId);
     const [ uid, setUid ] = useState(null);
     const { user } = useAuth();
     const [ uname, setUname ] = useState(null);
+    const { theme } = useContext(ThemeContext);
 
     useEffect(() => {
         if(user) {
@@ -25,27 +28,26 @@ const Info = ({ navigation, route }) => {
 
     const styles = StyleSheet.create({
         container:{
-            padding: 16,
+            flex: 1,
             width: '100%',
-            backgroundColor: '#121212',
+            backgroundColor: 'transparent',
             minHeight: '100%',
             alignItems: 'center',
-            flexGrow: 1,
         },
         h1: {
-            color: '#FFFFFF',
+            color: theme.text,
             fontSize: 30,
             textAlign: 'center',
             marginBottom: 10,
         },
         h3: {
-            color: '#FFFFFF',
+            color: theme.text,
             fontSize: 20,
             textAlign: 'center',
             marginBottom: 10,
         },
         card: {
-            backgroundColor: '#1E1E1E',
+            backgroundColor: theme.background ,
             borderRadius: 12,
             padding: 16,
             width: '100%',
@@ -57,16 +59,16 @@ const Info = ({ navigation, route }) => {
             marginTop: 12,
         },
         label: {
-            color: '#AAAAAA',
+            color: theme.text,
             fontSize: 16,
             fontWeight: 'bold',
             marginTop: 8,
         },
         value: {
-            color: '#FFFFFF',
+            color: theme.button.color,
             fontSize: 18,
             marginBottom: 12,
-            backgroundColor: '#2E2E2E',
+            backgroundColor: theme.button.background,
             borderRadius: 8,
             padding: 8,            
             shadowColor: '#000',
@@ -88,7 +90,7 @@ const Info = ({ navigation, route }) => {
             marginTop: 12,
         },
         inputContainer: {
-            backgroundColor: '#2E2E2E',
+            backgroundColor: theme.button.background,
             borderRadius: 8,
             paddingHorizontal: 12,
             paddingVertical: 8,
@@ -101,7 +103,7 @@ const Info = ({ navigation, route }) => {
           },
           input: {
             flex: 1,
-            color: '#FFFFFF',
+            color: theme.button.color,
             fontSize: 16,
             paddingVertical: 4,
             paddingRight: 8,
@@ -115,16 +117,19 @@ const Info = ({ navigation, route }) => {
     });
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <Menu navigation = {navigation} back = {true} />
-            <View style = {[{flex: 1, width: '100%'}]}>
-                    {
-                        page === 'posts'? <Post id = {id} postId = {postId} styles = {styles} deviceId = {deviceID} uid = {uid} name = {uname}/> :
-                        page === 'proposals'? <Proposals id = {id} postId = {postId} styles = {styles} deviceId = {deviceID} uid = {uid} name = {uname}/> :
-                        page === 'emergency'? <Emergency id = {id} postId = {postId} styles = {styles} deviceId = {deviceID} uid = {uid} name = {uname}/> : null
-                    }
-            </View>
-        </ScrollView>
+        <View style = {{flex: 1 }}>
+            <RadialBackground />
+            <ScrollView contentContainerStyle={styles.container}>
+                <Menu navigation = {navigation} back = {true} />
+                <View style = {[{flex: 1, width: '100%'}]}>
+                        {
+                            page === 'posts'? <Post id = {id} postId = {postId} styles = {styles} deviceId = {deviceID} uid = {uid} name = {uname} theme = {theme}/> :
+                            page === 'proposals'? <Proposals id = {id} postId = {postId} styles = {styles} deviceId = {deviceID} uid = {uid} name = {uname} theme = {theme}/> :
+                            page === 'emergency'? <Emergency id = {id} postId = {postId} styles = {styles} deviceId = {deviceID} uid = {uid} name = {uname} theme = {theme}/> : null
+                        }
+                </View>
+            </ScrollView>
+        </View>
     )
 }
 
@@ -136,6 +141,7 @@ const Post = (props) => {
     const styles = props.styles;
 
     const deviceId = props.deviceId;
+    const theme = props.theme;
 
     const [ like, setLike ] = useState(0);
     const [ post, setPost ] = useState(null);
@@ -285,7 +291,7 @@ const toggleLike = async (type) => {
                                 style={{
                                     padding: 10,
                                     borderRadius: 12,
-                                    backgroundColor: '#2E2E2E',
+                                    backgroundColor: theme.button.background,
                                 }}
                                 onPress={() => toggleLike('like')}
                             >
@@ -295,7 +301,7 @@ const toggleLike = async (type) => {
                                     color={like === 1 ? "#00FF00" : "#FFFFFF"} 
                                 />
                             </TouchableOpacity>
-                            <Text style={{ color: '#FFFFFF', fontSize: 16, marginTop: 6 }}>
+                            <Text style={{ color: theme.text, fontSize: 16, marginTop: 6 }}>
                                 {lcount??  0}
                             </Text>
                         </View>
@@ -306,7 +312,7 @@ const toggleLike = async (type) => {
                                 style={{
                                     padding: 10,
                                     borderRadius: 12,
-                                    backgroundColor: '#2E2E2E',
+                                    backgroundColor: theme.button.background,
                                 }}
                                 onPress={() => toggleLike('dislike')}
                             >
@@ -316,7 +322,7 @@ const toggleLike = async (type) => {
                                     color={like === -1 ? "#FF0000" : "#FFFFFF"} 
                                 />
                             </TouchableOpacity>
-                            <Text style={{ color: '#FFFFFF', fontSize: 16, marginTop: 6 }}>
+                            <Text style={{ color: theme.text, fontSize: 16, marginTop: 6 }}>
                                 {dcount?? 0}
                             </Text>
                         </View>
@@ -347,13 +353,13 @@ const toggleLike = async (type) => {
                 <Text style = {styles.h3}>Comments</Text>
                 <View style={{ marginTop: 12, width: '100%' }}>
                     {comments.length > 0? comments.map((c) => (
-                        <View key={c.id} style={{ marginBottom: 12, padding: 12, backgroundColor: '#2E2E2E', borderRadius: 8 }}>
-                            <Text style={{ color: '#FFFFFF', fontSize: 16 }}>{c.comment}</Text>
+                        <View key={c.id} style={{ marginBottom: 12, padding: 12, backgroundColor: theme.card, borderRadius: 8 }}>
+                            <Text style={{ color: theme.text, fontSize: 16 }}>{c.comment}</Text>
                             <Text style={{ color: '#AAAAAA', fontSize: 14, marginTop: 4 }}>
                                 {c.username} - {new Date(c.createdAt).toLocaleDateString()}      
                             </Text>
                         </View>
-                    )) : <Text style={{ color: '#AAAAAA', fontSize: 16 }}>No comments yet</Text>}
+                    )) : <Text style={{ color: theme.text, fontSize: 16 }}>No comments yet</Text>}
                 </View>
             </View>
     )
@@ -363,6 +369,7 @@ const Proposals = (props) => {
     const styles = props.styles;
     // const { user } = useAuth();
     const uid = props.uid;
+    const theme = props.theme;
 
     const [proposal, setProposal] = useState(null);
     const [selected, setSelected] = useState(null);
@@ -487,7 +494,6 @@ const Proposals = (props) => {
             {proposal?.options &&
                 Object.entries(proposal.options).map(([indexStr, value]) => {
                     const index = parseInt(indexStr.replace('option', ''));
-                    console.log(index);
                     const isWinner = getWinningOptions().includes(index);
                     const count = proposal.voteCounts?.[index] ?? 0;
 
@@ -499,12 +505,12 @@ const Proposals = (props) => {
                                 marginTop: 12,
                                 padding: 12,
                                 borderRadius: 10,
-                                backgroundColor: selected === index ? '#4CAF50' : '#2E2E2E',
+                                backgroundColor: selected === index ? theme.button.background : theme.background,
                                 borderColor: isWinner ? '#FFD700' : '#555',
                                 borderWidth: 2,
                             }}
                         >
-                            <Text style={{ color: '#FFF', fontSize: 16 }}>
+                            <Text style={{ color: theme.text , fontSize: 16 }}>
                                 {value} - {count} vote{count !== 1 ? 's' : ''} {isWinner ? '🏆' : ''}
                             </Text>
                         </TouchableOpacity>
@@ -530,8 +536,8 @@ const Proposals = (props) => {
                 <Text style = {styles.h3}>Comments</Text>
                 <View style={{ marginTop: 12, width: '100%' }}>
                     {comments.length > 0? comments.map((c) => (
-                        <View key={c.id} style={{ marginBottom: 12, padding: 12, backgroundColor: '#2E2E2E', borderRadius: 8 }}>
-                            <Text style={{ color: '#FFFFFF', fontSize: 16 }}>{c.comment}</Text>
+                        <View key={c.id} style={{ marginBottom: 12, padding: 12, backgroundColor: theme.background, borderRadius: 8 }}>
+                            <Text style={{ color: theme.text, fontSize: 16 }}>{c.comment}</Text>
                             <Text style={{ color: '#AAAAAA', fontSize: 14, marginTop: 4 }}>
                                 {c.username} - {new Date(c.createdAt).toLocaleDateString()}      
                             </Text>
@@ -543,52 +549,48 @@ const Proposals = (props) => {
 };
 
 const Emergency = (props) => {
-
-    const styles = props.styles;
-    const [ proposal, setProposal ] = useState(null);
-    // const [ deviceId, setDeviceId ] = useState(null);   
-    // const { user } = useAuth();
-
-    const deviceId = props.deviceId
-
-    // useEffect(() => {
-    //     if(user) 
-    //         setDeviceId(user.photoURL);
-    // }, [user]);
-
+    const { styles, theme, id, postId } = props;
+    const [emergency, setEmergency] = useState(null);
+  
     useEffect(() => {
-        const q = query(
-            ref(database, `communities/${props.id}/emergency/${props.postId}`),
-            orderByChild('createdAt'),
-        );
-
-        const unsub = onValue(q, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                setProposal(data);
-            } else {
-                setProposal(null);
-            }
-        });
-
-        return () => unsub();
+      const q = query(
+        ref(database, `communities/${id}/emergency/${postId}`),
+        orderByChild('createdAt')
+      );
+      const unsub = onValue(q, snapshot => {
+        setEmergency(snapshot.val());
+      });
+      return () => unsub();
     }, []);
-
+  
     return (
-        <View style={styles.card}>
-            <Text style = {styles.h1}>Proposals</Text>
-            <View style = {styles.secCard}>
-                <Text style = {styles.label}>Title: </Text>
-                <Text style = {styles.value}>{proposal ? proposal.title: null}</Text>
-            </View>
-            <View style = {styles.secCard}>
-                <Text style = {styles.label}>Description: </Text>
-                <Text style = {styles.value}>{proposal ? proposal.desc: null}</Text>
-            </View>
-            <View style = {styles.misContainer}>
-                <Text style={styles.label}>Posted By: {proposal?.createdBy}</Text>
-                <Text style={styles.label}>Posted At: {new Date(proposal?.createdAt).toLocaleDateString()}</Text>
-            </View>
+      <View style={styles.card}>
+        <Text style={styles.h1}>Emergency</Text>
+  
+        <View style={styles.secCard}>
+          <Text style={styles.label}>Title:</Text>
+          <Text style={styles.value}>{emergency?.title ?? ''}</Text>
         </View>
-    )
-}
+  
+        <View style={styles.secCard}>
+          <Text style={styles.label}>Description:</Text>
+          <Text style={styles.value}>{emergency?.desc ?? ''}</Text>
+        </View>
+  
+        <View style={styles.secCard}>
+          <Text style={styles.label}>Posted By:</Text>
+          <Text style={styles.value}>{emergency?.createdBy ?? ''}</Text>
+        </View>
+  
+        <View style={styles.secCard}>
+          <Text style={styles.label}>Posted At:</Text>
+          <Text style={styles.value}>
+            {emergency?.createdAt
+              ? new Date(emergency.createdAt).toLocaleDateString()
+              : ''}
+          </Text>
+        </View>
+      </View>
+    );
+  };
+  

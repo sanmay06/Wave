@@ -6,6 +6,7 @@ import useAuth from '@/hooks/Auth';
 import { set, ref, get, update, push } from 'firebase/database';
 import { database } from '@/firebaseConfig';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import RadialBackground from '@/components/ui/Background';
 
 const Create = ({ navigation, route }) => {
 
@@ -128,6 +129,7 @@ const Posts = (props) => {
 
     return (
         <View style={styles.mainContainer}>
+            <RadialBackground />
             <Text style={styles.text}>Enter Post Title</Text>
             <TextInput 
                 style = {styles.inputText}

@@ -6,6 +6,7 @@ import { ThemeContext } from '@/hooks/ThemeProvider';
 import Menu from '@/components/ui/Menu';
 import { useRoute } from '@react-navigation/native';
 import useAuth from '@/hooks/Auth';
+import RadialBackground from '@/components/ui/Background';
 
 function CreateComm({navigation}) {
 
@@ -107,6 +108,7 @@ function CreateComm({navigation}) {
 
     return (
         <ScrollView contentContainerStyle = {styles.mainContainer}>
+            <RadialBackground />
             <Menu navigation={navigation} back = {true}/>
             <Text style = {styles.text}>Create Community</Text>
             <Text style={styles.text}>Enter the community name</Text>

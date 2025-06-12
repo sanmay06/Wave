@@ -7,6 +7,8 @@ import { get, query, ref, set, orderByChild, startAt, endAt, remove } from "fire
 import Menu from "@/components/ui/Menu";
 import { useRoute } from "@react-navigation/native";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import RadialBackground from "@/components/ui/Background";
+
 const Community = ({ navigation }) => {
 
     // const { user } = useAuth();
@@ -53,7 +55,8 @@ const Community = ({ navigation }) => {
         container: {
             flex: 1,
             backgroundColor: theme.background,
-            padding: 20,
+            justifyContent: 'center',
+            alignItems: 'center',
           },
         title: {
             fontSize: screenWidth * 0.1,
@@ -83,7 +86,8 @@ const Community = ({ navigation }) => {
             
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
+            <RadialBackground />
             <Menu navigation={navigation} />
             <View style = {{display: 'flex',marginTop: 12, height:50 , flexDirection: "row", alignItems: 'center', verticalAlign: 'center', width: '95%', justifyContent: 'space-between', backgroundColor: theme.menuBackground}}>
                 <Text style={styles.title}>Communities</Text>
@@ -107,7 +111,7 @@ const Community = ({ navigation }) => {
                 </TouchableOpacity>
             </View>
             {community ? <CommMenu nav={navigation} community = {community} theme = {theme} deviceID = {deviceId}/>: <Communities navigation = {navigation} setComm = {setCommunity} devId = {deviceId}/>}
-        </View>
+        </ScrollView>
     );
 };
 
@@ -120,7 +124,7 @@ const CommMenu = (props) => {
     const styles = StyleSheet.create({
         container: {
           flex: 1,
-          backgroundColor: theme.background,
+          backgroundColor: 'transparent',
           padding: 20,
           alignItems: 'center',
           justifyContent: 'space-around',

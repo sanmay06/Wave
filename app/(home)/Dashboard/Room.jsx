@@ -9,6 +9,7 @@ import Fan from '@/components/ui/Fan';
 import Outlet from '@/components/ui/Outlets';
 import useAuth from '@/hooks/Auth';
 import { MotiView } from 'moti';
+import RadialBackground from '@/components/ui/Background';
 
 function Room({navigation , route}) {
 
@@ -100,7 +101,7 @@ function Room({navigation , route}) {
                     a.push(data.outlets['outlet' + i]);
                 }
                 setOutlets(a);
-                console.log(outlets);
+                // console.log(outlets);
             }
             if(data.name) {
                 setName(data.name);
@@ -166,7 +167,7 @@ function Room({navigation , route}) {
             // console.log("Object:",obj)
 
             await update(ref(database, `${deviceId}/rooms/room${id}/lights`), obj).then(
-                console.log('updated Lights')
+                // console.log('updated Lights')
             )
         } 
         updateData();
@@ -187,7 +188,7 @@ function Room({navigation , route}) {
             // console.log("Object:",obj)
 
             await update(ref(database, `${deviceId}/rooms/room${id}/outlets`), obj).then(
-                console.log('updated outlets')
+                // console.log('updated outlets')
             )
         } 
         updateData();
@@ -208,7 +209,7 @@ function Room({navigation , route}) {
             // console.log("Object:",obj)
 
             await update(ref(database, `${deviceId}/rooms/room${id}/fans`), obj).then(
-                console.log('updated Fans')
+                // console.log('updated Fans')
             )
         }
         updateData();
@@ -217,12 +218,13 @@ function Room({navigation , route}) {
     const styles = StyleSheet.create({
         container: {
             flex: 1,
-            backgroundColor: theme.background,
+            backgroundColor: 'transparent',
         },
         componentBox: {
             flexGrow: 1,
             padding: 10,
             width: '100%',
+            backgroundColor: 'transparent',
         },
         compText: {
             fontSize: 20,
@@ -244,6 +246,7 @@ function Room({navigation , route}) {
 
     return (
         <View style={styles.container}>
+            <RadialBackground />
             <Menu back={true} navigation={navigation} />
             <ScrollView contentContainerStyle={styles.componentBox}>
                 {/* {changes && <Pressable onPress={() => { setChanges(); setChange(false)}} style={{ marginBottom: 16 }} >

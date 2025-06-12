@@ -8,6 +8,7 @@ import Menu  from "@/components/ui/Menu";
 import { StackNavigationProp } from "@react-navigation/stack";
 import useAuth from "@/hooks/Auth";
 import { useRoute } from "@react-navigation/native";
+import RadialBackground from "@/components/ui/Background";
 
 type RootStackParamList = {
   Dashboard: undefined;
@@ -38,11 +39,12 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: theme.background,
+      backgroundColor: 'transparent',
       padding: 20,
     },
     scrollContainer: {
       flexGrow: 1,
+      backgroundColor: 'transparent',
     },
     title: {
       fontSize: 36,
@@ -124,7 +126,6 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {
   const [rooms, setRooms] = useState<any>("");
   const [data, setData] = useState<any>("");
   const [ deviceId, setDeviceId ] = useState<string>('');
-  // const { user }: { user: any | null } = useAuth();
   const [ chnages, setChanges ] = useState<any>({});
   const route:any = useRoute();
   console.log('route:',route.params);
@@ -153,14 +154,6 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {
     });
     setRooms((prevRooms: any) => ({ ...prevRooms, [`room${roomId}`]: { ...prevRooms[`room${roomId}`], name: newName } }));
   };
-
-  // useEffect(() => {
-  //   // console.log(user)
-  //     if(user && user.photoURL) {
-  //         setDeviceId(user.photoURL as string);
-  //     }
-  //     // console.log("Device ID:", deviceId);
-  // }, [user]);
 
   useEffect(() => {
     if(deviceId != '') {
@@ -256,69 +249,68 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {
   }
 
   return (
-    <ScrollView 
-      contentContainerStyle={styles.scrollContainer}
-    >
-      <Menu navigation={navigation}/>
-      {/* <Pressable
-        style = {{backgroundColor: 'white'}}
-        onPress={createRooms}
-      ><Text style = {{color: 'black'}}>Click Me </Text></Pressable> */}
-      <View style={styles.container}>
-        <Pressable onPress={() => updateRooms()}>
-          <MotiView 
-            style={styles.card}
-            from={{ opacity: 0, translateY: -50 }}
-            animate={{ opacity: 1, translateY: 0 }}
-          >
-            <Text style={styles.cardTitle}>Temperature</Text>
-            <Text style={styles.cardValue}>{temperature}°C</Text>
-            <Text style={styles.cardTitle}>Humidity</Text>
-            <Text style={styles.cardValue}>{humidity}%</Text>
-            <Text style={styles.cardTitle}>Battery</Text>
-            <Text style={styles.cardValue}>{battery}%</Text>
-            <Text style={styles.cardTitle}>Pi Temperature</Text>
-            <Text style={styles.cardValue}>{pitemp}</Text>
-          </MotiView>
-          <View style={{ marginBottom: 24 }}>
-            <Text style={styles.compText}>Rooms</Text>
-            <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
-              {DisplayRooms()}
+    <View style = {{ flex :1 }}>
+      <RadialBackground />
+      <ScrollView 
+        contentContainerStyle={styles.scrollContainer}
+      >
+        <Menu navigation={navigation}/>
+        <View style={styles.container}>
+          <Pressable onPress={() => updateRooms()}>
+            <MotiView 
+              style={styles.card}
+              from={{ opacity: 0, translateY: -50 }}
+              animate={{ opacity: 1, translateY: 0 }}
+            >
+              <Text style={styles.cardTitle}>Temperature</Text>
+              <Text style={styles.cardValue}>{temperature}°C</Text>
+              <Text style={styles.cardTitle}>Humidity</Text>
+              <Text style={styles.cardValue}>{humidity}%</Text>
+              <Text style={styles.cardTitle}>Battery</Text>
+              <Text style={styles.cardValue}>{battery}%</Text>
+              <Text style={styles.cardTitle}>Pi Temperature</Text>
+              <Text style={styles.cardValue}>{pitemp}</Text>
+            </MotiView>
+            <View style={{ marginBottom: 24 }}>
+              <Text style={styles.compText}>Rooms</Text>
+              <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+                {DisplayRooms()}
+              </View>
             </View>
-          </View>
-         
+          
 
-          <View style={{backgroundColor: theme.background, borderRadius: 25, padding: 20, marginBottom: 15, shadowColor: "#000", shadowOpacity: 0.1, shadowOffset: { width: 0, height: 2 }, elevation: 5, borderColor: theme.border, borderWidth: 1,flexDirection: 'row', justifyContent: 'space-between', width: '80%', }}>
-            <Text style={styles.cardTitle}>Master Switch</Text>
-            <Switch
-              value={light}
-              onValueChange={(value: boolean) => {
-                setLight(value);
-                toggleLight("light3", value);
-              }}
-            />
-          </View>
-            
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Scheduled ON Time</Text>
-            <TextInput
-              style={styles.input}
-              value={scheduledOnTime}
-              onChangeText={setScheduledOnTime}
-              placeholder="HH:MM"
-            />
-            <Text style={styles.cardTitle}>Scheduled OFF Time</Text>
-            <TextInput
-              style={styles.input}
-              value={scheduledOffTime}
-              onChangeText={setScheduledOffTime}
-              placeholder="HH:MM"
-            />
-            <Button title="Save Schedule" onPress={saveSchedule} />
-          </View>
-        </Pressable>
-      </View>
-    </ScrollView>
+            <View style={{backgroundColor: theme.background, borderRadius: 25, padding: 20, marginBottom: 15, shadowColor: "#000", shadowOpacity: 0.1, shadowOffset: { width: 0, height: 2 }, elevation: 5, borderColor: theme.border, borderWidth: 1,flexDirection: 'row', justifyContent: 'space-between', width: '80%', }}>
+              <Text style={styles.cardTitle}>Master Switch</Text>
+              <Switch
+                value={light}
+                onValueChange={(value: boolean) => {
+                  setLight(value);
+                  toggleLight("light3", value);
+                }}
+              />
+            </View>
+              
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>Scheduled ON Time</Text>
+              <TextInput
+                style={styles.input}
+                value={scheduledOnTime}
+                onChangeText={setScheduledOnTime}
+                placeholder="HH:MM"
+              />
+              <Text style={styles.cardTitle}>Scheduled OFF Time</Text>
+              <TextInput
+                style={styles.input}
+                value={scheduledOffTime}
+                onChangeText={setScheduledOffTime}
+                placeholder="HH:MM"
+              />
+              <Button title="Save Schedule" onPress={saveSchedule} />
+            </View>
+          </Pressable>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 

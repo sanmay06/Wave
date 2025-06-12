@@ -4,6 +4,7 @@ import { ThemeContext } from "@/hooks/ThemeProvider";
 import useAuth from "@/hooks/Auth";
 import { ScrollView } from "react-native-gesture-handler";
 import EvilIcons from '@expo/vector-icons/EvilIcons';
+import RadialBackground from "@/components/ui/Background";
 
 function Register({ navigation }) {
     const { register } = useAuth();
@@ -108,124 +109,126 @@ function Register({ navigation }) {
         }
 
     return (
-        <ScrollView 
-            contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}
-        >
-            <View style={styles.mainContainer}>
-                <Text style={styles.text}>Enter your Username</Text>
-                <TextInput 
-                    style={styles.inputText}
-                    value={name}
-                    onChangeText={setName}
-                />
-
-                <Text style={styles.text}>Enter your E-Mail</Text>
-                <TextInput 
-                    style={styles.inputText}
-                    value={email}
-                    onChangeText={setEmail}
-                />
-
-                <Text style={styles.text}>Enter Device Id</Text>
-                <TextInput 
-                    style={styles.inputText}
-                    value={deviceId}
-                    onChangeText={setDeviceId}
-                />
-
-                <Text style={styles.text}>Enter your Phone Number</Text>
-                <TextInput 
-                    style={styles.inputText}
-                    value={phone}
-                    onChangeText={setPhone}
-                />
-
-                <Text style={styles.text}>Enter your Address</Text>
-                <TextInput 
-                    style={styles.addressTest}
-                    value={address}
-                    onChangeText={setAddress}
-                    multiline
-                />
-
-<View>
-                    <Text style={styles.text}>Latitude</Text>
-                    <TextInput
+        <View style={{ flex: 1 }}>
+            <ScrollView 
+                contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent' }}
+            >
+                <View style={styles.mainContainer}>
+                    <Text style={styles.text}>Enter your Username</Text>
+                    <TextInput 
                         style={styles.inputText}
-                        value={latitude}
-                        // onChangeText={(text) => setData({ ...data, latitude: text })}
-                        editable={false}
+                        value={name}
+                        onChangeText={setName}
                     />
-                </View>
 
-                <View>
-                    <Text style={styles.text}>Longitude</Text>
-                    <TextInput
+                    <Text style={styles.text}>Enter your E-Mail</Text>
+                    <TextInput 
                         style={styles.inputText}
-                        value={longitude}
-                        // onChangeText={(text) => setData({ ...data, longitude: text })}
-                        editable={false}
+                        value={email}
+                        onChangeText={setEmail}
                     />
-                </View>
 
-                <TouchableOpacity
-                    style={[styles.button, { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '80%', height: 40 }]}
-                    onPress={getLocation}
-                >
-                    <Text style = {styles.text}>Get Location</Text><EvilIcons name="location" size={20} color="black" />
-                </TouchableOpacity>
+                    <Text style={styles.text}>Enter Device Id</Text>
+                    <TextInput 
+                        style={styles.inputText}
+                        value={deviceId}
+                        onChangeText={setDeviceId}
+                    />
 
-                <Text style={styles.text}>Enter password:</Text>
-                <TextInput
-                    value={password}
-                    secureTextEntry={passvis}
-                    onChangeText={setpassword}
-                    style={styles.inputText}
-                />
+                    <Text style={styles.text}>Enter your Phone Number</Text>
+                    <TextInput 
+                        style={styles.inputText}
+                        value={phone}
+                        onChangeText={setPhone}
+                    />
 
-                <Text style={styles.text}>Confirm Password:</Text>
-                <TextInput
-                    value={conpass}
-                    secureTextEntry={passvis}
-                    onChangeText={setconpass}
-                    style={styles.inputText}
-                />
+                    <Text style={styles.text}>Enter your Address</Text>
+                    <TextInput 
+                        style={styles.addressTest}
+                        value={address}
+                        onChangeText={setAddress}
+                        multiline
+                    />
 
-                <TouchableOpacity
-                    onPress={() => setpassvis(!passvis)}
-                    style={styles.button}
-                >
-                    <Text style={styles.buttonText}>{passvis ? "Show Password" : "Hide Password"}</Text>
-                </TouchableOpacity>
+                    <View>
+                        <Text style={styles.text}>Latitude</Text>
+                            <TextInput
+                                style={styles.inputText}
+                                value={latitude}
+                                // onChangeText={(text) => setData({ ...data, latitude: text })}
+                                editable={false}
+                            />
+                    </View>
 
-                {msg ? <Text style={[styles.text, { color: "red" }]}>{msg}</Text> : null}
+                    <View>
+                        <Text style={styles.text}>Longitude</Text>
+                        <TextInput
+                            style={styles.inputText}
+                            value={longitude}
+                            // onChangeText={(text) => setData({ ...data, longitude: text })}
+                            editable={false}
+                        />
+                    </View>
 
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => {
-                        register(email, password, name, deviceId, phone, address, latitude, longitude).then((res) => {
-                            if (res === "success") {
-                                navigation.navigate('login');
-                            }else 
-                                setmsg(res);
-                        });
-                        // updateUser(name, photo, phone);
+                    <TouchableOpacity
+                        style={[styles.button, { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '80%', height: 40 }]}
+                        onPress={getLocation}
+                    >
+                        <Text style = {styles.text}>Get Location</Text><EvilIcons name="location" size={20} color="black" />
+                    </TouchableOpacity>
+
+                    <Text style={styles.text}>Enter password:</Text>
+                    <TextInput
+                        value={password}
+                        secureTextEntry={passvis}
+                        onChangeText={setpassword}
+                        style={styles.inputText}
+                    />
+
+                    <Text style={styles.text}>Confirm Password:</Text>
+                    <TextInput
+                        value={conpass}
+                        secureTextEntry={passvis}
+                        onChangeText={setconpass}
+                        style={styles.inputText}
+                    />
+
+                    <TouchableOpacity
+                        onPress={() => setpassvis(!passvis)}
+                        style={styles.button}
+                    >
+                        <Text style={styles.buttonText}>{passvis ? "Show Password" : "Hide Password"}</Text>
+                    </TouchableOpacity>
+
+                    {msg ? <Text style={[styles.text, { color: "red" }]}>{msg}</Text> : null}
+
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => {
+                            register(email, password, name, deviceId, phone, address, latitude, longitude).then((res) => {
+                                if (res === "success") {
+                                    navigation.navigate('login');
+                                }else 
+                                    setmsg(res);
+                            });
+                            // updateUser(name, photo, phone);
+                        }
                     }
-                }
-                >
-                    <Text style={styles.buttonText}>Submit</Text>
-                </TouchableOpacity>
+                    >
+                        <Text style={styles.buttonText}>Submit</Text>
+                    </TouchableOpacity>
 
-                <View style={styles.hr} />
+                    <View style={styles.hr} />
 
-                <Text style={styles.text}>
-                    Existing user? 
-                    <Pressable onPress={() => navigation.navigate('login')}>
-                        <Text style={styles.link}> Login here</Text>
-                    </Pressable>
-                </Text>
-            </View>
-        </ScrollView>
+                    <Text style={styles.text}>
+                        Existing user? 
+                        <Pressable onPress={() => navigation.navigate('login')}>
+                            <Text style={styles.link}> Login here</Text>
+                        </Pressable>
+                    </Text>
+                </View>
+            </ScrollView>
+        </View>
     );
 }
 

@@ -1,66 +1,62 @@
 
 
 export const Colors = {
-  // Light Theme (White Background)
   light: {
-    background: '#ffffff',  // Pure white for a clean look
-    primary: '#0073e6',     // Vibrant blue for primary elements
-    secondary: '#CEEAD6',   // Light green for accents
-    text: '#333333',        // Dark gray for readability
-    labelText: '#555555',   // Lighter gray for secondary text
-    button: { background: '#0073e6', color: '#ffffff' },  // Blue button with white text
-    buttonHover: { background: '#005bb5', color: '#ffffff' }, // Darker blue on hover
-    border: '#e0e0e0',      // Light gray for dividers and borders
-    link: '#0073e6',        // Blue for links
-    linkHover: '#005bb5',   // Darker blue on hover
-
+    background: '#F5F7FA', // Soft, near-white pink-tinted background
+    primary: '#e75480',     // Warm pink (vivid, but gentle enough)
+    secondary: '#fadadd',   // Light rose/pink pastel accent
+    text: '#333333',        // Maintain high contrast for readability
+    labelText: '#555555',   // Slightly softened for secondary text
+    button: { background: '#e75480', color: '#ffffff' },  // Pink button
+    buttonHover: { background: '#c7436d', color: '#ffffff' }, // Deeper pink
+    border: '#f3e6ec',      // Light pink border to match the background tone
+    link: '#e75480',        // Consistent with primary color
+    linkHover: '#c7436d',   // Slightly darker hover for link
+    card: '#ffffff',
+    
     // Tabs
-    tabBackground: '#f5f5f5',  // Light gray for inactive tabs
-    tabActiveBackground: '#ffffff', // White for active tab
-    tabText: '#333333',        // Dark gray for tab text
-    tabActiveText: '#0073e6',  // Blue for active tab text
+    tabBackground: '#fef1f4',  // Very light pinkish background
+    tabActiveBackground: '#fffafa', // Matches overall background
+    tabText: '#333333',
+    tabActiveText: '#e75480',
 
     // Menu Bar
-    menuBackground: '#f8f9fa',  // Light gray for menu background
-    menuText: '#333333',        // Dark gray for menu text
-    menuHoverBackground: '#e3f2fd', // Light blue hover effect
-    menuHoverText: '#0073e6',   // Blue text on hover
+    menuBackground: '#fff0f5',  // Light pink background
+    menuText: '#333333',
+    menuHoverBackground: '#ffe4ee', // Slightly deeper pink hover
+    menuHoverText: '#e75480',
 
     // Sidebar
-    sidebarBackground: '#f1f1f1', // Light gray sidebar
-    sidebarText: '#444444',       // Slightly darker gray for contrast
-    sidebarActiveText: '#0073e6', // Highlight active sidebar item
+    sidebarBackground: '#fdf0f5', // Warm light pink
+    sidebarText: '#444444',
+    sidebarActiveText: '#e75480',
   },
 
-  // Dark Theme (Dark Background)
   dark: {
-    background: '#121212',  // Deep black for dark mode
-    primary: '#1E88E5',     // Bright blue for contrast
-    secondary: '#1565C0',   // Darker blue for accents
-    text: '#E0E0E0',        // Light gray text for readability
-    labelText: '#B0BEC5',    // Subtle gray for secondary text
-    button: { background: '#1E88E5', color: '#ffffff' },  // Blue button with white text
-    buttonHover: { background: '#1565C0', color: '#ffffff' }, // Darker blue on hover
-    border: '#333333',      // Dark gray for dividers
-    link: '#64B5F6',        // Lighter blue for visibility
-    linkHover: '#42A5F5',   // Slightly darker on hover
+    background: '#121212',
+    primary: '#1E88E5',
+    secondary: '#1565C0',
+    text: '#E0E0E0',
+    labelText: '#B0BEC5',
+    button: { background: '#1E88E5', color: '#ffffff' },
+    buttonHover: { background: '#1565C0', color: '#ffffff' },
+    border: '#333333',
+    link: '#64B5F6',
+    linkHover: '#42A5F5',
 
-    // Tabs
-    tabBackground: '#1E1E1E',  // Dark gray for inactive tabs
-    tabActiveBackground: '#121212', // Dark black for active tab
-    tabText: '#B0BEC5',        // Gray text for tabs
-    tabActiveText: '#64B5F6',  // Bright blue for active tab
+    tabBackground: '#1E1E1E',
+    tabActiveBackground: '#121212',
+    tabText: '#B0BEC5',
+    tabActiveText: '#64B5F6',
 
-    // Menu Bar
-    menuBackground: '#1c1c1c',  // Dark gray for menu
-    menuText: '#E0E0E0',        // Light gray menu text
-    menuHoverBackground: '#263238', // Dark blue-gray hover effect
-    menuHoverText: '#64B5F6',   // Bright blue text on hover
+    menuBackground: '#1c1c1c',
+    menuText: '#E0E0E0',
+    menuHoverBackground: '#263238',
+    menuHoverText: '#64B5F6',
 
-    // Sidebar
-    sidebarBackground: '#181818', // Slightly lighter black for sidebar
-    sidebarText: '#B0BEC5',       // Soft gray for contrast
-    sidebarActiveText: '#64B5F6', // Highlight active sidebar item
+    sidebarBackground: '#181818',
+    sidebarText: '#B0BEC5',
+    sidebarActiveText: '#64B5F6',
   },
 };
 

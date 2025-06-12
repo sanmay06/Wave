@@ -14,13 +14,13 @@ const Menu = (props) => {
 
     const styles = StyleSheet.create({
         title: {
-            fontSize: 36,
+            fontSize: 26,
             fontWeight: "bold",
             textAlign: "center",
             color: theme.menuText,
         },
         subtitle: {
-            fontSize: 16,
+            fontSize: 10,
             color: theme.labelText,
             textAlign: "center",
         },

@@ -38,14 +38,14 @@ export default function RootLayout() {
 
   return (
       <ThemeProvider>
-        <SafeAreaProvider>
+        <SafeAreaProvider >
         {/* <NavigationContainer> */}
             <Stack.Navigator initialRouteName='login' screenOptions={{headerShown: false}}>
               <Stack.Screen name = "login" component={Login} />
               <Stack.Screen name = "home" component={Home} />
               <Stack.Screen name = "register" component={Register} />
             </Stack.Navigator>
-          </SafeAreaProvider>
+        </SafeAreaProvider>
         {/* </NavigationContainer> */}
         </ThemeProvider>
   );

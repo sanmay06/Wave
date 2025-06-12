@@ -34,6 +34,7 @@ function Login({navigation}) {
         mainContainer: {
             backgroundColor: theme.background,
             alignItems: 'center',
+            flex: 1,
             width: '100%',
             height: '100%',
             flexGap: 10,
@@ -85,10 +86,6 @@ function Login({navigation}) {
             color: theme.button.color
         }
     })
-
-    useEffect(() => {
-        
-    }, [])
 
     return (
         <View style={styles.mainContainer}>

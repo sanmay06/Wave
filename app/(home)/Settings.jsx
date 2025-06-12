@@ -8,6 +8,7 @@ import Svg, { Path, Circle, Text } from 'react-native-svg';
 import Menu from '@/components/ui/Menu';
 import useAuth from '@/hooks/Auth';
 import { useRoute } from '@react-navigation/native';
+import RadialBackground from '@/components/ui/Background';
 
 const db = database;
 const screenWidth = Dimensions.get('window').width;
@@ -64,22 +65,25 @@ const Settings = ({navigation}) => {
   }, [deviceId]);
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
-      <Menu navigation={navigation}/>
-      <Title style={[styles.header, { color: theme.primary }]}>Sensor Data</Title>
+    <View style={{ flex: 1 }}>
+      <RadialBackground />
+      <ScrollView style={[styles.container, { backgroundColor: 'transparent' }]}>
+        <Menu navigation={navigation}/>
+        <Title style={[styles.header, { color: theme.primary }]}>Sensor Data</Title>
 
-      {loading ? (
-        <ActivityIndicator animating={true} color={theme.primary} size="large" />
-      ) : (
-        <>
-          <DataCard title="Temperature (°C)" data={temperature} theme={theme} />
-          <DataCard title="Humidity (%)" data={humidity} theme={theme} />
-          <DataCard title="Sensor Battery (%)" data={battery} theme={theme} />
-          <DataCard title="Dist Battery (%)" data={distbtry} theme={theme} />
-          <DataCard title="Pi Temperature (°C)" data={pitemp} theme={theme} />
-        </>
-      )}
-    </ScrollView>
+        {loading ? (
+          <ActivityIndicator animating={true} color={theme.primary} size="large" />
+        ) : (
+          <>
+            <DataCard title="Temperature (°C)" data={temperature} theme={theme} />
+            <DataCard title="Humidity (%)" data={humidity} theme={theme} />
+            <DataCard title="Sensor Battery (%)" data={battery} theme={theme} />
+            <DataCard title="Dist Battery (%)" data={distbtry} theme={theme} />
+            <DataCard title="Pi Temperature (°C)" data={pitemp} theme={theme} />
+          </>
+        )}
+      </ScrollView>
+    </View>
   );
 };
 

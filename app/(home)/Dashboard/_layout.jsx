@@ -12,7 +12,6 @@ export default function Dash() {
             <Stack.Navigator initialRouteName='dash' screenOptions={{headerShown: false}}>
               <Stack.Screen name = 'dash' component={Dashboard} initialParams={{deviceID: params.deviceID}}/>
               <Stack.Screen name = 'room/[id]' component={Room} />
-              {/* <Stack.Screen name='Home' component={ Dashboard } /> */}
             </Stack.Navigator>
   );
 }

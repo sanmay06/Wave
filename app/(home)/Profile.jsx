@@ -9,7 +9,7 @@ import { useRoute } from '@react-navigation/native';
 import { ScrollView } from 'moti';
 import * as Location from 'expo-location';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
-
+import RadialBackground from '@/components/ui/Background';
 
 function Profile({navigation}) {
     const { theme } = useContext(ThemeContext);
@@ -36,7 +36,8 @@ function Profile({navigation}) {
 
     const styles = StyleSheet.create({
         mainContainer: {
-            backgroundColor: theme.background,
+            backgroundColor: 'transparent',
+            flex: 1,
             width: '100%',
             alignItems: 'center',
             width: '100%',
@@ -112,6 +113,7 @@ function Profile({navigation}) {
     
     return (
         <View style={styles.mainContainer}>
+            <RadialBackground />
             <Menu navigation={navigation} />
             <View style={{ width: '100%', alignItems: 'center', marginTop: 20 }}>
                 <Text style={styles.text}>Profile</Text>

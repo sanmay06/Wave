@@ -8,6 +8,7 @@ import { useContext } from 'react';
 import { ThemeContext } from '@/hooks/ThemeProvider';
 import Commune from './community/_layout';
 import { useRoute } from '@react-navigation/native';
+import RadialBackground from '@/components/ui/Background';
 
 const Tab = createBottomTabNavigator();
 
@@ -17,7 +18,8 @@ function Home() {
     const { params } = useRoute();
 
     return (
-        <SafeAreaView style={{ flex: 1}}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
+            <RadialBackground />
             <Tab.Navigator
                 screenOptions={({ route }) => ({
                     tabBarIcon: ({ focused, color, size}) => {
