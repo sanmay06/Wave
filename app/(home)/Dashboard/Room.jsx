@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Text, View, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { Text, View, StyleSheet, ScrollView, Pressable, Dimensions, TouchableOpacity } from 'react-native';
 import Light from '@/components/ui/Lights';
 import { database } from '@/firebaseConfig';
 import { ref, get, update, set, onValue } from 'firebase/database';
@@ -10,6 +10,7 @@ import Outlet from '@/components/ui/Outlets';
 import useAuth from '@/hooks/Auth';
 import { MotiView } from 'moti';
 import RadialBackground from '@/components/ui/Background';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 function Room({navigation , route}) {
 
@@ -18,7 +19,6 @@ function Room({navigation , route}) {
     const { id } = route.params;
 
     const [lights, setLights] = useState(null);
-    const [ data, setData ] = useState();
     const [ deviceId, setDeviceId ] = useState();
     const [ fans, setFans ] = useState(null);
     const [ outlets, setOutlets ] = useState(null);
@@ -66,50 +66,48 @@ function Room({navigation , route}) {
         const refe = ref(database, `/${deviceId}/rooms/room${id}`);
 
         const unsubscribe = onValue(refe, (snapshot) => {
-            setData(snapshot.val());
+            if(snapshot.exists()) {
+                const data = snapshot.val();
+                if(data) {
+                    if(data.lights) {
+                        let length = Object.values(data.lights).length;
+                        let arr = [];
+                        for(let i = 1; i <= length; i++) {
+                            // console.log(data.lights['light' + i]);
+                            arr.push(data.lights['light' + i]);
+                        }
+                        setLights(arr);
+                        // console.log(lights);
+                    }
+                    if(data.fans) {
+                        let length = Object.values(data.fans).length;
+                        let a = [];
+                        for(let i = 1; i <= length; i++) {
+                            a.push(data.fans['fan' + i]);
+                        }
+                        setFans(a);
+                        // console.log(fans);
+                    }
+                    if(data.outlets) {
+                        let length = Object.values(data.outlets).length;
+                        let a = [];
+                        for(let i = 1; i <= length; i++) {
+                            a.push(data.outlets['outlet' + i]);
+                        }
+                        setOutlets(a);
+                        // console.log(outlets);
+                    }
+                    if(data.name) {
+                        setName(data.name);
+                    }
+                    // console.log('fans:', a);            
+                    // console.log(arr);
+                }
+            }
         });
 
         return () => unsubscribe;
     }, [deviceId]);
-
-    //loading the data
-    useEffect(() => {
-        if(data) {
-            if(data.lights) {
-                let length = Object.values(data.lights).length;
-                let arr = [];
-                for(let i = 1; i <= length; i++) {
-                    // console.log(data.lights['light' + i]);
-                    arr.push(data.lights['light' + i]);
-                }
-                setLights(arr);
-                // console.log(lights);
-            }
-            if(data.fans) {
-                let length = Object.values(data.fans).length;
-                let a = [];
-                for(let i = 1; i <= length; i++) {
-                    a.push(data.fans['fan' + i]);
-                }
-                setFans(a);
-                // console.log(fans);
-            }
-            if(data.outlets) {
-                let length = Object.values(data.outlets).length;
-                let a = [];
-                for(let i = 1; i <= length; i++) {
-                    a.push(data.outlets['outlet' + i]);
-                }
-                setOutlets(a);
-                // console.log(outlets);
-            }
-            if(data.name) {
-                setName(data.name);
-            }
-            // console.log('fans:', a);            
-            // console.log(arr);
-        }
-    }, [data]);
 
     const toggleLight = (name) => {
         setLights(prev =>
@@ -164,8 +162,6 @@ function Room({navigation , route}) {
                 return acc;
             },{});
 
-            // console.log("Object:",obj)
-
             await update(ref(database, `${deviceId}/rooms/room${id}/lights`), obj).then(
                 // console.log('updated Lights')
             )
@@ -215,6 +211,9 @@ function Room({navigation , route}) {
         updateData();
     }, [fans]);
 
+    const { height, width } = Dimensions.get('window');
+    const size = height > width ? width: height;
+
     const styles = StyleSheet.create({
         container: {
             flex: 1,
@@ -240,7 +239,23 @@ function Room({navigation , route}) {
             fontWeight: 'bold',
             color: theme.text,
             textAlign: 'center',
-        }
+        },
+        button: {
+            position: 'absolute',
+            bottom: size * 0.06,
+            right: size * 0.06,
+            backgroundColor: theme.button.background,
+            borderRadius: size * 0.07,
+            height: size * 0.13,
+            width: size * 0.13,
+            alignItems: 'center',
+            justifyContent: 'center',
+            shadowColor: '#000',
+        //             shadowOpacity: 0.3,
+        //             shadowOffset: { width: 0, height: 3 },
+        //             shadowRadius: 5,
+            elevation: 6,
+        },
     });
 
 
@@ -310,7 +325,7 @@ function Room({navigation , route}) {
                         </View>
                     </View>
 
-                    <View>
+                    <View style={{ marginBottom: 24 }}>
                         <Text style={styles.compText}>Outlets</Text>
                         <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                             {outlets && outlets.map((outlet, id) => (
@@ -335,8 +350,19 @@ function Room({navigation , route}) {
                             ))}
                         </View>
                     </View>
+
                 </Pressable>
             </ScrollView>
+            <TouchableOpacity
+                        style = {styles.button}
+                        onPress={() => {if(edit) setChanges(); setEdit(!edit)}}
+                    >
+                        {edit ?
+                            <MaterialIcons name="save" size={size * 0.07} color={theme.secondary} />:
+                            <MaterialIcons name="edit" size={size * 0.07} color={theme.secondary} />
+                        }
+                        
+                    </TouchableOpacity>
         </View>
     );
 }

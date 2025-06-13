@@ -6,7 +6,6 @@ import { database } from "../../../firebaseConfig";
 import { ThemeContext } from "@/hooks/ThemeProvider";
 import Menu  from "@/components/ui/Menu";
 import { StackNavigationProp } from "@react-navigation/stack";
-import useAuth from "@/hooks/Auth";
 import { useRoute } from "@react-navigation/native";
 import RadialBackground from "@/components/ui/Background";
 
@@ -128,7 +127,7 @@ const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {
   const [ deviceId, setDeviceId ] = useState<string>('');
   const [ chnages, setChanges ] = useState<any>({});
   const route:any = useRoute();
-  console.log('route:',route.params);
+  // console.log('route:',route.params);
 
   useEffect(() => {
     if (route?.params?.deviceID) {

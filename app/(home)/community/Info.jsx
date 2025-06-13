@@ -154,7 +154,7 @@ const Post = (props) => {
                 setdCount(data.dislikes.count ?? 0);
                 if (data.likes[deviceId] !== null && data.likes[deviceId] === 1) {
                     setLike(1);
-                } else if (data.dislikes[deviceId] === 1) {
+                } else if (data.dislikes[deviceId] !== null && data.dislikes[deviceId] === 1) {
                     setLike(-1);
                 } else {
                     setLike(0);
@@ -208,11 +208,7 @@ const saveComment = async() => {
 const toggleLike = async (type) => {
   try {
     if (!deviceId) return;
-
-    // Only fetch pincode once
-    const res = await get(ref(database, `${deviceId}/profile/pincode`));
-    const pincode = res.val();
-    const basePath = `communities/${pincode}/${props.id}/posts/${props.postId}`;
+    const basePath = `communities/${props.id}/posts/${props.postId}`;
     
     let updates = {};
     let newLike = like;

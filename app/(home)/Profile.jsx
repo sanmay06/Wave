@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, TextInput, Dimensions, TouchableOpacity, Button
 import Menu from '@/components/ui/Menu';
 import useAuth from '@/hooks/Auth';
 import { ThemeContext } from '@/hooks/ThemeProvider';
-import { ref, get, set, push, update, onValue } from "firebase/database";
+import { ref, update, onValue } from "firebase/database";
 import { database } from '@/firebaseConfig';
 import { useRoute } from '@react-navigation/native';
 import { ScrollView } from 'moti';
@@ -37,11 +37,9 @@ function Profile({navigation}) {
     const styles = StyleSheet.create({
         mainContainer: {
             backgroundColor: 'transparent',
-            flex: 1,
             width: '100%',
             alignItems: 'center',
             width: '100%',
-            height: '100%',
             flexGap: 10,
         },
         link: {

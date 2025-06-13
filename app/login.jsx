@@ -14,8 +14,8 @@ function Login({navigation}) {
             const logg = await logged(navigation);
             if(logg.check) {
                 // const devId = logg.deviceID;
-                console.log(logg);
-                console.log("Logged in with device ID: ", logg.deviceID);
+                // console.log(logg);
+                // console.log("Logged in with device ID: ", logg.deviceID);
                 navigation.navigate("home", { deviceID: logg.deviceID });
             }
         }
@@ -125,10 +125,13 @@ function Login({navigation}) {
                 visible={forgotPass}
                 onClose={() => setForgotPass(false)}
             />
-            <Text 
-                style = {styles.buttonText}
+            <TouchableOpacity 
+                style= {styles.link}
                 onPress={() => setForgotPass(true)}
-            >Forgot Password?</Text>
+            >
+                <Text style = {styles.buttonText}>Forgot Password?</Text>
+            </TouchableOpacity>
+            
             <View style = {{alignItems:"center"}}>
                 <View style= {styles.hr}></View>
                 <Text style = {styles.login}>new user? </Text><Pressable onPress={() => navigation.navigate('register')} style={styles.link}><Text style = {styles.login}>Register here</Text></Pressable>

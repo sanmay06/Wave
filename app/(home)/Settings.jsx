@@ -6,7 +6,6 @@ import { database } from '@/firebaseConfig';
 import { ThemeContext } from '@/hooks/ThemeProvider';
 import Svg, { Path, Circle, Text } from 'react-native-svg';
 import Menu from '@/components/ui/Menu';
-import useAuth from '@/hooks/Auth';
 import { useRoute } from '@react-navigation/native';
 import RadialBackground from '@/components/ui/Background';
 
@@ -25,13 +24,6 @@ const Settings = ({navigation}) => {
   const [pitemp, setPitemp] = useState([]);
   const [ deviceId, setDeviceId ] = useState();
     
-  // const { user } = useAuth(); 
-  // useEffect(() => {
-  //     if(user) {
-  //         setDeviceId(user.photoURL);
-  //     }
-  // }, [user]);
-
   useEffect(() => {
     setDeviceId(params.deviceID);
   }, []);

@@ -44,8 +44,8 @@ const Outlet = (props) => {
           width: screenWidth * 0.8,
           color: theme.text,
           textAlign: "center",
-          borderWidth: 1,
-          borderColor: 'white',
+          borderWidth: 2.5,
+          borderColor: theme.secondary,
         },
         cardTitle: {
           fontSize: screenWidth * 0.1,
@@ -88,7 +88,7 @@ const Outlet = (props) => {
           <Pressable
             style={styles.card}
             onPress={() => {if(!props.edit) props.toggle(props.name) }}
-            onLongPress={() => props.setEdit(true)}
+            // onLongPress={() => props.setEdit(true)}
           >
              {
               props.edit ? (

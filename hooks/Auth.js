@@ -107,7 +107,7 @@ const useAuth = () => {
   };
 
   const updateUser = async (name, device_id, user) => {
-    console.log(user);
+    // console.log(user);
     if(user) {
       updateProfile(user, {
         displayName: name,
