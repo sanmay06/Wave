@@ -1,5 +1,5 @@
 import React,{ useContext } from 'react'
-import { Text, TouchableOpacity, View, StyleSheet } from "react-native"
+import { Text, TouchableOpacity, View, StyleSheet, Dimensions } from "react-native"
 import Ionicons from '@expo/vector-icons/Ionicons';
 import useAuth from '@/hooks/Auth';
 import { ThemeContext } from '@/hooks/ThemeProvider';
@@ -12,15 +12,18 @@ const Menu = (props) => {
 
     const { logout } = useAuth();
 
+    const { height, width } = Dimensions.get('window');
+    const size = height > width ? width: height;
+
     const styles = StyleSheet.create({
         title: {
-            fontSize: 26,
+            fontSize: size * 0.07,
             fontWeight: "bold",
             textAlign: "center",
             color: theme.menuText,
         },
         subtitle: {
-            fontSize: 10,
+            fontSize: size * 0.03,
             color: theme.labelText,
             textAlign: "center",
         },
@@ -51,7 +54,7 @@ const Menu = (props) => {
                         onPress={() => navigation.goBack()}
                         style = {{ paddingRight: 10 }}
                     >
-                        <Ionicons name="arrow-back" size={45} color={theme.menuText} />
+                        <Ionicons name="arrow-back" size={size * 0.1} color={theme.menuText} />
                     </TouchableOpacity>}
 
                 <View style = {styles.titlecontainer}>
@@ -68,9 +71,9 @@ const Menu = (props) => {
                             style = {{ paddingRight: 10 }}
                         >
                             props.clicked ?
-                                <Ionicons nmae = "mail-unread-outline" size={45} color = {theme.menuText} />
+                                <Ionicons nmae = "mail-unread-outline" size={size * 0.1} color = {theme.menuText} />
                             :
-                                <Ionicons name="mail-outline" size={45} color={theme.menuText} />
+                                <Ionicons name="mail-outline" size={size * 0.1} color={theme.menuText} />
                         </TouchableOpacity>
                 }
                 <TouchableOpacity 
@@ -79,7 +82,7 @@ const Menu = (props) => {
                         // navigation.navigate('login')
                     }}
                 >
-                    <Ionicons name="exit-outline" size={45} color={theme.menuText} />
+                    <Ionicons name="exit-outline" size={size * 0.1} color={theme.menuText} />
                 </TouchableOpacity>
             </View>
         </View>

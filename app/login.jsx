@@ -3,6 +3,7 @@ import { Text, StyleSheet, View, TextInput, Pressable, Dimensions, TouchableOpac
 import { ThemeContext } from '@/hooks/ThemeProvider';
 import useAuth from '@/hooks/Auth';
 import ForgotPasswordModal from '@/components/ui/ForgotPass';
+import RadialBackground from '@/components/ui/Background';
 
 function Login({navigation}) {
 
@@ -89,6 +90,7 @@ function Login({navigation}) {
 
     return (
         <View style={styles.mainContainer}>
+            <RadialBackground />
             <Text style={styles.text}>Enter your E-mail:</Text>
             <TextInput 
                 value={USN}
