@@ -228,8 +228,8 @@ function Room({navigation , route}) {
         },
         compText: {
             fontSize: 20,
-            color: theme.text,
-            backgroundColor: 'grey',
+            color: theme.secondary,
+            backgroundColor: theme.primary,
             paddingVertical: 6,
             paddingHorizontal: 12,
             marginBottom: 8,

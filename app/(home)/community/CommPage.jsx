@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Dimensions, Platform } from 'react-native';
 import Menu from '@/components/ui/Menu';
 import { ThemeContext } from "@/hooks/ThemeProvider";
 import useAuth from '@/hooks/Auth';
@@ -12,79 +12,83 @@ function CommPage({navigation, route}) {
 
     const { theme } = useContext(ThemeContext);
     const { id, page, deviceID } = route.params;
+    const { height, width } = Dimensions.get('window');
+    const size = ( height > width ? width: height );
 
     const styles = {
         container: {
-          flexGrow: 1,
-          padding: 16,
-          width: '100%',
-          backgroundColor: 'transparent',
-        },
-        create: {
+            flexGrow: 1,
+            padding: size * 0.04,        // Responsive padding
+            width: '100%',
+            backgroundColor: 'transparent',
+          },
+          create: {
             color: theme.text,
-            fontSize: 12,
+            fontSize: size * 0.03,       // Responsive font size
             fontWeight: '500',
-            marginBottom: 8,  
-        },
-        headText: {
-          color: theme.primary,
-          fontSize: 24,
-          fontWeight: 'bold',
-          marginBottom: 8,
-        },
-        h1: {
+            marginBottom: size * 0.02,
+          },
+          headText: {
             color: theme.primary,
-            fontSize: 30,
+            fontSize: size * 0.06,
+            fontWeight: 'bold',
+            marginBottom: size * 0.02,
+          },
+          h1: {
+            color: theme.primary,
+            fontSize: size * 0.07,
             textAlign: 'center',
-            marginBottom: 10,
-        },
-        text: {
-          color: theme.text,
-          fontSize: 18,
-          fontWeight: '500',
-          marginBottom: 8,
-        },
-        card: {
-          backgroundColor: theme.card,
-          borderRadius: 12,
-          padding: 16,
-          width: '80%',
-          marginBottom: 16,
-          shadowColor: '#000',
-          shadowOpacity: 0.2,
-          shadowOffset: { width: 0, height: 2 },
-          shadowRadius: 4,
-          elevation: 3,
-        },
-        button: {
-          position: 'absolute',
-          bottom: 24,
-          right: 24,
-          backgroundColor: theme.button,
-          borderRadius: 28,
-          height: 56,
-          width: 56,
-          alignItems: 'center',
-          justifyContent: 'center',
-          shadowColor: '#000',
-          shadowOpacity: 0.3,
-          shadowOffset: { width: 0, height: 3 },
-          shadowRadius: 5,
-          elevation: 6,
-        }
+            marginBottom: size * 0.025,
+          },
+          text: {
+            color: theme.text,
+            fontSize: size * 0.045,
+            fontWeight: '500',
+            marginBottom: size * 0.02,
+          },
+          card: {
+            backgroundColor: theme.card,
+            borderRadius: size * 0.03,
+            padding: size * 0.04,
+            width: '80%',
+            marginBottom: size * 0.03,
+            shadowColor: '#000',
+            shadowOpacity: Platform.OS === 'ios' ? 0.1 : 0.2,
+            shadowOffset: { width: 0, height: 2 },
+            shadowRadius: 4,
+            elevation: 3,
+          },
+          button: {
+            position: 'absolute',
+            bottom: size * 0.06,
+            right: size * 0.06,
+            backgroundColor: theme.button.background,
+            borderRadius: size * 0.07,
+            height: size * 0.14,
+            width: size * 0.14,
+            alignItems: 'center',
+            justifyContent: 'center',
+            shadowColor: '#000',
+//             shadowOpacity: 0.3,
+//             shadowOffset: { width: 0, height: 3 },
+//             shadowRadius: 5,
+            elevation: 6,
+          },
       };
 
     console.log("Community ID:", id); // Log the community ID to verify it's being passed correctly
     return (
         <View style = {{width: '100%', height: '100%', flex: 1}}>
             <RadialBackground />
-            <Menu navigation={navigation} back={true} />
-            {/* <Text  style={styles.h1}>Community Page</Text> */}
-            { 
-              page === 'posts'? <Posts id = {id} navigation={navigation} devId = {deviceID} style = {styles} /> :
-              page === 'proposals' ? <Proposals id = {id} navigation={navigation} devId = {deviceID} style = {styles} /> :
-              page === 'emergency' ? <Emergency id = {id} navigation={navigation} devId = {deviceID} style = {styles} /> : null
-            }
+            <ScrollView contentContainerStyle = {{flex:1}} >
+                <Menu navigation={navigation} back={true} />
+                {/* <Text  style={styles.h1}>Community Page</Text> */}
+                { 
+                page === 'posts'? <Posts id = {id} navigation={navigation} devId = {deviceID} style = {styles} /> :
+                page === 'proposals' ? <Proposals id = {id} navigation={navigation} devId = {deviceID} style = {styles} /> :
+                page === 'emergency' ? <Emergency id = {id} navigation={navigation} devId = {deviceID} style = {styles} /> : null
+                }
+            </ScrollView>
         </View>
     );
 }

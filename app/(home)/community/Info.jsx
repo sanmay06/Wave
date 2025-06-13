@@ -28,10 +28,9 @@ const Info = ({ navigation, route }) => {
 
     const styles = StyleSheet.create({
         container:{
-            flex: 1,
+//             flex: 1,
             width: '100%',
             backgroundColor: 'transparent',
-            minHeight: '100%',
             alignItems: 'center',
         },
         h1: {
@@ -65,18 +64,11 @@ const Info = ({ navigation, route }) => {
             marginTop: 8,
         },
         value: {
-            color: theme.button.color,
+            color: theme.text,
             fontSize: 18,
             marginBottom: 12,
-            backgroundColor: theme.button.background,
             borderRadius: 8,
-            padding: 8,            
-            shadowColor: '#000',
-            shadowOpacity: 0.2,
-            shadowOffset: { width: 0, height: 2 },
-            shadowRadius: 4,
-            elevation: 5,
-            marginTop: 12,
+            padding: 8,
         },
         secCard: {
             borderRadius: 12,
@@ -271,8 +263,7 @@ const toggleLike = async (type) => {
 };
 
 
-    return (
-        
+    return (        
             <View style={styles.card}>
                 <Text style = {styles.h1}>Post</Text>
                 <View style = {styles.secCard}>
@@ -536,7 +527,7 @@ const Proposals = (props) => {
                 <Text style = {styles.h3}>Comments</Text>
                 <View style={{ marginTop: 12, width: '100%' }}>
                     {comments.length > 0? comments.map((c) => (
-                        <View key={c.id} style={{ marginBottom: 12, padding: 12, backgroundColor: theme.background, borderRadius: 8 }}>
+                        <View key={c.id} style={{ marginBottom: 12, padding: 12, backgroundColor: theme.card, borderRadius: 8 }}>
                             <Text style={{ color: theme.text, fontSize: 16 }}>{c.comment}</Text>
                             <Text style={{ color: '#AAAAAA', fontSize: 14, marginTop: 4 }}>
                                 {c.username} - {new Date(c.createdAt).toLocaleDateString()}      
