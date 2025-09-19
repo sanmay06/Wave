@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { View, Text, Switch, Alert, Button, TextInput, ScrollView, StyleSheet, Linking, Dimensions, Pressable } from "react-native";
 import { ref, onValue, set, query, orderByKey, limitToLast, push, get } from "firebase/database";
 import { MotiView } from "moti";
-import { database } from "../../../firebaseConfig";
+import { database } from "@/firebaseConfig";
 import { ThemeContext } from "@/hooks/ThemeProvider";
 import Menu  from "@/components/ui/Menu";
 import { StackNavigationProp } from "@react-navigation/stack";
